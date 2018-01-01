@@ -66,7 +66,7 @@ module.exports.userPayload = function userPayload(token) {
     });
 }
 
-/*var OAuth_Users = require('../models/oauth_users');
+var User = require('../models/user');
 module.exports.authenticate = function authenticate(token) {
     return new Promise((resolve) => {
         client.verifyIdToken(
@@ -76,8 +76,8 @@ module.exports.authenticate = function authenticate(token) {
                 if(login) {
                     var payload = login.getPayload();
                     var userid = payload['sub'];
-                    var user = new OAuth_Users();
-                    OAuth_Users.findOne({'unique_id' : userid }, (err, result) => {
+                    var user = new User();
+                    User.findOne({'unique_id' : userid }, (err, result) => {
                         if(result.permissions >= 2) {
                             resolve(true);
                         }else{
@@ -90,4 +90,4 @@ module.exports.authenticate = function authenticate(token) {
             })
         );
     });
-}*/
+}

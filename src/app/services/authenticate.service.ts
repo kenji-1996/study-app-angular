@@ -27,8 +27,8 @@ export class AuthenticateService {
           }else{
             this.auth2access = gapi.auth2.getAuthInstance();
             var profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
-            if(sessionStorage.getItem('idtoken') != gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token) {
-              sessionStorage.setItem('idtoken', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
+            if(this.cookieService.get('idtoken') != gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token) {
+              this.cookieService.set('idtoken', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
             }
             this.validate(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token).subscribe(data => {});
           }
@@ -46,6 +46,7 @@ export class AuthenticateService {
       this.cookieService.set('name', result['name'],30/1440,'session');
       this.cookieService.set('perm', result['permissions'],30/1440,'session');
       this.cookieService.set('logged', 'true',30/1440,'session');
+      this.cookieService.set('questions',JSON.stringify(result['questions']),30/1440,'session');
     });
   }
 

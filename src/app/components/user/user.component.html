@@ -1,2 +1,7 @@
-<p>Welcome to profile {{name}}</p>
+<p *ngIf="name">
+    Welcome to profile {{name}}, idtoken here:<br />
+    {{idtoken}} <br /><br />
+    {{questions}}
+</p>
+
 <button id="logout" (click)="handleLogOut()"> Log out</button>

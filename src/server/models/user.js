@@ -4,13 +4,14 @@
 var mongoose     = require('mongoose');
 var Schema = mongoose.Schema;
 
-var USER  = new Schema({
+var UserSchema  = new Schema({
     unique_id: String,
     email: String,
     name: String,
     source: String,
     picture: String,
-    permissions: Number
+    permissions: Number,
+    questions : [{ type: Schema.Types.ObjectId, ref: 'Question' }],
 });
 
-module.exports = mongoose.model('Users', USER);
+module.exports = mongoose.model('User', UserSchema);
