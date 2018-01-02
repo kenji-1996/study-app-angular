@@ -3,6 +3,7 @@
  */
 //User API
 const router = require('express').Router();
+var mongoose = require('mongoose');
 var settings = require('../../misc/settings');
 var USER = require('../../models/user');
 var QUESTION = require('../../models/question');
@@ -31,13 +32,21 @@ router.route('/user')
         } else
         if (req.body.action == 'add_question') {
             var idtoken = req.body.idtoken;
-            settings.verify(idtoken).then((result) => {
+            settings.userPayload(idtoken).then((result) => {
                 if(result) {
-                    var question = new QUESTION();
-                    question.question = req.body.question_question;
-                    question.answer = req.body.question_answer;
-                    question.category = req.body.question_category
-                    res.json({result: 'successfully read'});
+                    USER.findOne({'unique_id' : result['sub'] }, (err, userQuery) => {
+                        var user = userQuery;
+                        var question = new QUESTION();
+                        question.question = req.body.question_question;
+                        question.answer = req.body.question_answer;
+                        question.category = req.body.question_category;
+                        question.save(function (err, result) {
+                            if (err) return console.error(err);
+                            user.questions.push(question);
+                            res.json({result: result})
+                        });
+
+                    });
                 }else{
                     res.json({result: 'failed to validate session'});
                 }
@@ -47,24 +56,20 @@ router.route('/user')
             var idtoken = req.body.idtoken;
             settings.userPayload(idtoken).then((result) => {
                 if (result) {
+                    user._id = new mongoose.Types.ObjectId();
                     user.unique_id = result['sub'];
                     user.email = result['email'];
                     user.name = result['name'];
                     user.source = result['iss'];
                     user.picture = result['picture'];
                     user.permissions = 0;
-                    USER.findOne({'unique_id' : result['sub'] }, (err, user) => {
-                        if(user) {
-                            res.json(user);
-                        }else{
-                            user.save((err) => {
-                                if (err)
-                                    res.send(err);
 
-                                res.json(user);
-                            });
-                        }
+                    USER.update({'unique_id' : result['sub'] },user,{upsert: true}, function (err, raw) {
+
+                        console.log('The raw response from Mongo was ', raw);
+                        res.json(user);
                     });
+
                 } else {
                     res.json({result: "invalid id token"});
                 }
