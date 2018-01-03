@@ -5,6 +5,7 @@ var mongoose     = require('mongoose');
 var Schema = mongoose.Schema;
 
 var questionSchema  = new Schema({
+    _id: Schema.Types.ObjectId,
     question: String,
     answer: String,
     category: String,
