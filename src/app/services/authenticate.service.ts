@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 export declare const gapi: any;
 import * as global from '../globals';
-import {CookieService} from "ngx-cookie-service";
 import 'rxjs/add/operator/map'
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class AuthenticateService {
@@ -11,8 +11,7 @@ export class AuthenticateService {
   auth2;
   auth2access;
 
-  constructor(private http: HttpClient,
-              private cookieService: CookieService
+  constructor(private http: HttpClient
   ) { }
 
   public initAuth() {
@@ -27,31 +26,25 @@ export class AuthenticateService {
           }else{
             this.auth2access = gapi.auth2.getAuthInstance();
             var profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
-            if(this.cookieService.get('idtoken') != gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token) {
-              this.cookieService.set('idtoken', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
+            if(localStorage.getItem('idtoken') != gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token) {
+              localStorage.setItem('idtoken', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
             }
-            this.validate(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token).subscribe(data => {});
+            this.validate(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token).subscribe();
           }
         });
       });
     } catch (ex) {  }
   }
 
-  public validate(idtoken: string):any {
+  public validate(idtoken: string): Observable<any> {
     var body = { idtoken : idtoken/*, type: 'list'*/ };
-    return this.http.post(global.url + '/api/user', body, {}).map(result =>
-    {
-      this.cookieService.set('email', result['email'],30/1440,'session');
-      this.cookieService.set('avatar', result['picture'],30/1440,'session');
-      this.cookieService.set('name', result['name'],30/1440,'session');
-      this.cookieService.set('perm', result['permissions'],30/1440,'session');
-      this.cookieService.set('logged', 'true',30/1440,'session');
-      this.cookieService.set('questions',JSON.stringify(result['questions']),30/1440,'session');
-    });
+    return this.http.post(global.url + '/api/user', body, {});
   }
 
+  /**/
+
   public localLoggedIn() {
-    if(this.cookieService.get('logged') == 'true') {
+    if(localStorage.getItem('logged')) {
       return true;
     }
   }
@@ -63,9 +56,9 @@ export class AuthenticateService {
   }
 
   public revoke()  {
-    this.cookieService.deleteAll('sessions');
+    localStorage.removeItem('logged');
+    localStorage.removeItem('idtoken');
     gapi.auth2.getAuthInstance().signOut();
   }
 
 }
-

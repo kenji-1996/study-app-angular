@@ -1,5 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
+import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {AuthenticateService} from "../../services/authenticate.service";
 import {Router} from "@angular/router";
 declare const gapi: any;
@@ -15,9 +14,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
     auth2:any;
     logged = false;
 
-    constructor(private cookieService: CookieService,
+    constructor(
                 public auth: AuthenticateService,
-                private route: Router
+                private route: Router,
+                private zone:NgZone
     ) { }
 
     ngOnInit() {
@@ -41,15 +41,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.auth2.attachClickHandler(element, {},
             (loggedInUser) => {
                 var idtoken = loggedInUser.getAuthResponse().id_token;
-                this.cookieService.set('idtoken',idtoken,30/1440,'session');
-                this.auth.validate(idtoken).subscribe(data => {
-                  alert("Logged in as " + this.cookieService.get('name'));
-                    },
-                    (err) => console.error(err),
-                    () => {
-                        this.route.navigate(['/user'])
-                    }
-                );
+                localStorage.setItem('idtoken',idtoken);
+                this.auth.validate(idtoken).subscribe(result => {
+                    console.log(result);
+                    localStorage.setItem('email', result['email']);
+                    localStorage.setItem('avatar', result['picture']);
+                    localStorage.setItem('name', result['name']);
+                    localStorage.setItem('perm', result['permissions']);
+                    localStorage.setItem('logged', 'true');
+                    localStorage.setItem('questions',JSON.stringify(result['questions']));
+                    alert("Logged in as " + localStorage.getItem('name'));
+                    //Zone needed to properly load
+                    this.zone.run(() => this.route.navigate(['/user']));
+                });
             }, function (error) {
                 alert("Error: " + error.error);
             });
