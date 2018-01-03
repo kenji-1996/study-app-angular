@@ -4,9 +4,9 @@
 //Question API
 const router = require('express').Router();
 var mongoose = require('mongoose');
-var settings = require('../../misc/settings');
-var USER = require('../../models/user');
-var QUESTION = require('../../models/question');
+var settings = require('../misc/settings');
+var USER = require('../models/user');
+var QUESTION = require('../models/question');
 
 router.route('/question')
     .post((req,res) => {
@@ -14,10 +14,22 @@ router.route('/question')
             var idtoken = req.body.idtoken;
             settings.userPayload(idtoken).then((result) => {
                 if (result) {
-                    USER.findOne({'unique_id' : result['sub'] }, function(err, user) {
-                        QUESTION.find({ _id: { $in: user.questions}}, function (err, markets) {
-                            res.json(markets);
-                        });
+                    USER.findOne({'unique_id': result['sub']}, function (err, user) {
+                        if(req.body.limit){
+                            QUESTION
+                                .find({_id: {$in: user.questions}})
+                                .sort({_id:-1})
+                                .limit(parseInt(req.body.limit))
+                                .exec(function(err, questions) {
+                                    if(err) return res.send(err);
+                                    res.json(questions);
+                                });
+                        }else{
+                            QUESTION.find({_id: {$in: user.questions}}, function (err, questions) {
+                                res.json(questions);
+                            });
+                        }
+
                     });
                 } else {
                     res.json({result: 'failed to validate session'});

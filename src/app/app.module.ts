@@ -9,6 +9,7 @@ import { CookieService } from 'ngx-cookie-service';
 import {AuthenticateService} from "./services/authenticate.service";
 import {HttpClientModule} from "@angular/common/http";
 import { UserComponent } from './components/user/user.component';
+import {DataManagementService} from "./services/data-management.service";
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { UserComponent } from './components/user/user.component';
   ],
   providers: [
     CookieService,
-    AuthenticateService
+    AuthenticateService,
+    DataManagementService
   ],
   bootstrap: [AppComponent]
 })
