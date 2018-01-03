@@ -7,6 +7,7 @@ var mongoose = require('mongoose');
 var settings = require('../../misc/settings');
 var USER = require('../../models/user');
 var QUESTION = require('../../models/question');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 router.route('/user')
     .post((req,res) => {
@@ -34,21 +35,11 @@ router.route('/user')
             var idtoken = req.body.idtoken;
             settings.userPayload(idtoken).then((result) => {
                 if (result) {
-                    USER.findOne({'unique_id' : result['sub'] }).
-                    populate('questions'). // only works if we pushed refs to children
-                    exec(function (err, person) {
-                        if (err) return console.log(err);
-                        console.log(person);
+                    USER.findOne({'unique_id' : result['sub'] }, function(err, user) {
+                        QUESTION.find({ _id: { $in: user.questions}}, function (err, markets) {
+                            res.json(markets);
+                        });
                     });
-
-
-                    /*, function (err, userQuery) {
-                        console.log(userQuery.questions);
-                        questionResults = QUESTION.find({_id: { $in : userQuery.questions } }, function(err, questionQuery) {
-                            console.log(questionQuery);
-                            res.json(questionQuery);
-                        }) ;
-                    });*/
                 } else {
                     res.json({result: 'failed to validate session'});
                 }
@@ -70,7 +61,7 @@ router.route('/user')
                             if (err) return console.error(err);
 
 
-                            user.questions.push(question);
+                            user.questions.push(question.id);
                             user.save(function (err, userQuery) {
                                 if (err) return console.error(err);
                             });
@@ -95,8 +86,11 @@ router.route('/user')
                         permissions: 0,
                     });
                     USER.update({'unique_id' : result['sub'] },gmailUser,{upsert: true}, function (err, raw) {
-                        console.log('The raw response from Mongo was ', raw);
-                        res.json(gmailUser);
+                        //console.log('The raw response from Mongo was ', raw);
+                    });
+                    USER.findOne({'unique_id' : result['sub']}, function(err,userResult) {
+                        //console.log(userResult);
+                        res.json(userResult);
                     });
 
                 } else {
@@ -108,5 +102,10 @@ router.route('/user')
     .get((req, res) => {
         res.json({result: 'api works'});
     });
+
+String.prototype.toObjectId = function() {
+    var ObjectId = (require('mongoose').Types.ObjectId);
+    return new ObjectId(this.toString());
+};
 
 module.exports = router;
