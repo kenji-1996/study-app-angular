@@ -1,0 +1,40 @@
+<div mat-dialog-content style="margin: 10px;">
+    <mat-card-title-group>
+        <div mat-card-avatar class="example-header-image"></div>
+        <mat-card-title>{{data.title}}</mat-card-title>
+        <p class="text-muted">{{data.author}}</p>
+    </mat-card-title-group>
+    <mat-card-content>
+        <div class="mat-elevation-z4" style="margin:15px;">
+            <mat-table #table [dataSource]="dataSource">
+
+                <!-- Position Column -->
+                <ng-container matColumnDef="question">
+                    <mat-header-cell *matHeaderCellDef> Question </mat-header-cell>
+                    <mat-cell *matCellDef="let question">{{question.question | slice:0:30}}...</mat-cell>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="answer">
+                    <mat-header-cell *matHeaderCellDef> Answer </mat-header-cell>
+                    <mat-cell *matCellDef="let question">{{question.answer | slice:0:30}}...</mat-cell>
+                </ng-container>
+
+                <!-- Weight Column -->
+                <ng-container matColumnDef="category">
+                    <mat-header-cell *matHeaderCellDef> Tags </mat-header-cell>
+                    <mat-cell *matCellDef="let question">{{question.category}}</mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" ></mat-row><!-- (click)="editUser(row)" -->
+            </mat-table>
+        </div>
+    </mat-card-content>
+    <br />
+</div>
+
+<div mat-dialog-actions>
+    <ng-container *ngIf="data.source"><button mat-button (click)="openSite(data.source)">Source</button></ng-container>
+    <button mat-button (click)="onNoClick()" tabindex="-1">Close</button>
+</div>

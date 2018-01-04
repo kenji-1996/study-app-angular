@@ -14,7 +14,7 @@ var UserSchema  = new Schema({
     source: String,
     picture: String,
     permissions: Number,
-    questions: [String],
+    tests: [String],
 });
 
 module.exports = mongoose.model('User', UserSchema);

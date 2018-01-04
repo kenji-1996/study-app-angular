@@ -14,7 +14,6 @@ export class UserComponent implements OnInit, AfterViewInit {
   name;
   idtoken;
   questions;
-  latestQuestion;
 
   constructor(
               public auth: AuthenticateService,
@@ -27,11 +26,11 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.idtoken = localStorage.getItem('idtoken');
     this.questions = localStorage.getItem('questions');
     var body = { idtoken : this.idtoken, action: 'get', limit: '1'/*, type: 'list'*/ };
-    this.data.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
+    /*this.data.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
       if(!this.isEmptyObject(dataResult)) {
         this.latestQuestion = dataResult;
       }
-    });
+    });*/
   }
 
   ngAfterViewInit() {

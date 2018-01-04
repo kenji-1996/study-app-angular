@@ -5,6 +5,7 @@ import {HomeComponent} from "../components/home/home.component";
 const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'user', loadChildren: '../components/user/user.module#UserModule' },
+    { path: 'test-manager', loadChildren: '../components/test-manager/test-manager.module#TestManagerModule' },
     { path: '**', redirectTo: '404' },
 ];
 

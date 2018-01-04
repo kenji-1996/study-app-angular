@@ -9,25 +9,22 @@ var USER = require('../models/user');
 var QUESTION = require('../models/question');
 var TEST = require('../models/test');
 
-router.route('/question')
+router.route('/test')
     .post((req,res) => {
         if (req.body.action == 'get') {
             var idtoken = req.body.idtoken;
             settings.userPayload(idtoken).then((result) => {
                 if (result) {
-                    TEST.findById(req.body.testid)
-                        .exec(function(err, tests) {
-                            if(err) return res.send(err);
-                            QUESTION
-                                .find({_id: {$in: tests.questions}})
-                                .sort({_id:-1})
-                                .limit(parseInt(req.body.limit))
-                                .exec(function(err, questions) {
-                                    if(err) return res.send(err);
-
-                                    res.json(questions);
-                                });
-                        });
+                    USER.findOne({'unique_id': result['sub']}, function (err, user) {
+                        TEST
+                            .find({_id: {$in: user.tests}})
+                            .sort({_id:-1})
+                            .limit(parseInt(req.body.limit))
+                            .exec(function(err, tests) {
+                                if(err) return res.send(err);
+                                res.json(tests);
+                            });
+                    });
                 } else {
                     res.json({result: 'failed to validate session'});
                 }
@@ -37,24 +34,24 @@ router.route('/question')
             var idtoken = req.body.idtoken;
             settings.userPayload(idtoken).then((result) => {
                 if(result) {
-                    TEST.findById(req.body.testid, function(err, test) {
-                        var question = new QUESTION({
+                    USER.findOne({'unique_id' : result['sub'] }, function(err, user) {
+                        var test = new TEST({
                             _id: new mongoose.Types.ObjectId(),
-                            question: req.body.question,
-                            answer: req.body.answer,
-                            category: req.body.category,
+                            title: req.body.title,
+                            authorID: user.id,
+                            author: user.name,
                         });
 
-                        question.save(function (err, result) {
+                        test.save(function (err, result) {
                             if (err) return console.error(err);
 
 
-                            test.questions.push(question.id);
-                            test.save(function (err, testQuery) {
+                            user.tests.push(test.id);
+                            user.save(function (err, userQuery) {
                                 if (err) return console.error(err);
                             });
 
-                            res.json({result: result})
+                            res.json({result: ('Test ' + test.title + ' under ID ' + test.id + ' was added')})
                         });
                     });
                 }else{

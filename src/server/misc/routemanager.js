@@ -6,11 +6,13 @@ const settings = require('./settings');
 
 var user = require('../routes/user');
 var question = require('../routes/question');
+var test = require('../routes/test');
 
 router.use(settings.bodyParser.urlencoded({ extended: true }));
 router.use(settings.bodyParser.json());
 
 router.use(question);
 router.use(user);
+router.use(test);
 
 module.exports = router;
