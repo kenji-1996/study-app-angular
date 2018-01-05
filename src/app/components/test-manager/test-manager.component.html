@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-md-12">
-    <button mat-raised-button>Add Test</button>
+    <button mat-raised-button (click)="addTest()">Add Test</button>
     <span *ngIf="selectedTest">
       <button mat-raised-button>Remove</button>
       <button mat-raised-button (click)="editTest()">Edit</button>

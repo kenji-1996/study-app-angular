@@ -11,6 +11,9 @@ import {ImportsModule} from "./modules/imports.module";
 import { TestManagerComponent } from './components/test-manager/test-manager.module';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
+import { TempComponent } from './components/temp/temp.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {AddDialog} from "./dialogs/addDialog/add-dialog";
 
 
 @NgModule({
@@ -18,15 +21,19 @@ import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
     AppComponent,
     HomeComponent,
     EditTestDialog,
+    TempComponent,
+    AddDialog,
   ],
   imports: [
     BrowserModule,
     AppRouterModule,
     ImportsModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
   ],
   entryComponents: [
-    EditTestDialog
+    EditTestDialog,
+    AddDialog
   ],
   providers: [
     AuthenticateService,

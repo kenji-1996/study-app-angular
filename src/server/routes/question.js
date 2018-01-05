@@ -33,10 +33,53 @@ router.route('/question')
                 }
             });
         } else
+        if (req.body.action == 'update') {
+            var idtoken = req.body.idtoken;
+            settings.userPayload(idtoken).then((result) => {
+                if (result) {
+                    TEST.findById(req.body.testid)
+                        .exec(function(err, test) {
+                            if(err) return res.send(err);
+
+                            test.questions = [];
+                            QUESTION.deleteMany({_id: {$in: test.questions} }, function(err) {});
+
+                            if(req.body.questions) {
+                                var questions = req.body.questions;
+                                for (var i = 0; i < questions.length; i++) {
+                                    var question = new QUESTION({
+                                        _id: new mongoose.Types.ObjectId(),
+                                        question: questions[i].question,
+                                        answer: questions[i].answer,
+                                        category: questions[i].category,
+                                    });
+                                    test.questions.push(question.id);
+                                    console.log(question);
+                                    question.save(function (err, result) {
+                                        if (err) return console.error(err);
+
+
+                                    });
+                                }
+                                test.save(function (err, testQuery) {
+                                    if (err) return console.error(err);
+                                });
+                            }else{
+                                return res.json({result:"No update"});
+                            }
+                        });
+                } else {
+                    res.json({result: 'failed to validate session'});
+                }
+            });
+        } else
         if (req.body.action == 'add') {
             var idtoken = req.body.idtoken;
             settings.userPayload(idtoken).then((result) => {
                 if(result) {
+                    TEST.update(req.body.testid,gmailUser,{upsert: true}, function (err, raw) {
+                        //console.log('The raw response from Mongo was ', raw);
+                    });
                     TEST.findById(req.body.testid, function(err, test) {
                         var question = new QUESTION({
                             _id: new mongoose.Types.ObjectId(),

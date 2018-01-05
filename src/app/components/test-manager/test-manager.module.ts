@@ -8,6 +8,7 @@ import { Test } from '../../objects/test';
 import {MatDialog} from "@angular/material";
 import {EditTestDialog} from "../../dialogs/editTest/edit-test.component";
 import {isNullOrUndefined} from "util";
+import {AddDialog} from "../../dialogs/addDialog/add-dialog";
 
 @Component({
   selector: 'app-test-manager',
@@ -34,6 +35,19 @@ export class TestManagerComponent implements OnInit {
     this.selectedTest = test;
   }
 
+  addTest(): void{
+    let dialogRef = this.dialog.open(AddDialog, {
+      data: {name: '',}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(!isNullOrUndefined(result)) {
+        //console.log(result);
+        //this.userService.update(this.id_token,this.question, this.profileImage).subscribe(result => console.log(result));
+      }
+    });
+  }
+
   editTest(): void {
     let dialogRef = this.dialog.open(EditTestDialog, {
       width: '80%',
@@ -43,7 +57,7 @@ export class TestManagerComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if(!isNullOrUndefined(result)) {
         alert(result);
-        //this.userService.update(this.id_token,this.name, this.profileImage).subscribe(result => console.log(result));
+        //this.userService.update(this.id_token,this.question, this.profileImage).subscribe(result => console.log(result));
       }
     });
   }

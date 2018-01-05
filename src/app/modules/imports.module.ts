@@ -7,7 +7,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
-    MatButtonModule, MatCardModule, MatChipsModule, MatDialogModule, MatFormFieldModule,
+    MatButtonModule, MatCardModule, MatChipsModule, MatDialogModule, MatFormFieldModule, MatIconModule,
     MatInputModule, MatTableModule
 } from "@angular/material";
 
@@ -23,6 +23,7 @@ import {
         MatButtonModule,
         MatCardModule,
         MatTableModule,
+        MatIconModule,
     ],
     exports: [
         CommonModule,
@@ -35,6 +36,7 @@ import {
         MatButtonModule,
         MatCardModule,
         MatTableModule,
+        MatIconModule,
     ],
     declarations: []
 })

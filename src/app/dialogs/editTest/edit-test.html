@@ -1,40 +1,61 @@
 <div mat-dialog-content style="margin: 10px;">
-    <mat-card-title-group>
-        <div mat-card-avatar class="example-header-image"></div>
-        <mat-card-title>{{data.title}}</mat-card-title>
-        <p class="text-muted">{{data.author}}</p>
-    </mat-card-title-group>
-    <mat-card-content>
-        <div class="mat-elevation-z4" style="margin:15px;">
-            <mat-table #table [dataSource]="dataSource">
+    <mat-table class="table-margin-bottom" #table [dataSource]="dataSource">
+        <ng-container matColumnDef="question">
+            <mat-header-cell *matHeaderCellDef>Question</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <mat-form-field floatLabel="never" underlineRef="row.editing">
+                    <input matInput [formControl]="row.validator.controls['question']" placeholder="question" [(ngModel)]="row.currentData.question" >
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="answer">
+            <mat-header-cell *matHeaderCellDef>Answer</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <mat-form-field floatLabel="never">
+                    <input matInput [formControl]="row.validator.controls['answer']" placeholder="answer" [(ngModel)]="row.currentData.answer">
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="category">
+            <mat-header-cell *matHeaderCellDef>Category</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <mat-form-field floatLabel="never">
+                    <input matInput [formControl]="row.validator.controls['category']" placeholder="category" [(ngModel)]="row.currentData.category">
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+        <!--
+        <ng-container matColumnDef="actionsColumn">
+            <mat-header-cell *matHeaderCellDef>
+              <button mat-icon-button color="accent" (click)="dataSource.createNew()"><i class="fa fa-plus mat-icon"></i></button>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <button *ngIf="!row.editing" mat-icon-button color="primary" focusable="false" (click)="row.startEdit()">
+                <i class="fa fa-pencil mat-icon"></i>
+              </button>
+              <button *ngIf="row.editing" mat-icon-button color="primary" focusable="false" (click)="row.confirmEditCreate()">
+                <i class="fa fa-check mat-icon"></i>
+              </button>
+              <button mat-icon-button color="primary" focusable="false" (click)="row.cancelOrDelete()">
+                <i class="fa fa-times mat-icon"></i>
+              </button>
+            </mat-cell>
+          </ng-container>
+          -->
 
-                <!-- Position Column -->
-                <ng-container matColumnDef="question">
-                    <mat-header-cell *matHeaderCellDef> Question </mat-header-cell>
-                    <mat-cell *matCellDef="let question">{{question.question | slice:0:30}}...</mat-cell>
-                </ng-container>
 
-                <!-- Name Column -->
-                <ng-container matColumnDef="answer">
-                    <mat-header-cell *matHeaderCellDef> Answer </mat-header-cell>
-                    <mat-cell *matCellDef="let question">{{question.answer | slice:0:30}}...</mat-cell>
-                </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectAndEditRow(row)"></mat-row>
+    </mat-table>
 
-                <!-- Weight Column -->
-                <ng-container matColumnDef="category">
-                    <mat-header-cell *matHeaderCellDef> Tags </mat-header-cell>
-                    <mat-cell *matCellDef="let question">{{question.category}}</mat-cell>
-                </ng-container>
-
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" ></mat-row><!-- (click)="editUser(row)" -->
-            </mat-table>
-        </div>
-    </mat-card-content>
     <br />
+
 </div>
 
 <div mat-dialog-actions>
-    <ng-container *ngIf="data.source"><button mat-button (click)="openSite(data.source)">Source</button></ng-container>
+    <button *ngIf="isSelected" mat-raised-button (click)="confirmSelectedRow()"><i class="fa fa-check mat-icon"></i> Save</button>
+    <button *ngIf="isSelected" mat-raised-button (click)="cancelOrDeleteRow()"><i class="fa fa-remove mat-icon"></i> Delete</button>
+    <button mat-raised-button (click)="dataSource.createNew()">Add Question</button>
+    <button mat-raised-button (click)="submitArray()">Submit array</button>
     <button mat-button (click)="onNoClick()" tabindex="-1">Close</button>
 </div>
