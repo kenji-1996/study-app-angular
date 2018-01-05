@@ -34,7 +34,7 @@ export class EditTestDialog {
     displayedColumns = ['question', 'answer', 'category'];
     @Output() questionListChange = new EventEmitter<Question[]>();
 
-    dataSource: TableDataSource<Question>;
+    public dataSource: TableDataSource<Question>;
 
     constructor(
         public dialogRef: MatDialogRef<EditTestDialog>,
@@ -44,7 +44,7 @@ export class EditTestDialog {
     ) {
         var body = { idtoken : localStorage.getItem('idtoken'), action: 'get', testid:data._id /*this.data._id, type: 'list'*/ };
         this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
-            this.questionList = dataResult.data;
+            this.questionList = <Question>dataResult.data;
             this.dataSource = new TableDataSource<any>(this.questionList, Question, this.personValidator);
             this.dataSource.datasourceSubject.subscribe(questionList => this.questionListChange.emit(questionList));
         });
@@ -52,6 +52,7 @@ export class EditTestDialog {
 
     onNoClick(): void {
         this.dialogRef.close();
+
     }
 
     selectAndEditRow(row:any) {
@@ -76,7 +77,13 @@ export class EditTestDialog {
     }
 
     submitArray() {
-        var body = { idtoken : localStorage.getItem('idtoken'), action: 'update', testid:this.data._id, questions: this.dataSource.currentData /*this.data._id, type: 'list'*/ };
+        let questions;
+        if(this.dataSource.currentData) {
+            questions = this.dataSource.currentData
+        }else{
+            questions = this.questionList;
+        }
+        var body = { idtoken : localStorage.getItem('idtoken'), action: 'update', testid:this.data._id, questions: questions  };
         this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
             console.log(dataResult);
         });

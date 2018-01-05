@@ -8,10 +8,8 @@ import { HomeComponent } from './components/home/home.component';
 import {AuthenticateService} from "./services/authenticate.service";
 import {DataManagementService} from "./services/data-management.service";
 import {ImportsModule} from "./modules/imports.module";
-import { TestManagerComponent } from './components/test-manager/test-manager.module';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
-import { TempComponent } from './components/temp/temp.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {AddDialog} from "./dialogs/addDialog/add-dialog";
 
@@ -21,7 +19,6 @@ import {AddDialog} from "./dialogs/addDialog/add-dialog";
     AppComponent,
     HomeComponent,
     EditTestDialog,
-    TempComponent,
     AddDialog,
   ],
   imports: [

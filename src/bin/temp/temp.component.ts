@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Injectable, Input, OnInit, Output} from '@angular/core';
+/*import {Component, EventEmitter, Injectable, Input, OnInit, Output} from '@angular/core';
 import { TableDataSource, ValidatorService } from 'angular4-material-table';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {DataManagementService} from "../../services/data-management.service";
@@ -64,27 +64,28 @@ export class TempComponent implements OnInit {
 
   submitArray() {
     console.log(this.dataSource);
-    var body = { idtoken : localStorage.getItem('idtoken'), action: 'update', testid:'5a4d983d3e56e023041988c1', questions: this.dataSource.currentData /*this.data._id, type: 'list'*/ };
+    var body = { idtoken : localStorage.getItem('idtoken'), action: 'update', testid:'5a4d983d3e56e023041988c1', questions: this.dataSource.currentData };
     this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
       console.log(dataResult);
     });
   }
 
 
-  ngOnInit() {
-    var body = { idtoken : localStorage.getItem('idtoken'), action: 'get', testid:'5a4d983d3e56e023041988c1' /*this.data._id, type: 'list'*/ };
-    this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
-      this.questionList = dataResult;
-      this.dataSource = new TableDataSource<any>(this.questionList, Question, this.personValidator);
-      this.dataSource.datasourceSubject.subscribe(questionList => this.questionListChange.emit(questionList));
-    });
-  }
 
+}*/
 
-}
-
-class Question {
+/*class Question {
   question: string;
   answer: string;
   category: string;
 }
+
+ ngOnInit() {
+ var body = { idtoken : localStorage.getItem('idtoken'), action: 'get', testid:'5a4d983d3e56e023041988c1' };
+ this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
+ this.questionList = dataResult;
+ this.dataSource = new TableDataSource<any>(this.questionList, Question, this.personValidator);
+ this.dataSource.datasourceSubject.subscribe(questionList => this.questionListChange.emit(questionList));
+ });
+ }
+*/

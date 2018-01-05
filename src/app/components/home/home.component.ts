@@ -21,7 +21,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     ) { }
 
     ngOnInit() {
-
         this.logged = this.auth.localLoggedIn();
     }
 
