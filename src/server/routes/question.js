@@ -4,110 +4,132 @@
 //Question API
 const router = require('express').Router();
 var mongoose = require('mongoose');
+//Settings file with functions I use in lots of places + imports
 var settings = require('../misc/settings');
-var USER = require('../models/user');
+//Models crafted from schema for mongodb and mongoose to interpret
 var QUESTION = require('../models/question');
 var TEST = require('../models/test');
 
+//When routing to /api/question
+/**
+ * Post to question, choose an 'action'
+ * 'get' will return as many questions as specified, or all if no 'limit' is specified
+ *
+ * Currently all attempts at API access need to be verified with a google payload, 'get' requests might be changed in future.
+ *
+ * Will loop through the question '_id's array that every test has in search for questions to send back
+ */
 router.route('/question')
     .post((req,res) => {
         if (req.body.action == 'get') {
-            var idtoken = req.body.idtoken;
-            settings.userPayload(idtoken).then((result) => {
-                if (result) {
-                    TEST.findById(req.body.testid)
-                        .exec(function(err, tests) {
-                            if(err) return res.send(err);
-                            QUESTION
-                                .find({_id: {$in: tests.questions}})
-                                .sort({_id:-1})
-                                .limit(parseInt(req.body.limit))
-                                .exec(function(err, questions) {
-                                    if(err) return res.send(err);
-
-                                    res.json(questions);
-                                });
-                        });
-                } else {
-                    res.json({result: 'failed to validate session'});
-                }
-            });
+            if(req.body.idtoken) {
+                var idtoken = req.body.idtoken;
+                settings.userPayload(idtoken).then((result) => {
+                    if (result) {
+                        TEST.findById(req.body.testid)
+                            .exec(function (err, tests) {
+                                if (err) return res.status(404).json({message:"No test found", data: null});
+                                QUESTION
+                                    .find({_id: {$in: tests.questions}})
+                                    .sort({_id: -1})
+                                    .limit(parseInt(req.body.limit))
+                                    .exec(function (err, questions) {
+                                        if (err) return res.status(500).json({message:"Couldn't execute find", data: null});
+                                        return res.status(200).json({message:"Questions found", data: questions});
+                                    });
+                            });
+                    } else {
+                        return res.status(403).json({message:"Failed to validate idtoken", data: null});
+                    }
+                });
+            }else{
+                return res.status(403).json({message:"Failed to validate idtoken", data: null});
+            }
         } else
+        /**
+         * Update requires a valid test _id, once found, tests are cleared and so are questions
+         */
         if (req.body.action == 'update') {
-            var idtoken = req.body.idtoken;
-            settings.userPayload(idtoken).then((result) => {
-                if (result) {
-                    TEST.findById(req.body.testid)
-                        .exec(function(err, test) {
-                            if(err) return res.send(err);
-
-                            test.questions = [];
-                            QUESTION.deleteMany({_id: {$in: test.questions} }, function(err) {});
-
-                            if(req.body.questions) {
-                                var questions = req.body.questions;
-                                for (var i = 0; i < questions.length; i++) {
-                                    var question = new QUESTION({
-                                        _id: new mongoose.Types.ObjectId(),
-                                        question: questions[i].question,
-                                        answer: questions[i].answer,
-                                        category: questions[i].category,
-                                    });
-                                    test.questions.push(question.id);
-                                    console.log(question);
-                                    question.save(function (err, result) {
-                                        if (err) return console.error(err);
+            if(req.body.idtoken) {
+                var idtoken = req.body.idtoken;
+                settings.userPayload(idtoken).then((result) => {
+                    if (result) {
+                        TEST.findById(req.body.testid)
+                            .exec(function (err, test) {
+                                if (err) return res.status(404).json({message:"Test find id query failed", data: null});
 
 
-                                    });
-                                }
-                                test.save(function (err, testQuery) {
-                                    if (err) return console.error(err);
+                                QUESTION.deleteMany({_id: {$in: test.questions}}, function (err) {
+                                    if (err) return res.status(500).json({message:"Question delete query failed questions.", data: null});
                                 });
-                            }else{
-                                return res.json({result:"No update"});
-                            }
-                        });
-                } else {
-                    res.json({result: 'failed to validate session'});
-                }
-            });
+                                test.questions = [];
+
+                                if (req.body.questions) {
+                                    var questions = req.body.questions;
+                                    for (var i = 0; i < questions.length; i++) {
+                                        var question = new QUESTION({
+                                            _id: new mongoose.Types.ObjectId(),
+                                            question: questions[i].question,
+                                            answer: questions[i].answer,
+                                            category: questions[i].category,
+                                        });
+                                        test.questions.push(question.id);
+                                        question.save(function (err, result) {
+                                            if (err) return res.status(500).json({message:"Question save query failed", data: null});
+                                        });
+                                    }
+                                    test.save(function (err, testQuery) {
+                                        if (err) return res.status(500).json({message:"Test save query failed"});
+                                        return res.status(200).json({message:"Test saved successfully", data: testQuery});
+                                    });
+                                } else {
+                                    return res.status(404).json({message:"No questions found", data: null});
+                                }
+                            });
+                    } else {
+                        return res.status(403).json({message:"Failed to validate idtoken", data: null});
+                    }
+                });
+            }else{
+                return res.status(403).json({message:"Failed to validate idtoken", data: null});
+            }
         } else
         if (req.body.action == 'add') {
-            var idtoken = req.body.idtoken;
-            settings.userPayload(idtoken).then((result) => {
-                if(result) {
-                    TEST.update(req.body.testid,gmailUser,{upsert: true}, function (err, raw) {
-                        //console.log('The raw response from Mongo was ', raw);
-                    });
-                    TEST.findById(req.body.testid, function(err, test) {
-                        var question = new QUESTION({
-                            _id: new mongoose.Types.ObjectId(),
-                            question: req.body.question,
-                            answer: req.body.answer,
-                            category: req.body.category,
-                        });
-
-                        question.save(function (err, result) {
-                            if (err) return console.error(err);
-
-
-                            test.questions.push(question.id);
-                            test.save(function (err, testQuery) {
-                                if (err) return console.error(err);
+            if(req.body.idtoken) {
+                var idtoken = req.body.idtoken;
+                settings.userPayload(idtoken).then((result) => {
+                    if (result) {
+                        TEST.findById(req.body.testid, function (err, test) {
+                            if (err) return res.status(500).json({message:"Test find query failed",data: null} );
+                            var question = new QUESTION({
+                                _id: new mongoose.Types.ObjectId(),
+                                question: req.body.question,
+                                answer: req.body.answer,
+                                category: req.body.category,
                             });
+                            question.save(function (err, result) {
+                                if (err) return res.status(500).json({message:"Question save query failed", data: null});
 
-                            res.json({result: result})
+                                test.questions.push(question.id);
+                                test.save(function (err, testQuery) {
+                                    if (err) return res.status(500).json({message:"Test save query failed", data: null});
+                                });
+                                return res.status(200).res.json({message: "Question save success", data: result});
+                            });
                         });
-                    });
-                }else{
-                    res.json({result: 'failed to validate session'});
-                }
-            });
+                    } else {
+                        return res.status(403).json({message:"Failed to validate idtoken", data: null});
+                    }
+                });
+            }else{
+                return res.status(403).json({message:"Failed to validate idtoken", data: null});
+            }
+        }else{
+            return res.status(404).json({message:"Please post an action to body.", data: null});
         }
     })
     .get((req, res) => {
-        res.json({result: 'api works'});
+        res.json({message: 'api works', data: null});
     });
 
 

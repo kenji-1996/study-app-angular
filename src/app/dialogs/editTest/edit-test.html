@@ -24,26 +24,6 @@
                 </mat-form-field>
             </mat-cell>
         </ng-container>
-        <!--
-        <ng-container matColumnDef="actionsColumn">
-            <mat-header-cell *matHeaderCellDef>
-              <button mat-icon-button color="accent" (click)="dataSource.createNew()"><i class="fa fa-plus mat-icon"></i></button>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-              <button *ngIf="!row.editing" mat-icon-button color="primary" focusable="false" (click)="row.startEdit()">
-                <i class="fa fa-pencil mat-icon"></i>
-              </button>
-              <button *ngIf="row.editing" mat-icon-button color="primary" focusable="false" (click)="row.confirmEditCreate()">
-                <i class="fa fa-check mat-icon"></i>
-              </button>
-              <button mat-icon-button color="primary" focusable="false" (click)="row.cancelOrDelete()">
-                <i class="fa fa-times mat-icon"></i>
-              </button>
-            </mat-cell>
-          </ng-container>
-          -->
-
-
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectAndEditRow(row)"></mat-row>
     </mat-table>
@@ -53,9 +33,28 @@
 </div>
 
 <div mat-dialog-actions>
-    <button *ngIf="isSelected" mat-raised-button (click)="confirmSelectedRow()"><i class="fa fa-check mat-icon"></i> Save</button>
+    <button *ngIf="isSelected" mat-raised-button (click)="confirmSelectedRow()"><i class="fa fa-check mat-icon"></i> Confirm</button>
     <button *ngIf="isSelected" mat-raised-button (click)="cancelOrDeleteRow()"><i class="fa fa-remove mat-icon"></i> Delete</button>
-    <button mat-raised-button (click)="dataSource.createNew()">Add Question</button>
-    <button mat-raised-button (click)="submitArray()">Submit array</button>
+    <button *ngIf="!isSelected" mat-raised-button (click)="dataSource.createNew()">Add Question</button>
+    <button mat-raised-button (click)="submitArray()">Save changes</button>
     <button mat-button (click)="onNoClick()" tabindex="-1">Close</button>
 </div>
+
+<!--
+<ng-container matColumnDef="actionsColumn">
+    <mat-header-cell *matHeaderCellDef>
+      <button mat-icon-button color="accent" (click)="dataSource.createNew()"><i class="fa fa-plus mat-icon"></i></button>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <button *ngIf="!row.editing" mat-icon-button color="primary" focusable="false" (click)="row.startEdit()">
+        <i class="fa fa-pencil mat-icon"></i>
+      </button>
+      <button *ngIf="row.editing" mat-icon-button color="primary" focusable="false" (click)="row.confirmEditCreate()">
+        <i class="fa fa-check mat-icon"></i>
+      </button>
+      <button mat-icon-button color="primary" focusable="false" (click)="row.cancelOrDelete()">
+        <i class="fa fa-times mat-icon"></i>
+      </button>
+    </mat-cell>
+  </ng-container>
+  -->

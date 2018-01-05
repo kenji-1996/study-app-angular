@@ -1,4 +1,4 @@
-import {MAT_DIALOG_DATA, MatDialogRef, MatTableDataSource} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {Component, EventEmitter, Inject, Injectable, Input, Output} from "@angular/core";
 import {DataManagementService} from "../../services/data-management.service";
 
@@ -44,7 +44,7 @@ export class EditTestDialog {
     ) {
         var body = { idtoken : localStorage.getItem('idtoken'), action: 'get', testid:data._id /*this.data._id, type: 'list'*/ };
         this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
-            this.questionList = dataResult;
+            this.questionList = dataResult.data;
             this.dataSource = new TableDataSource<any>(this.questionList, Question, this.personValidator);
             this.dataSource.datasourceSubject.subscribe(questionList => this.questionListChange.emit(questionList));
         });
@@ -76,8 +76,7 @@ export class EditTestDialog {
     }
 
     submitArray() {
-        console.log(this.dataSource);
-        var body = { idtoken : localStorage.getItem('idtoken'), action: 'update', testid:'5a4d983d3e56e023041988c1', questions: this.dataSource.currentData /*this.data._id, type: 'list'*/ };
+        var body = { idtoken : localStorage.getItem('idtoken'), action: 'update', testid:this.data._id, questions: this.dataSource.currentData /*this.data._id, type: 'list'*/ };
         this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
             console.log(dataResult);
         });

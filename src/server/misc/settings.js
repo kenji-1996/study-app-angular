@@ -1,38 +1,56 @@
 /**
  * Created by Kenji on 12/29/2017.
  */
-//Setup variables/connections
-var GoogleAuth = require('google-auth-library');
-var mongoose     = require('mongoose');
-var bodyParser = require('body-parser');
-var auth = new GoogleAuth;
-var client = new auth.OAuth2('***REMOVED***', '', '');
+/**
+ * We use google auth lib for login/token management
+ * mongoose for interaction with our mongodb database
+ */
+let GoogleAuth = require('google-auth-library');
+let mongoose     = require('mongoose');
+let bodyParser = require('body-parser');
+/**
+ * We initialize the auth with our API link with Google
+ * Then we connect to our mongodb hosted on my server, targeting the 'study' database.
+ */
+let auth = new GoogleAuth;
+let client = new auth.OAuth2('***REMOVED***', '', '');
 mongoose.connect('mongodb://kenji:***REMOVED***@***REMOVED***:27017/study');
-var db = mongoose.connection;
+let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
     console.log("Connected to mongodb at ***REMOVED***");
 });
-
+//Export the database for access in other files
 module.exports.db = db;
-
 module.exports.bodyParser = bodyParser;
+
+//Now we have 'global' functions that are used alot, so we can call them multiple times for our methods
+/**
+ * Here we verify that the given token is valid, thus the user has permissions.
+ * We use googles auth lib to push it, then resolve the promise true or false
+ * @param token
+ * @returns {Promise}
+ */
 module.exports.verify = function verify(token) {
     return new Promise((resolve) => { client.verifyIdToken(
         token,
         client._clientId,
         ((e, login) => {
             if(login) {
-                var payload = login.getPayload();
-                var userid = payload['sub'];
                 resolve(true);
             }else{
                 resolve(false);
             }
         }));
     });
-}
+};
 
+/**
+ * Here is a very similar method except we return a userID of the token, sort of a depreciated method as we can simply use userPayLoad
+ * and return the whole user JSON object and extract it in another place.
+ * @param token
+ * @returns {Promise}
+ */
 module.exports.getUserID = function getUserID(token) {
     return new Promise((resolve) => {
         client.verifyIdToken(
@@ -40,33 +58,45 @@ module.exports.getUserID = function getUserID(token) {
             client._clientId,
             ((e, login) => {
                 if(login) {
-                    var payload = login.getPayload();
-                    var userid = payload['sub'];
+                    let payload = login.getPayload();
+                    let userid = payload['sub'];
                     resolve(userid);
                 }else{
                     resolve(false);
                 }
             }));
     });
-}
+};
 
+/**
+ * This method simply returns the whole user object with google auth
+ * @param token
+ * @returns {Promise}
+ */
 module.exports.userPayload = function userPayload(token) {
-    return new Promise((resolve, reject) => {client.verifyIdToken(
+    return new Promise((resolve) => {client.verifyIdToken(
         token,
         client._clientId,
         ((e, login) => {
             if(login) {
-                var payload = login.getPayload();
-                var userid = payload['sub'];
+                let payload = login.getPayload();
+                let userid = payload['sub'];
                 resolve(payload);
             }else{
                 resolve(false);
             }
         }));
     });
-}
+};
 
-var User = require('../models/user');
+
+let User = require('../models/user');
+/**
+ * Here we authenticate a user against a database, use their token to verify its from them,
+ * then check their ID against the database permissions.
+ * @param token
+ * @returns {Promise}
+ */
 module.exports.authenticate = function authenticate(token) {
     return new Promise((resolve) => {
         client.verifyIdToken(
@@ -74,10 +104,8 @@ module.exports.authenticate = function authenticate(token) {
             client._clientId,
             ((e, login) => {
                 if(login) {
-                    var payload = login.getPayload();
-                    var userid = payload['sub'];
-                    var user = new User();
-                    User.findOne({'unique_id' : userid }, (err, result) => {
+                    let payload = login.getPayload();
+                    User.findOne({'unique_id' : payload['sub'] }, (err, result) => {
                         if(result.permissions >= 2) {
                             resolve(true);
                         }else{
@@ -90,4 +118,8 @@ module.exports.authenticate = function authenticate(token) {
             })
         );
     });
+};
+
+module.exports.errHandler = function authenticate(msg,res) {
+
 }

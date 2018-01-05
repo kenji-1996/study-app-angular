@@ -27,7 +27,7 @@ export class TestManagerComponent implements OnInit {
   ngOnInit() {
     var body = { idtoken : localStorage.getItem('idtoken'), action: 'get'/*, type: 'list'*/ };
     this.data.postDATA(global.url + '/api/test', body).subscribe(dataResult=> {
-      this.tests = dataResult;
+      this.tests = dataResult.data;
     });
   }
 
@@ -52,6 +52,7 @@ export class TestManagerComponent implements OnInit {
     let dialogRef = this.dialog.open(EditTestDialog, {
       width: '80%',
       data: this.selectedTest
+
     });
 
     dialogRef.afterClosed().subscribe(result => {
