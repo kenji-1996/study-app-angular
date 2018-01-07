@@ -17,5 +17,4 @@ export class DataManagementService {
   postDATA(url:string,body:any):any {
     return this.http.post(url, body).map(x => x);
   }
-
 }

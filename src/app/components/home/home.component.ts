@@ -48,8 +48,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
                     localStorage.setItem('name', result['name']);
                     localStorage.setItem('perm', result['permissions']);
                     localStorage.setItem('logged', 'true');
-                    localStorage.setItem('questions',JSON.stringify(result['questions']));
-                    alert("Logged in as " + localStorage.getItem('name'));
                     //Zone needed to properly load
                     this.zone.run(() => this.route.navigate(['/user']));
                 });

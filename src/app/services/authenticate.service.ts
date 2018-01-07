@@ -57,8 +57,15 @@ export class AuthenticateService {
 
   public revoke()  {
     localStorage.removeItem('logged');
+    localStorage.removeItem('email');
+    localStorage.removeItem('avatar');
+    localStorage.removeItem('perm');
+    localStorage.removeItem('name');
     localStorage.removeItem('idtoken');
-    gapi.auth2.getAuthInstance().signOut();
+    gapi.auth2.getAuthInstance().signOut().then(() => {
+      console.log("done");
+    });
+    console.log(localStorage.getItem('avatar'))
   }
 
 }

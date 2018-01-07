@@ -44,7 +44,7 @@ export class EditTestDialog {
     ) {
         var body = { idtoken : localStorage.getItem('idtoken'), action: 'get', testid:data._id /*this.data._id, type: 'list'*/ };
         this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
-            this.questionList = <Question>dataResult.data;
+            this.questionList = dataResult.data;
             this.dataSource = new TableDataSource<any>(this.questionList, Question, this.personValidator);
             this.dataSource.datasourceSubject.subscribe(questionList => this.questionListChange.emit(questionList));
         });

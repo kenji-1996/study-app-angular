@@ -10,31 +10,20 @@ import {ImportsModule} from "../../modules/imports.module";
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss']
 })
-export class UserComponent implements OnInit, AfterViewInit {
+export class UserComponent implements OnInit {
   name;
   idtoken;
   questions;
 
   constructor(
               public auth: AuthenticateService,
-              private route: Router,
-              private data: DataManagementService
+              private route: Router
   ) {  }
 
   ngOnInit() {
     this.name = localStorage.getItem('name');
     this.idtoken = localStorage.getItem('idtoken');
     this.questions = localStorage.getItem('questions');
-    var body = { idtoken : this.idtoken, action: 'get', limit: '1'/*, type: 'list'*/ };
-    /*this.data.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
-      if(!this.isEmptyObject(dataResult)) {
-        this.latestQuestion = dataResult;
-      }
-    });*/
-  }
-
-  ngAfterViewInit() {
-
   }
 
 
@@ -42,11 +31,6 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.auth.revoke();
     this.route.navigate(['/']);
   }
-
-  isEmptyObject(obj) {
-    return (obj && (Object.keys(obj).length === 0));
-  }
-
 }
 
 @NgModule({
