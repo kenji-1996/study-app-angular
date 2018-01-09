@@ -126,3 +126,42 @@ exports.listQuestions = function(req, res) {
             if (err) return res.status(500).json({message: "Find questions query failed", data: err});
         });
 };
+
+/**
+ * /api/tests/:testId/questions [POST]
+ * Removes all current questions then inputs the given JSON array
+ * @param req
+ * @param res
+ * @return JSON {message,data}
+ */
+exports.updateQuestions = function(req, res) {
+    TEST.findById(req.params.testId)
+        .exec(function (err, test) {
+            if (err) return res.status(404).json({message:"Test find id query failed", data: null});
+            QUESTION.deleteMany({_id: {$in: test.questions}}, function (err) {
+                if (err) return res.status(500).json({message:"Question delete query failed questions.", data: null});
+            });
+            test.questions = [];
+            if (req.body.questions) {
+                var questions = req.body.questions;
+                for (var i = 0; i < questions.length; i++) {
+                    var question = new QUESTION({
+                        _id: new mongoose.Types.ObjectId(),
+                        question: questions[i].question,
+                        answer: questions[i].answer,
+                        category: questions[i].category,
+                    });
+                    test.questions.push(question.id);
+                    question.save(function (err, result) {
+                        if (err) return res.status(500).json({message:"Question save query failed", data: null});
+                    });
+                }
+                test.save(function (err, testQuery) {
+                    if (err) return res.status(500).json({message:"Test save query failed"});
+                    return res.status(200).json({message:"Test saved successfully", data: testQuery});
+                });
+            } else {
+                return res.status(404).json({message:"No questions found", data: null});
+            }
+        });
+};

@@ -45,7 +45,7 @@ export class EditTestDialog {
         public dataEmit: DataEmitterService
     ) {
         var body = { idtoken : localStorage.getItem('idtoken'), action: 'get', testid:data._id /*this.data._id, type: 'list'*/ };
-        this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
+        this.dataManagement.getDATA(global.url + '/api/tests/' + data._id + '/questions').subscribe(dataResult=> {
             this.questionList = dataResult.data;
             this.dataSource = new TableDataSource<any>(this.questionList, Question, this.personValidator);
             this.dataSource.datasourceSubject.subscribe(questionList => this.questionListChange.emit(questionList));
@@ -85,11 +85,11 @@ export class EditTestDialog {
         }else{
             questions = this.questionList;
         }
-        var body = { idtoken : localStorage.getItem('idtoken'), action: 'update', testid:this.data._id, questions: questions  };
-        this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
+        var body = { questions: questions  };
+        this.dataManagement.postDATA(global.url + '/api/tests/' + this.data._id + '/questions', body).subscribe(dataResult=> {
             if(dataResult) {
                 this.dialogRef.close();
-                this.dataEmit.push(dataResult.message);
+                this.dataEmit.pushUpdateArray(dataResult.message);
             }
         });
     }

@@ -13,7 +13,7 @@
       <mat-icon aria-hidden="true">notifications</mat-icon>
   </button>
 
-  <button mat-icon-button class="icon-padding" [matMenuTriggerFor]="menu"><!--style="border-radius: 50%; height: 80%;width:80%;"-->
+  <button *ngIf="logged" mat-icon-button class="icon-padding" [matMenuTriggerFor]="menu"><!--style="border-radius: 50%; height: 80%;width:80%;"-->
     <img class="img-fluid" style="border-radius: 60%;" [src]="photo.value">
   </button>
 
@@ -60,5 +60,5 @@
 <mat-menu x-position="before" #menu="matMenu">
   <button mat-menu-item routerLink="/products"><mat-icon aria-hidden="true">settings</mat-icon>Settings</button>
   <button mat-menu-item routerLink="/dashboard"><mat-icon aria-hidden="true">account_box</mat-icon>Profile</button>
-  <button mat-menu-item routerLink="/dashboard"><mat-icon aria-hidden="true">exit_to_app</mat-icon>Sign out</button>
+  <button mat-menu-item (click)="handleLogOut()"><mat-icon aria-hidden="true">exit_to_app</mat-icon>Sign out</button>
 </mat-menu>

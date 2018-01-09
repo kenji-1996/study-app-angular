@@ -28,11 +28,8 @@ router.route('/tests/:testId/questions')
     .get(function(req,res) {
         testController.listQuestions(req,res);
     })
-    .put(function(req,res) {
-        testController.updateTest(req,res);
-    })
-    .delete(function(req,res) {
-        testController.deleteTest(req,res);
+    .post(function(req,res) {
+        testController.updateQuestions(req,res);
     })
 
 module.exports = router;
@@ -108,7 +105,7 @@ module.exports = router;
                             });
                             test.save(function (err, result) {
                                 if (err) return res.status(500).json({message:"Save test query failed", data: null});
-                                user.tests.push(test.id);
+                                user.tests.pushUpdateArray(test.id);
                                 user.save(function (err, userQuery) {
                                     if (err) return res.status(500).json({message:"Save user query failed", data: null});
                                 });

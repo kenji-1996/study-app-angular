@@ -27,7 +27,7 @@ module.exports.bodyParser = bodyParser;
 //Now we have 'global' functions that are used alot, so we can call them multiple times for our methods
 /**
  * Here we verify that the given token is valid, thus the user has permissions.
- * We use googles auth lib to push it, then resolve the promise true or false
+ * We use googles auth lib to pushUpdateArray it, then resolve the promise true or false
  * @param token
  * @returns {Promise}
  */

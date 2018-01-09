@@ -3,6 +3,7 @@ import {AuthenticateService} from "../services/authenticate.service";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {DataEmitterService} from "../services/data-emitter.service";
 import {MatSnackBar} from "@angular/material";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -12,28 +13,27 @@ import {MatSnackBar} from "@angular/material";
 export class AppComponent implements OnInit{
 
   photo = new BehaviorSubject("https://i.imgur.com/7OGK7HA.jpg");
-
   title = 'DigitalStudy.io';
+  logged = false;
   constructor(private auth: AuthenticateService,
               public dataEmit: DataEmitterService,
               public snackBar: MatSnackBar,
+              public route: Router
   ) {
     this.auth.initAuth();
-    dataEmit.$updateArray.subscribe(data => {
-      console.log(data);
-      this.snackBar.open(data, 'close', {
-        duration: 2000,
-      });
-    });
+    this.logged = this.auth.localLoggedIn();
+    this.dataEmit.$loggedIn.subscribe(data => { this.logged = data;});
+    dataEmit.$updateArray.subscribe(data => { this.snackBar.open(data, 'close', { duration: 2000 }); });
   }
 
-  printAvatar() {
-    console.log(this.photo);
-  }
+    public handleLogOut() {
+        this.auth.revoke();
+        this.route.navigate(['/']);
+    }
 
   ngOnInit() {
-    if(localStorage.getItem('avatar')) {
-      this.photo.next(localStorage.getItem('avatar'));
+    if(this.logged) {
+      this.photo.next(JSON.parse(localStorage.getItem('userObject')).picture);
     }
     this.photo.subscribe(value => {
       console.log(value);

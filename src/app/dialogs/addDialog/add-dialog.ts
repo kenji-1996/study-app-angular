@@ -29,7 +29,7 @@ export class AddDialog {
                 title: this.data.name
             };
             this.postData.postDATA(global.url + '/api/tests', body).subscribe(dataResult => {
-                this.dataEmit.push(dataResult.message);
+                this.dataEmit.pushUpdateArray(dataResult.message);
                 this.dialogRef.close();
             });
 

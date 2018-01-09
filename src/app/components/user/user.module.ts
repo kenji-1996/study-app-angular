@@ -22,12 +22,6 @@ export class UserComponent implements OnInit {
   ngOnInit() {
     this.name = JSON.parse(localStorage.getItem('userObject')).name;
     this.idtoken = localStorage.getItem('idtoken');
-    console.log(JSON.parse(localStorage.getItem('userObject')))
-  }
-
-  public handleLogOut() {
-    this.auth.revoke();
-    this.route.navigate(['/']);
   }
 }
 

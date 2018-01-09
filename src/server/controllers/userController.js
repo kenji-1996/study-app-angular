@@ -3,14 +3,12 @@
  */
 let settings = require('../misc/settings');
 
-let mongoose = require('mongoose');
 let TEST = require('../models/test');
 let USER = require('../models/user');
-let QUESTION = require('../models/question');
 
 /**
  * /api/users [GET]
- * List ALL tests in DB.
+ * List ALL users in DB.
  * @param req
  * @param res
  * @return JSON {message,data}
@@ -32,20 +30,22 @@ exports.listUsers = function(req, res) {
 exports.authenticateUser = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (user) {
         if(!user) { return null; }
-        var authUser = new USER({
-            unique_id: user['sub'],
-            email: user['email'],
-            name: user['name'],
-            source: user['iss'],
-            picture: user['picture'],
-            permissions: 0,
-        });
-        USER.update({'unique_id' : user['sub'] },authUser,{upsert: true}, function (err, raw) {
-            if (err) return res.status(500).json({message: "Failed to update/insert user", data: err});
-        });
-        USER.findOne({'unique_id' : user['sub']}, function(err,userResult) {
-            if (err) return res.status(500).json({message: "Couldnt find user", data: err});
-            return res.status(200).json({message: "Users retrieved", data: userResult});
+        var query = {'unique_id' : user['sub'] }, update = {lastLogin: new Date(),}, options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+        USER.findOneAndUpdate(query, update, options, function(err, result) {
+            if (err) return res.status(500).json({message: "Couldnt create or update user", data: err});
+            if(!result.email) {
+                result.email = user['email'];
+                result.name = user['name'];
+                result.source = user['iss'];
+                result.picture = user['picture'];
+                result.save(function (err,newUser) {
+                    if (err) return res.status(500).json({message: "Couldnt update user", data: err});
+                    return res.status(200).json({message: "User created and retrieved", data: newUser});
+                });
+            }else{
+                return res.status(200).json({message: "User retrieved", data: result});
+            }
         });
     });
 };
@@ -57,10 +57,9 @@ exports.authenticateUser = function(req, res) {
  * @param res
  */
 exports.listUser = function(req, res) {
-    TEST.find({_id: req.params.testId}, function(err, test) {
+    USER.find({_id: req.params.userId}, function(err, test) {
         if (err) return res.status(500).json({message: "Find test query failed", data: err});
-
-        return res.status(200).json({message: "Test found", data: test});
+        return res.status(200).json({message: "User found", data: test});
     });
 };
 /**
@@ -82,7 +81,7 @@ exports.updateUser = function(req, res) {
                 }else{
                     USER.findOneAndUpdate({unique_id: user['sub']}, req.body, {new: true}, function (err, userQ2) {
                         if (err) return res.status(500).json({message: "Save user query failed", data: err});
-                        return res.status(200).json({message: ('Admin updated user ' + userQ2.id), data: userQ2});
+                        return res.status(200).json({message: ('Updated self ' + userQ2.id), data: userQ2});
                     });
                 }
 
@@ -108,11 +107,29 @@ exports.deleteUser = function(req, res) {
                         if (err) return res.status(500).json({message: "Find user query failed", data: err});
                         userQ1.remove();
                         return res.status(200).json({message: ('Admin updated user ' + userQ1.id), data: userQ1});
-
                     });
                 } else {
                     return res.status(401).json({message: 'No permission to delete user', data: null});
                 }
             });
     });
+};
+
+/**
+ * /api/users/:userId/tests [GET]
+ * List the questions for selected ID
+ * @param req
+ * @param res
+ * @return JSON {message,data}
+ */
+exports.listTests = function(req, res) {
+    USER.findById(req.params.userId)
+        .exec(function (err, result) {
+            TEST.find({'_id': { $in: result.tests}})
+                .exec(function (err,testFindQuery) {
+                    if (err) { return res.status(404).json({message: "No tests found", data: err}) }
+                    return res.status(200).json({message: 'Questions found', data: testFindQuery});
+                });
+            if (err) return res.status(500).json({message: "Find tests query failed", data: err});
+        });
 };

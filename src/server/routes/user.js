@@ -11,7 +11,7 @@ router.route('/users')
     })
     .post(function(req,res) {
         testController.authenticateUser(req,res);
-    })
+    });
 
 router.route('/users/:userId')
     .get(function(req,res) {
@@ -22,6 +22,11 @@ router.route('/users/:userId')
     })
     .delete(function(req,res) {
         testController.deleteUser(req,res);
+    });
+
+router.route('/users/:userId/tests')
+    .get(function(req,res) {
+        testController.listTests(req,res);
     })
 
 module.exports = router;

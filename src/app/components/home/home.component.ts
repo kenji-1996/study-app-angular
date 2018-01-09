@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {AuthenticateService} from "../../services/authenticate.service";
 import {Router} from "@angular/router";
+import {DataEmitterService} from "../../services/data-emitter.service";
 declare const gapi: any;
 
 @Component({
@@ -18,7 +19,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     constructor(
                 public auth: AuthenticateService,
                 private route: Router,
-                private zone:NgZone
+                private zone:NgZone,
+                public dataEmit: DataEmitterService,
     ) { }
 
     ngOnInit() {
@@ -42,13 +44,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
             (loggedInUser) => {
                 var idtoken = loggedInUser.getAuthResponse().id_token;
                 localStorage.setItem('idtoken',idtoken);
-                this.auth.validate(idtoken).subscribe(result => {
+                this.auth.validate().subscribe(result => {
                     console.log(result);
-                    localStorage.setItem('userObject',JSON.stringify(result));
-                    /*localStorage.setItem('email', result['email']);
-                    localStorage.setItem('avatar', result['picture']);
-                    localStorage.setItem('name', result['name']);
-                    localStorage.setItem('perm', result['permissions']);*/
+                    localStorage.setItem('userObject',JSON.stringify(result.data));
+                    this.dataEmit.pushLoggedIn(true);
                     localStorage.setItem('logged', 'true');
                     //Zone needed to properly load
                     this.zone.run(() => this.route.navigate(['/user']));

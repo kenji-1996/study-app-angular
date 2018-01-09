@@ -14,9 +14,10 @@ var UserSchema  = new Schema({
     name: String,
     source: String,
     picture: String,
-    permissions: Number,
+    permissions: { type: Number, default: 0 },
     tests: [String],
-    date: { type: Date, default: Date.now },
+    lastLogin: { type: Date, default: Date.now },
+    dateCreated: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('Users', UserSchema);

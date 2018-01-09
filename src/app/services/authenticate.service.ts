@@ -4,6 +4,7 @@ export declare const gapi: any;
 import * as global from '../globals';
 import 'rxjs/add/operator/map'
 import {Observable} from "rxjs/Observable";
+import {DataEmitterService} from "./data-emitter.service";
 
 @Injectable()
 export class AuthenticateService {
@@ -11,7 +12,9 @@ export class AuthenticateService {
   auth2;
   auth2access;
 
-  constructor(private http: HttpClient
+  constructor(
+      private http: HttpClient,
+      public dataEmit: DataEmitterService,
   ) { }
 
   public initAuth() {
@@ -28,14 +31,18 @@ export class AuthenticateService {
             if(localStorage.getItem('idtoken') != gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token) {
               localStorage.setItem('idtoken', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
             }
-            this.validate(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token).subscribe();
+            this.validate().subscribe(data => {
+                localStorage.setItem('userObject', JSON.stringify(data.data));
+                localStorage.setItem('logged','true');
+                this.dataEmit.pushLoggedIn(true);
+            });
           }
         });
       });
     } catch (ex) {  }
   }
 
-  public validate(idtoken: string): Observable<any> {
+  public validate(): Observable<any> {
     return this.http.post(global.url + '/api/users', {});
   }
 
@@ -57,9 +64,8 @@ export class AuthenticateService {
     localStorage.removeItem('userObject');
     localStorage.removeItem('idtoken');
     localStorage.removeItem('logged');
-    gapi.auth2.getAuthInstance().signOut().then(() => {
-      console.log("Signed out");
-    });
+    this.dataEmit.pushLoggedIn(false);
+    gapi.auth2.getAuthInstance().signOut().then(() => { console.log("Signed out"); });
   }
 
 }
