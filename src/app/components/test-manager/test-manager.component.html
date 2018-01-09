@@ -9,7 +9,7 @@
 </div>
 
 <div class="row">
-  <div class="col-lg-3" *ngFor="let t of tests">
+  <div class="col-md-4" *ngFor="let t of tests">
     <mat-card>
       <mat-card-title-group>
         <mat-card-title>{{t.title}}</mat-card-title>
@@ -20,6 +20,7 @@
       <mat-card-actions>
         <button mat-button (click)="removeTest(t)">Remove</button>
         <button mat-button (click)="editTest(t)">Edit</button>
+        <button mat-button (click)="editTest(t)">Take test</button>
       </mat-card-actions>
     </mat-card>
     <br />
