@@ -5,11 +5,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
     MatButtonModule, MatCardModule, MatChipsModule, MatDialogModule, MatExpansionModule, MatFormFieldModule,
     MatIconModule,
-    MatInputModule, MatListModule, MatMenuModule, MatSidenavModule, MatTableModule, MatToolbarModule
+    MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatSidenavModule, MatSnackBarModule,
+    MatTableModule, MatToolbarModule
 } from "@angular/material";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
@@ -33,6 +33,8 @@ import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
         MatMenuModule,
         MatListModule,
         MatExpansionModule,
+        MatSnackBarModule,
+        MatProgressBarModule,
         FlexLayoutModule,
     ],
     exports: [
@@ -53,6 +55,8 @@ import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
         MatMenuModule,
         MatListModule,
         MatExpansionModule,
+        MatSnackBarModule,
+        MatProgressBarModule,
         FlexLayoutModule,
     ],
     declarations: []

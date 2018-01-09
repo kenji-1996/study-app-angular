@@ -25,7 +25,6 @@ export class AuthenticateService {
             this.revoke();
           }else{
             this.auth2access = gapi.auth2.getAuthInstance();
-            var profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
             if(localStorage.getItem('idtoken') != gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token) {
               localStorage.setItem('idtoken', gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
             }
@@ -37,8 +36,7 @@ export class AuthenticateService {
   }
 
   public validate(idtoken: string): Observable<any> {
-    var body = { idtoken : idtoken/*, type: 'list'*/ };
-    return this.http.post(global.url + '/api/user', body, {});
+    return this.http.post(global.url + '/api/users', {});
   }
 
   /**/
@@ -56,16 +54,12 @@ export class AuthenticateService {
   }
 
   public revoke()  {
-    localStorage.removeItem('logged');
-    localStorage.removeItem('email');
-    localStorage.removeItem('avatar');
-    localStorage.removeItem('perm');
-    localStorage.removeItem('name');
+    localStorage.removeItem('userObject');
     localStorage.removeItem('idtoken');
+    localStorage.removeItem('logged');
     gapi.auth2.getAuthInstance().signOut().then(() => {
-      console.log("done");
+      console.log("Signed out");
     });
-    console.log(localStorage.getItem('avatar'))
   }
 
 }

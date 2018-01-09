@@ -10,9 +10,10 @@ var Schema = mongoose.Schema;
 
 var questionSchema  = new Schema({
     _id: Schema.Types.ObjectId,
-    question: String,
+    question: {type:String, required: true},
     answer: String,
     category: String,
+    date: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model('Question', questionSchema);

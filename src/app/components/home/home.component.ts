@@ -14,6 +14,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     auth2:any;
     logged = false;
 
+
     constructor(
                 public auth: AuthenticateService,
                 private route: Router,
@@ -43,10 +44,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
                 localStorage.setItem('idtoken',idtoken);
                 this.auth.validate(idtoken).subscribe(result => {
                     console.log(result);
-                    localStorage.setItem('email', result['email']);
+                    localStorage.setItem('userObject',JSON.stringify(result));
+                    /*localStorage.setItem('email', result['email']);
                     localStorage.setItem('avatar', result['picture']);
                     localStorage.setItem('name', result['name']);
-                    localStorage.setItem('perm', result['permissions']);
+                    localStorage.setItem('perm', result['permissions']);*/
                     localStorage.setItem('logged', 'true');
                     //Zone needed to properly load
                     this.zone.run(() => this.route.navigate(['/user']));

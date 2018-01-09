@@ -9,10 +9,13 @@ var Schema = mongoose.Schema;
 
 var testSchema  = new Schema({
     _id: Schema.Types.ObjectId,
-    title: String,
+    title: {type:String, required: true},
     questions: [String],
     authorID: String,
     author: String,
+    authorIMG: String,
+    date: { type: Date, default: Date.now },
+    private: { type: Boolean, default:true },
 });
 
 module.exports = mongoose.model('Test', testSchema);

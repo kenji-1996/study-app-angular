@@ -13,7 +13,6 @@ import {ImportsModule} from "../../modules/imports.module";
 export class UserComponent implements OnInit {
   name;
   idtoken;
-  questions;
 
   constructor(
               public auth: AuthenticateService,
@@ -21,11 +20,10 @@ export class UserComponent implements OnInit {
   ) {  }
 
   ngOnInit() {
-    this.name = localStorage.getItem('name');
+    this.name = JSON.parse(localStorage.getItem('userObject')).name;
     this.idtoken = localStorage.getItem('idtoken');
-    this.questions = localStorage.getItem('questions');
+    console.log(JSON.parse(localStorage.getItem('userObject')))
   }
-
 
   public handleLogOut() {
     this.auth.revoke();

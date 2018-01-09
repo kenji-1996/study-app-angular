@@ -114,7 +114,7 @@ router.route('/question')
                                 test.save(function (err, testQuery) {
                                     if (err) return res.status(500).json({message:"Test save query failed", data: null});
                                 });
-                                return res.status(200).res.json({message: "Question save success", data: result});
+                                return res.status(200).json({message: "Question save success", data: result});
                             });
                         });
                     } else {

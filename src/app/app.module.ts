@@ -12,6 +12,9 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
 import {ReactiveFormsModule} from "@angular/forms";
 import {AddDialog} from "./dialogs/addDialog/add-dialog";
+import {DataEmitterService} from "./services/data-emitter.service";
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
 
 
 @NgModule({
@@ -34,7 +37,13 @@ import {AddDialog} from "./dialogs/addDialog/add-dialog";
   ],
   providers: [
     AuthenticateService,
-    DataManagementService
+    DataManagementService,
+    DataEmitterService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AddHeaderInterceptor,
+      multi: true,
+    }
   ],
   bootstrap: [AppComponent]
 })

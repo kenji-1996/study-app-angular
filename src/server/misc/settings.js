@@ -119,7 +119,26 @@ module.exports.authenticate = function authenticate(token) {
         );
     });
 };
-
-module.exports.errHandler = function authenticate(msg,res) {
+module.exports.ensureAuthorized = function ensureAuthorized(req, res) {
+    return new Promise((resolve) => {
+        let bearerToken;
+        let bearerHeader = req.headers["authorization"];
+        if (typeof bearerHeader !== 'undefined') {
+            let bearer = bearerHeader.split(" ");
+            bearerToken = bearer[1];
+            req.token = bearerToken;
+            this.userPayload(req.token).then((result) => {
+                if (!result) {
+                    resolve(false);
+                    return res.status(403).json({message:"Failed to verify token supplied in authorization header", data: null});
+                }else{
+                    resolve(result);
+                }
+            });
+        } else {
+            resolve(false);
+            return res.status(403).json({message:"Failed to supply token in authorization header.", data: null});
+        }
+    });
 
 }

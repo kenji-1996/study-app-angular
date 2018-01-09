@@ -1,4 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+//@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "theme";
 
 button:focus {outline:0 !important; }
+
+//Material 2 theme
+// Active icon color in list nav
+mat-list {
+  [mat-list-item].active {
+    background-color: mat-color($accent);
+    color: mat-color($accent, default-contrast)
+    mat-icon {
+
+    }
+    mat-icon[mat-list-icon] {
+      color: mat-color($accent);
+    }
+  }
+}

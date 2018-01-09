@@ -9,6 +9,7 @@ import {MatDialog} from "@angular/material";
 import {EditTestDialog} from "../../dialogs/editTest/edit-test.component";
 import {isNullOrUndefined} from "util";
 import {AddDialog} from "../../dialogs/addDialog/add-dialog";
+import {DataEmitterService} from "../../services/data-emitter.service";
 
 @Component({
   selector: 'app-test-manager',
@@ -18,48 +19,38 @@ import {AddDialog} from "../../dialogs/addDialog/add-dialog";
 export class TestManagerComponent implements OnInit {
 
   tests: Test[];
-  selectedTest: Test;
 
-  constructor( private route: Router,
+  constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
-               private dialog: MatDialog,) { }
-
-  ngOnInit() {
-    var body = { idtoken : localStorage.getItem('idtoken'), action: 'get'/*, type: 'list'*/ };
-    this.data.postDATA(global.url + '/api/test', body).subscribe(dataResult=> {
-      this.tests = dataResult.data;
+               private dialog: MatDialog,) {
+    dataEmit.$updateArray.subscribe(data => {
+      this.refreshData();
     });
   }
 
-  onSelect(test:Test) {
-    this.selectedTest = test;
+  ngOnInit() {
+    this.refreshData();
   }
 
   addTest(): void{
-    let dialogRef = this.dialog.open(AddDialog, {
-      data: {name: '',}
-    });
+    let dialogRef = this.dialog.open(AddDialog, { data: {name: '',} });
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if(!isNullOrUndefined(result)) {
-        //console.log(result);
-        //this.userService.update(this.id_token,this.question, this.profileImage).subscribe(result => console.log(result));
-      }
+  removeTest(test:any) {
+    var body = { idtoken : localStorage.getItem('idtoken'), action: 'remove', testid:test._id/*, type: 'list'*/ };
+    this.data.deleteDATA(global.url + '/api/tests/' + test._id, body).subscribe(dataResult=> { this.dataEmit.push(dataResult.message) });
+  }
+
+  editTest(test:any): void {
+    let dialogRef = this.dialog.open(EditTestDialog, { width: '80%',  data: test });
+    dialogRef.afterClosed().subscribe(() => {
+      this.refreshData();
     });
   }
 
-  editTest(): void {
-    let dialogRef = this.dialog.open(EditTestDialog, {
-      width: '80%',
-      data: this.selectedTest
-
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if(!isNullOrUndefined(result)) {
-        alert(result);
-        //this.userService.update(this.id_token,this.question, this.profileImage).subscribe(result => console.log(result));
-      }
+  refreshData() {
+    this.data.getDATA(global.url + '/api/tests').subscribe(dataResult=> {
+      this.tests = dataResult.data;
     });
   }
 }

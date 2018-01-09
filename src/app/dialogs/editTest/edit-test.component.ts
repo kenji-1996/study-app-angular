@@ -5,6 +5,7 @@ import {DataManagementService} from "../../services/data-management.service";
 import * as global from '../../globals';
 import {TableDataSource, ValidatorService} from "angular4-material-table";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {DataEmitterService} from "../../services/data-emitter.service";
 
 @Injectable()
 export class QuestionValidationService implements ValidatorService {
@@ -41,6 +42,7 @@ export class EditTestDialog {
         @Inject(MAT_DIALOG_DATA) public data: any,
         private personValidator: ValidatorService,
         private dataManagement: DataManagementService,
+        public dataEmit: DataEmitterService
     ) {
         var body = { idtoken : localStorage.getItem('idtoken'), action: 'get', testid:data._id /*this.data._id, type: 'list'*/ };
         this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
@@ -85,7 +87,10 @@ export class EditTestDialog {
         }
         var body = { idtoken : localStorage.getItem('idtoken'), action: 'update', testid:this.data._id, questions: questions  };
         this.dataManagement.postDATA(global.url + '/api/question', body).subscribe(dataResult=> {
-            console.log(dataResult);
+            if(dataResult) {
+                this.dialogRef.close();
+                this.dataEmit.push(dataResult.message);
+            }
         });
     }
 }

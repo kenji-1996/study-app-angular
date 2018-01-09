@@ -3,6 +3,29 @@
  */
 //User API
 const router = require('express').Router();
+let testController = require('../controllers/userController');
+
+router.route('/users')
+    .get(function(req,res) {
+        testController.listUsers(req,res);
+    })
+    .post(function(req,res) {
+        testController.authenticateUser(req,res);
+    })
+
+router.route('/users/:userId')
+    .get(function(req,res) {
+        testController.listUser(req,res);
+    })
+    .put(function(req,res) {
+        testController.updateUser(req,res);
+    })
+    .delete(function(req,res) {
+        testController.deleteUser(req,res);
+    })
+
+module.exports = router;
+/*const router = require('express').Router();
 var mongoose = require('mongoose');
 var settings = require('../misc/settings');
 var USER = require('../models/user');
@@ -63,4 +86,4 @@ String.prototype.toObjectId = function() {
     return new ObjectId(this.toString());
 };
 
-module.exports = router;
+module.exports = router;*/

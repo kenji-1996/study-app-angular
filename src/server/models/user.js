@@ -5,7 +5,6 @@
  */
 var mongoose     = require('mongoose');
 var Schema = mongoose.Schema;
-var QuestionSchema = require('./question').schema;
 
 
 var UserSchema  = new Schema({
@@ -17,6 +16,7 @@ var UserSchema  = new Schema({
     picture: String,
     permissions: Number,
     tests: [String],
+    date: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model('User', UserSchema);
