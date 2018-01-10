@@ -11,7 +11,7 @@ router.route('/tests')
     })
     .post(function(req,res) {
         testController.createTest(req,res);
-    })
+    });
 
 router.route('/tests/:testId')
     .get(function(req,res) {
@@ -22,7 +22,7 @@ router.route('/tests/:testId')
     })
     .delete(function(req,res) {
         testController.deleteTest(req,res);
-    })
+    });
 
 router.route('/tests/:testId/questions')
     .get(function(req,res) {
@@ -31,6 +31,17 @@ router.route('/tests/:testId/questions')
     .post(function(req,res) {
         testController.updateQuestions(req,res);
     })
+
+/*router.route('/tests/:testId/questions/:questionId')
+    .get(function(req,res) {
+        testController.listQuestions(req,res);
+    })
+    .put(function(req,res) {
+        testController.updateQuestions(req,res);
+    })
+    .delete(function(req,res) {
+        testController.updateQuestions(req,res);
+    })*/
 
 module.exports = router;
 

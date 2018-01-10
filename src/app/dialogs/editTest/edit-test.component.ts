@@ -20,9 +20,7 @@ export class QuestionValidationService implements ValidatorService {
 
 @Component({
     selector: 'edit-test',
-    providers: [
-        {provide: ValidatorService, useClass: QuestionValidationService }
-    ],
+    providers: [ {provide: ValidatorService, useClass: QuestionValidationService } ],
     templateUrl: './edit-test.html',
 })
 export class EditTestDialog {
@@ -44,7 +42,6 @@ export class EditTestDialog {
         private dataManagement: DataManagementService,
         public dataEmit: DataEmitterService
     ) {
-        var body = { idtoken : localStorage.getItem('idtoken'), action: 'get', testid:data._id /*this.data._id, type: 'list'*/ };
         this.dataManagement.getDATA(global.url + '/api/tests/' + data._id + '/questions').subscribe(dataResult=> {
             this.questionList = dataResult.data;
             this.dataSource = new TableDataSource<any>(this.questionList, Question, this.personValidator);

@@ -1,4 +1,4 @@
-<div mat-dialog-content style="margin: 10px;">
+<div mat-dialog-content>
     <mat-table class="table-margin-bottom" #table [dataSource]="dataSource">
         <ng-container matColumnDef="question">
             <mat-header-cell *matHeaderCellDef>Question</mat-header-cell>
@@ -33,10 +33,10 @@
 </div>
 
 <div mat-dialog-actions>
-    <button *ngIf="isSelected" mat-raised-button (click)="confirmSelectedRow()"><i class="fa fa-check mat-icon"></i> Confirm</button>
-    <button *ngIf="isSelected" mat-raised-button (click)="cancelOrDeleteRow()"><i class="fa fa-remove mat-icon"></i> Delete</button>
-    <button *ngIf="!isSelected" mat-raised-button (click)="dataSource.createNew()">Add Question</button>
-    <button mat-raised-button (click)="submitArray()">Submit</button>
+    <button *ngIf="isSelected" mat-button (click)="confirmSelectedRow()"><i class="fa fa-check mat-icon"></i> Confirm</button>
+    <button *ngIf="isSelected" mat-button (click)="cancelOrDeleteRow()"><i class="fa fa-remove mat-icon"></i> Delete</button>
+    <button *ngIf="!isSelected" mat-button (click)="dataSource.createNew()">Add Question</button>
+    <button mat-button (click)="submitArray()">Submit</button>
     <button mat-button (click)="onNoClick()" tabindex="-1">Close</button>
 </div>
 

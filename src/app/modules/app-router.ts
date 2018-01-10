@@ -6,6 +6,7 @@ const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'user', loadChildren: '../components/user/user.module#UserModule' },
     { path: 'test-manager', loadChildren: '../components/test-manager/test-manager.module#TestManagerModule' },
+    { path: 'test/:testId', loadChildren: '../components/test/test.module#TestModule' },
     { path: '**', redirectTo: '404' },
 ];
 

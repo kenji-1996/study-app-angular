@@ -6,7 +6,8 @@ import { CommonModule } from '@angular/common';
 import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {
-    MatButtonModule, MatCardModule, MatChipsModule, MatDialogModule, MatExpansionModule, MatFormFieldModule,
+    MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatDialogModule, MatExpansionModule,
+    MatFormFieldModule,
     MatIconModule,
     MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatSidenavModule, MatSnackBarModule,
     MatTableModule, MatToolbarModule
@@ -35,6 +36,7 @@ import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
         MatExpansionModule,
         MatSnackBarModule,
         MatProgressBarModule,
+        MatCheckboxModule,
         FlexLayoutModule,
     ],
     exports: [
@@ -57,6 +59,7 @@ import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
         MatExpansionModule,
         MatSnackBarModule,
         MatProgressBarModule,
+        MatCheckboxModule,
         FlexLayoutModule,
     ],
     declarations: []

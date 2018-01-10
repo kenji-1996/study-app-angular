@@ -1,5 +1,5 @@
 import {Component, NgModule, OnInit} from '@angular/core';
-import { RouterModule} from "@angular/router";
+import {ActivatedRoute, ParamMap, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
 
@@ -21,7 +21,8 @@ export class TestManagerComponent implements OnInit {
 
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
-               private dialog: MatDialog,) {
+               private dialog: MatDialog
+  ) {
     dataEmit.$updateArray.subscribe(() => {
       this.refreshData();
     });
@@ -40,7 +41,7 @@ export class TestManagerComponent implements OnInit {
   }
 
   editTest(test:any): void {
-    let dialogRef = this.dialog.open(EditTestDialog, { width: '80%',  data: test });
+    let dialogRef = this.dialog.open(EditTestDialog, { width: '100%',  data: test });
     dialogRef.afterClosed().subscribe(() => {
       this.refreshData();
     });

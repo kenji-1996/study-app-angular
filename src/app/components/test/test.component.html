@@ -1,0 +1,27 @@
+<div class="row align-content-center" style="margin: -10px;">
+  <mat-card class="col-sm-12" *ngIf="test$ | async as test" >
+    <mat-card-title-group>
+      <mat-card-title>{{test.title}}</mat-card-title>
+      <mat-card-subtitle>{{test.author}}</mat-card-subtitle>
+    </mat-card-title-group>
+    <!--<mat-card-content>
+    </mat-card-content>-->
+  </mat-card>
+  <div *ngIf="test$ | async as test">
+    <h3>"{{ test.title }}"</h3>
+    <div>
+      <label>Id: </label>{{ test._id }}</div>
+    <div>
+      <label>Name: </label>
+      <input [(ngModel)]="test.author" placeholder="name"/>
+    </div>
+    <div *ngFor="let q of test.questions">
+      {{q.question}}
+    </div>
+    <p>
+    </p>
+  </div>
+  <mat-checkbox>Give hint</mat-checkbox>
+  <mat-checkbox>Time limit</mat-checkbox>
+  <mat-checkbox>Instant result</mat-checkbox>
+</div>
