@@ -1,27 +1,46 @@
-import {Component, NgModule, OnInit} from '@angular/core';
+import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {Observable} from "rxjs/Observable";
-import {Question, TestToQuestion} from "../../objects/test";
+import {Question, testQuestion, TestToQuestion} from "../../objects/objects";
 import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/timer';
 import * as global from '../../globals';
 import {DataManagementService} from "../../services/data-management.service";
+import {Subscription} from "rxjs/Subscription";
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.scss']
 })
-export class TestComponent implements OnInit {
+export class TestComponent implements OnInit, OnDestroy {
 
+  //Loaded in test
   test$: Observable<TestToQuestion>;
+  result:testQuestion[] = [];
+  test;
+  started = false;
+  progress = '0';
+  selectedQuestion;
+  selectedId = 0;
+  answer;
+  timeLeft = 0;
+
+  //Options
+  giveHint = false;
+  timeLimit = false;
+  instantResult = false;
+  randomOrder = false;
+
+  private subscription: Subscription;
   constructor(
       private route: ActivatedRoute,
       private dataManagement: DataManagementService
   ) { }
 
   ngOnInit() {
-
     this.route.params.subscribe((params: Params) => {
       let testId = params['testId'];
       this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(dataResult=> {
@@ -33,9 +52,48 @@ export class TestComponent implements OnInit {
             questions.push(new Question(dataResult.data[i]._id,dataResult.data[i].question,dataResult.data[i].answer,dataResult.data[i].category));
           }
           this.test$ = Observable.of(test);
+          this.test = test;
         });
       });
     });
+  }
+
+  testStarted() {
+    this.started = true;
+    if(this.timeLimit) {
+      this.testTimer();
+    }
+    if(!this.randomOrder) {
+      this.selectedQuestion = this.test.questions[this.selectedId];
+    }
+  }
+
+  private testTimer() {
+    let timer = Observable.timer(0,1000);
+    let timeOver = 10;
+    this.subscription = timer.subscribe(t=> {
+      this.progress = ((t/timeOver)*100).toFixed(2);
+      if(t > timeOver) {
+        this.submitQuestion();
+      }
+    });
+  }
+
+  private submitQuestion() {
+    if(this.subscription) { this.subscription.unsubscribe(); }
+    if(this.selectedId < this.test.questions.length) {
+      this.selectedId++;
+      this.result.push(new testQuestion(this.selectedQuestion._id,this.selectedQuestion.question,this.selectedQuestion.answer,this.selectedQuestion.category,this.answer,(this.timeLimit? this.timeLeft : 0),0));
+      this.progress = '0';
+      this.selectedQuestion = this.test.questions[this.selectedId];
+      this.testTimer();
+    }
+  }
+
+  ngOnDestroy() {
+    if(this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
 }

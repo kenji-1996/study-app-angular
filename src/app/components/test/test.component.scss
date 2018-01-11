@@ -1,0 +1,27 @@
+.card-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.test-start {
+  margin: 2px;
+}
+.mat-expansion-test {
+   width: 400px;
+   display: block;
+}
+.hoz-center{
+  margin:0 auto;
+  display:block;
+}
+textarea {
+  width: 100%;
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;         /* Opera/IE 8+ */
+}

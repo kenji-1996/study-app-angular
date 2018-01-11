@@ -1,10 +1,10 @@
 import {Component, NgModule, OnInit} from '@angular/core';
-import {ActivatedRoute, ParamMap, RouterModule} from "@angular/router";
+import {RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
 
 import * as global from '../../globals';
-import { Test } from '../../objects/test';
+import { Test } from '../../objects/objects';
 import {MatDialog} from "@angular/material";
 import {EditTestDialog} from "../../dialogs/editTest/edit-test.component";
 import {AddDialog} from "../../dialogs/addDialog/add-dialog";
