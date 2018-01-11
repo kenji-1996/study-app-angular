@@ -24,11 +24,15 @@ export class Question {
     question: String;
     answer: String;
     category: String;
-    constructor(__id:string,_question:string,_answer:string,_category:string) {
+    hint: String;
+    keywords: String[];
+    constructor(__id:string,_question:string,_answer:string,_category:string,_hint:string,_keywords:string[]) {
         this._id = __id;
         this.question = _question;
         this.answer = _answer;
         this.category = _category;
+        this.hint = _hint;
+        this.keywords = _keywords;
     }
 }
 

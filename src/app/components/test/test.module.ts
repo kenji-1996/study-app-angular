@@ -8,7 +8,6 @@ import 'rxjs/add/observable/timer';
 import * as global from '../../globals';
 import {DataManagementService} from "../../services/data-management.service";
 import {Subscription} from "rxjs/Subscription";
-import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-test',
@@ -49,7 +48,7 @@ export class TestComponent implements OnInit, OnDestroy {
         let test = new TestToQuestion(dataResult.data[0]._id,dataResult.data[0].title,questions,dataResult.data[0].author);
         this.dataManagement.getDATA(global.url + '/api/tests/' + testId + '/questions').subscribe(dataResult=> {
           for(var i = 0; i < dataResult.data.length; i++) {
-            questions.push(new Question(dataResult.data[i]._id,dataResult.data[i].question,dataResult.data[i].answer,dataResult.data[i].category));
+            questions.push(new Question(dataResult.data[i]._id,dataResult.data[i].question,dataResult.data[i].answer,dataResult.data[i].category,dataResult.data[i].hint,dataResult.data[i].keywords));
           }
           this.test$ = Observable.of(test);
           this.test = test;
@@ -88,6 +87,10 @@ export class TestComponent implements OnInit, OnDestroy {
       this.selectedQuestion = this.test.questions[this.selectedId];
       this.testTimer();
     }
+  }
+
+  checkAnswer() {
+
   }
 
   ngOnDestroy() {

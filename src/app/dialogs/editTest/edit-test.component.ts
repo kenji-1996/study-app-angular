@@ -22,6 +22,7 @@ export class QuestionValidationService implements ValidatorService {
     selector: 'edit-test',
     providers: [ {provide: ValidatorService, useClass: QuestionValidationService } ],
     templateUrl: './edit-test.html',
+    styleUrls: ['./edit-test.scss']
 })
 export class EditTestDialog {
 
@@ -30,7 +31,7 @@ export class EditTestDialog {
 
     @Input() questionList = [];
 
-    displayedColumns = ['question', 'answer', 'category'];
+    displayedColumns = ['question', 'answer', 'category', 'hint', 'keywords'];
     @Output() questionListChange = new EventEmitter<Question[]>();
 
     public dataSource: TableDataSource<Question>;

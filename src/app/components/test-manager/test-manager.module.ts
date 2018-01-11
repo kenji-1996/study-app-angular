@@ -33,7 +33,7 @@ export class TestManagerComponent implements OnInit {
   }
 
   addTest(): void{
-    let dialogRef = this.dialog.open(AddDialog, { data: {name: '',} });
+    let dialogRef = this.dialog.open(AddDialog, { width: '100%', data: {name: '',} });
   }
 
   removeTest(test:any) {
@@ -41,7 +41,7 @@ export class TestManagerComponent implements OnInit {
   }
 
   editTest(test:any): void {
-    let dialogRef = this.dialog.open(EditTestDialog, { width: '100%',  data: test });
+    let dialogRef = this.dialog.open(EditTestDialog, { width: '200%',  data: test });
     dialogRef.afterClosed().subscribe(() => {
       this.refreshData();
     });
