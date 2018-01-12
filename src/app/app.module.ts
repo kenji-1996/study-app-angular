@@ -9,20 +9,23 @@ import {AuthenticateService} from "./services/authenticate.service";
 import {DataManagementService} from "./services/data-management.service";
 import {ImportsModule} from "./modules/imports.module";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
 import {ReactiveFormsModule} from "@angular/forms";
 import {AddDialog} from "./dialogs/addDialog/add-dialog";
 import {DataEmitterService} from "./services/data-emitter.service";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
+import {EditTestNameDialog} from "./dialogs/editTestName/edit-test-name";
+import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
+import {AuthGuard} from "./guards/auth.guard";
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    EditTestDialog,
     AddDialog,
+    EditTestNameDialog,
+    EditQuestionDialog,
   ],
   imports: [
     BrowserModule,
@@ -32,12 +35,14 @@ import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
     ReactiveFormsModule,
   ],
   entryComponents: [
-    EditTestDialog,
-    AddDialog
+    AddDialog,
+    EditTestNameDialog,
+    EditQuestionDialog,
   ],
   providers: [
     AuthenticateService,
     DataManagementService,
+    AuthGuard,
     DataEmitterService,
     {
       provide: HTTP_INTERCEPTORS,

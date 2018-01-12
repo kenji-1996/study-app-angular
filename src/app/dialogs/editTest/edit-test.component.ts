@@ -20,10 +20,9 @@ export class QuestionValidationService implements ValidatorService {
 
 @Component({
     selector: 'edit-test',
-    providers: [
-        {provide: ValidatorService, useClass: QuestionValidationService }
-    ],
+    providers: [ {provide: ValidatorService, useClass: QuestionValidationService } ],
     templateUrl: './edit-test.html',
+    styleUrls: ['./edit-test.scss']
 })
 export class EditTestDialog {
 
@@ -32,7 +31,7 @@ export class EditTestDialog {
 
     @Input() questionList = [];
 
-    displayedColumns = ['question', 'answer', 'category'];
+    displayedColumns = ['question', 'answer', 'category', 'hint', 'keywords'];
     @Output() questionListChange = new EventEmitter<Question[]>();
 
     public dataSource: TableDataSource<Question>;
@@ -44,7 +43,6 @@ export class EditTestDialog {
         private dataManagement: DataManagementService,
         public dataEmit: DataEmitterService
     ) {
-        var body = { idtoken : localStorage.getItem('idtoken'), action: 'get', testid:data._id /*this.data._id, type: 'list'*/ };
         this.dataManagement.getDATA(global.url + '/api/tests/' + data._id + '/questions').subscribe(dataResult=> {
             this.questionList = dataResult.data;
             this.dataSource = new TableDataSource<any>(this.questionList, Question, this.personValidator);
@@ -79,7 +77,7 @@ export class EditTestDialog {
     }
 
     submitArray() {
-        let questions;
+        /*let questions;
         if(this.dataSource.currentData) {
             questions = this.dataSource.currentData
         }else{
@@ -91,7 +89,7 @@ export class EditTestDialog {
                 this.dialogRef.close();
                 this.dataEmit.pushUpdateArray(dataResult.message);
             }
-        });
+        });*/
     }
 }
 

@@ -1,0 +1,57 @@
+<div class="card-container" *ngIf="!started">
+  <mat-card class="card-content" *ngIf="test$ | async as test">
+    <div>
+      <h1>{{test.title}} <span class="text-muted" style="font-size: small">{{test.author}}</span></h1>
+      <hr>
+      <mat-accordion class="mat-elevation-z0">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Settings
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-checkbox [(ngModel)]="giveHint">Give hint</mat-checkbox>
+          <mat-checkbox [(ngModel)]="timeLimit">Time limit</mat-checkbox>
+          <mat-checkbox [(ngModel)]="instantResult">Instant result</mat-checkbox>
+          <mat-checkbox [(ngModel)]="randomOrder">Random order</mat-checkbox>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Question preview
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ul class="fa-ul" *ngFor="let q of test.questions">
+            <li><i class="fa-li fa fa-question"></i>{{q.question}}</li>
+          </ul>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <br />
+      <div class="test-start"><button class="hoz-center" color="accent" mat-raised-button (click)="testStarted()">Start test</button></div>
+    </div>
+  </mat-card>
+</div>
+
+<div *ngIf="started">
+  <mat-card *ngIf="selectedQuestion">
+    <mat-card-subtitle>{{selectedQuestion.category}}</mat-card-subtitle>
+    <mat-card-title>{{selectedQuestion.question}}</mat-card-title>
+    <mat-card-content>
+      <mat-form-field style="width: 100%;">
+        <textarea matInput placeholder="Answer" rows="15" [(ngModel)]="answer"></textarea>
+      </mat-form-field>
+    </mat-card-content>
+    <mat-divider [inset]="true"></mat-divider>
+    <mat-card-actions>
+      <button mat-button (click)="submitQuestion()">Submit</button>
+      <button mat-button>SHARE</button>
+    </mat-card-actions>
+    <mat-card-footer>
+      <mat-progress-bar *ngIf="timeLimit" mode="determinate" [value]="progress"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+  <div>
+    <h4 class="text-center text-muted lead" *ngIf="selectedQuestion">{{selectedId + 1}} of {{test.questions.length}}</h4>
+  </div>
+</div>
+

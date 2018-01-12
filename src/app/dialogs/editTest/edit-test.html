@@ -1,10 +1,10 @@
-<div mat-dialog-content style="margin: 10px;">
+<div mat-dialog-content>
     <mat-table class="table-margin-bottom" #table [dataSource]="dataSource">
         <ng-container matColumnDef="question">
             <mat-header-cell *matHeaderCellDef>Question</mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <mat-form-field floatLabel="never" underlineRef="row.editing">
-                    <input matInput [formControl]="row.validator.controls['question']" placeholder="question" [(ngModel)]="row.currentData.question" >
+                    <input matInput [formControl]="row.validator.controls['question']" [(ngModel)]="row.currentData.question" >
                 </mat-form-field>
             </mat-cell>
         </ng-container>
@@ -12,7 +12,7 @@
             <mat-header-cell *matHeaderCellDef>Answer</mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <mat-form-field floatLabel="never">
-                    <input matInput [formControl]="row.validator.controls['answer']" placeholder="answer" [(ngModel)]="row.currentData.answer">
+                    <input matInput [formControl]="row.validator.controls['answer']" [(ngModel)]="row.currentData.answer">
                 </mat-form-field>
             </mat-cell>
         </ng-container>
@@ -20,7 +20,23 @@
             <mat-header-cell *matHeaderCellDef>Category</mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <mat-form-field floatLabel="never">
-                    <input matInput [formControl]="row.validator.controls['category']" placeholder="category" [(ngModel)]="row.currentData.category">
+                    <input matInput [formControl]="row.validator.controls['category']" [(ngModel)]="row.currentData.category">
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="hint">
+            <mat-header-cell *matHeaderCellDef>Category</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <mat-form-field floatLabel="never">
+                    <input matInput [formControl]="row.validator.controls['hint']" [(ngModel)]="row.currentData.hint">
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="keywords">
+            <mat-header-cell *matHeaderCellDef>Keywords</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <mat-form-field floatLabel="never">
+                    <input matInput [formControl]="row.validator.controls['keywords']" [(ngModel)]="row.currentData.keywords">
                 </mat-form-field>
             </mat-cell>
         </ng-container>
@@ -33,10 +49,10 @@
 </div>
 
 <div mat-dialog-actions>
-    <button *ngIf="isSelected" mat-raised-button (click)="confirmSelectedRow()"><i class="fa fa-check mat-icon"></i> Confirm</button>
-    <button *ngIf="isSelected" mat-raised-button (click)="cancelOrDeleteRow()"><i class="fa fa-remove mat-icon"></i> Delete</button>
-    <button *ngIf="!isSelected" mat-raised-button (click)="dataSource.createNew()">Add Question</button>
-    <button mat-raised-button (click)="submitArray()">Submit</button>
+    <button *ngIf="isSelected" mat-button (click)="confirmSelectedRow()"><i class="fa fa-check mat-icon"></i> Confirm</button>
+    <button *ngIf="isSelected" mat-button (click)="cancelOrDeleteRow()"><i class="fa fa-remove mat-icon"></i> Delete</button>
+    <button *ngIf="!isSelected" mat-button (click)="dataSource.createNew()">Add Question</button>
+    <button mat-button (click)="submitArray()">Submit</button>
     <button mat-button (click)="onNoClick()" tabindex="-1">Close</button>
 </div>
 

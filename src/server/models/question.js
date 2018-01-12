@@ -13,6 +13,8 @@ var questionSchema  = new Schema({
     question: {type:String, required: true},
     answer: String,
     category: String,
+    hint: String,
+    keywords: [String],
     date: { type: Date, default: Date.now },
 });
 

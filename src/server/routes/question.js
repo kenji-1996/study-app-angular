@@ -3,23 +3,13 @@
  */
 //Question API
 const router = require('express').Router();
-var mongoose = require('mongoose');
-//Settings file with functions I use in lots of places + imports
-var settings = require('../misc/settings');
-//Models crafted from schema for mongodb and mongoose to interpret
-var QUESTION = require('../models/question');
-var TEST = require('../models/test');
 
 //When routing to /api/question
 /**
- * Post to question, choose an 'action'
- * 'get' will return as many questions as specified, or all if no 'limit' is specified
- *
- * Currently all attempts at API access need to be verified with a google payload, 'get' requests might be changed in future.
- *
- * Will loop through the question '_id's array that every test has in search for questions to send back
+ * 'Questions' RESTful API has been moved into 'Tests' and/or 'User'
  */
-router.route('/question')
+module.exports = router;
+/*router.route('/question')
     .post((req,res) => {
         if (req.body.action == 'get') {
             if(req.body.idtoken) {
@@ -46,9 +36,6 @@ router.route('/question')
                 return res.status(403).json({message:"Failed to validate idtoken", data: null});
             }
         } else
-        /**
-         * Update requires a valid test _id, once found, tests are cleared and so are questions
-         */
         if (req.body.action == 'update') {
             if(req.body.idtoken) {
                 var idtoken = req.body.idtoken;
@@ -133,4 +120,4 @@ router.route('/question')
     });
 
 
-module.exports = router;
+module.exports = router;*/
