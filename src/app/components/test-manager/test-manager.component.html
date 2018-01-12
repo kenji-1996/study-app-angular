@@ -1,4 +1,4 @@
-<mat-grid-list [cols]="cols | async" rows="1" rowHeight="115px">
+<mat-grid-list [cols]="cols | async" rowHeight="115px" style="margin-bottom: 80px;">
   <mat-grid-tile *ngFor="let t of tests" >
       <mat-grid-tile-header [routerLink]="['/test', t._id]" style="cursor: pointer">
         <img src="https://svgshare.com/i/4vH.svg">
@@ -10,7 +10,6 @@
         <button mat-button (click)="removeTest(t)">Remove</button>
       </mat-grid-tile-footer>
   </mat-grid-tile>
-  <br /><br /><br />
 </mat-grid-list>
 
 <button class="settingsButton" color="accent" mat-fab="" style="z-index: 9;">

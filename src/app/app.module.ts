@@ -16,6 +16,7 @@ import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
 import {EditTestNameDialog} from "./dialogs/editTestName/edit-test-name";
 import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
+import {AuthGuard} from "./guards/auth.guard";
 
 
 @NgModule({
@@ -41,6 +42,7 @@ import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
   providers: [
     AuthenticateService,
     DataManagementService,
+    AuthGuard,
     DataEmitterService,
     {
       provide: HTTP_INTERCEPTORS,
