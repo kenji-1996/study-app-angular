@@ -1,28 +1,18 @@
-<div class="row">
-  <div class="col-md-12">
-    <button mat-raised-button (click)="addTest()">Add Test</button>
-    <br />
-    <br />
-    <mat-divider></mat-divider>
-    <br />
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-lg-3" *ngFor="let t of tests">
-    <mat-card>
-      <mat-card-title-group [routerLink]="['/test', t._id]">
-        <mat-card-title>{{t.title}}</mat-card-title>
-        <mat-card-subtitle>{{t.author}}</mat-card-subtitle>
-      </mat-card-title-group>
-      <!--<mat-card-content>
-      </mat-card-content>-->
-      <mat-card-actions>
+<mat-grid-list [cols]="cols | async" rows="1" rowHeight="115px">
+  <mat-grid-tile *ngFor="let t of tests" >
+      <mat-grid-tile-header [routerLink]="['/test', t._id]" style="cursor: pointer">
+        <img src="https://svgshare.com/i/4vH.svg">
+        <h3 mat-line>{{t.title}}</h3>
+        <span mat-line>Author: {{t.author}}</span>
+      </mat-grid-tile-header>
+      <mat-grid-tile-footer >
+        <button mat-button [routerLink]="['/edit-test', t._id]">Edit</button>
         <button mat-button (click)="removeTest(t)">Remove</button>
-        <button mat-button (click)="editTest(t)">Edit</button>
-      </mat-card-actions>
-    </mat-card>
-    <br />
-  </div>
-  <br>
-</div>
+      </mat-grid-tile-footer>
+  </mat-grid-tile>
+  <br /><br /><br />
+</mat-grid-list>
+
+<button class="settingsButton" color="accent" mat-fab="" style="z-index: 9;">
+  <mat-icon class="mat-24 mat-icon material-icons" role="img" aria-hidden="true">settings</mat-icon>
+</button>

@@ -77,7 +77,7 @@ export class EditTestDialog {
     }
 
     submitArray() {
-        let questions;
+        /*let questions;
         if(this.dataSource.currentData) {
             questions = this.dataSource.currentData
         }else{
@@ -89,7 +89,7 @@ export class EditTestDialog {
                 this.dialogRef.close();
                 this.dataEmit.pushUpdateArray(dataResult.message);
             }
-        });
+        });*/
     }
 }
 

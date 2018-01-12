@@ -1,0 +1,20 @@
+<div *ngIf="test">
+    <h2 (click)="updateTest()" style="cursor: text;"><span matTooltip="Click to edit!" matTooltipPosition="below">{{ test.title | uppercase }} Details </span><span class="text-muted" style="font-size: small">[{{test._id}} - {{test.author}}]</span></h2>
+    <hr>
+    <div class="search-results" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50">
+        <mat-list dense *ngFor="let q of test.questions">
+            <mat-list-item (click)="selectQuestion(q)">
+                <mat-icon mat-list-icon>question_answer</mat-icon>
+                <span mat-line>{{ q.question }}</span>
+                <span mat-line class="text-muted"> {{q.category}} </span>
+            </mat-list-item>
+        </mat-list>
+    </div>
+
+    <div>
+        <button *ngIf="selectedQuestion" mat-button (click)="upsertQuestion()">Edit Question</button>
+        <button *ngIf="selectedQuestion" mat-button (click)="removeTest()">Remove Question</button>
+        <button mat-button (click)="upsertQuestion()">Add Question</button>
+        <button mat-button (click)="submitQuestions()">Save questions</button>
+    </div>
+</div>

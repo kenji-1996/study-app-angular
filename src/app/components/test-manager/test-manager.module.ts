@@ -6,9 +6,13 @@ import {DataManagementService} from "../../services/data-management.service";
 import * as global from '../../globals';
 import { Test } from '../../objects/objects';
 import {MatDialog} from "@angular/material";
-import {EditTestDialog} from "../../dialogs/editTest/edit-test.component";
 import {AddDialog} from "../../dialogs/addDialog/add-dialog";
 import {DataEmitterService} from "../../services/data-emitter.service";
+import { ObservableMedia } from '@angular/flex-layout';
+import { Observable } from "rxjs/Observable";
+import "rxjs/add/operator/map";
+import "rxjs/add/operator/takeWhile";
+import "rxjs/add/operator/startWith";
 
 @Component({
   selector: 'app-test-manager',
@@ -18,10 +22,12 @@ import {DataEmitterService} from "../../services/data-emitter.service";
 export class TestManagerComponent implements OnInit {
 
   tests: Test[];
+  public cols: Observable<number>;
 
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
-               private dialog: MatDialog
+               private dialog: MatDialog,
+               private observableMedia: ObservableMedia
   ) {
     dataEmit.$updateArray.subscribe(() => {
       this.refreshData();
@@ -29,6 +35,21 @@ export class TestManagerComponent implements OnInit {
   }
 
   ngOnInit() {
+    const grid = new Map([
+      ["xs", 1],
+      ["sm", 2],
+      ["md", 3],
+      ["lg", 4],
+      ["xl", 5]
+    ]);
+    let start: number;
+    grid.forEach((cols, mqAlias) => {
+      if (this.observableMedia.isActive(mqAlias)) {
+        start = cols;
+      }
+    });
+    this.cols = this.observableMedia.asObservable()
+        .map(change => {return grid.get(change.mqAlias);}).startWith(start);
     this.refreshData();
   }
 
@@ -41,10 +62,10 @@ export class TestManagerComponent implements OnInit {
   }
 
   editTest(test:any): void {
-    let dialogRef = this.dialog.open(EditTestDialog, { width: '200%',  data: test });
+    /*let dialogRef = this.dialog.open(EditTestDialog, { width: '100%',  data: test });
     dialogRef.afterClosed().subscribe(() => {
       this.refreshData();
-    });
+    });*/
   }
 
   refreshData() {

@@ -7,13 +7,13 @@ import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {
     MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatDialogModule, MatExpansionModule,
-    MatFormFieldModule,
+    MatFormFieldModule, MatGridListModule,
     MatIconModule,
     MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatSidenavModule, MatSnackBarModule,
-    MatTableModule, MatToolbarModule
+    MatTableModule, MatToolbarModule, MatTooltipModule
 } from "@angular/material";
-import {FlexLayoutModule} from "@angular/flex-layout";
 import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
+import {FlexLayoutModule} from "@angular/flex-layout";
 
 @NgModule({
     imports: [
@@ -37,6 +37,8 @@ import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
         MatSnackBarModule,
         MatProgressBarModule,
         MatCheckboxModule,
+        MatTooltipModule,
+        MatGridListModule,
         FlexLayoutModule,
     ],
     exports: [
@@ -60,6 +62,8 @@ import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
         MatSnackBarModule,
         MatProgressBarModule,
         MatCheckboxModule,
+        MatTooltipModule,
+        MatGridListModule,
         FlexLayoutModule,
     ],
     declarations: []
