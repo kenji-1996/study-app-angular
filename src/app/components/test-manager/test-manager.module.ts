@@ -1,5 +1,5 @@
 import {Component, NgModule, OnInit} from '@angular/core';
-import {RouterModule} from "@angular/router";
+import {Router, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
 
@@ -27,7 +27,8 @@ export class TestManagerComponent implements OnInit {
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
                private dialog: MatDialog,
-               private observableMedia: ObservableMedia
+               private observableMedia: ObservableMedia,
+               private router: Router
   ) {
     dataEmit.$updateArray.subscribe(() => {
       this.refreshData();
@@ -54,7 +55,10 @@ export class TestManagerComponent implements OnInit {
   }
 
   addTest(): void{
-    let dialogRef = this.dialog.open(AddDialog, { width: '100%', data: {name: '',} });
+    let dialogRef = this.dialog.open(AddDialog, {data: {name: '',} });
+      dialogRef.afterClosed().subscribe(result => {
+          this.router.navigate(['/edit-test',result]);
+      });
   }
 
   removeTest(test:any) {

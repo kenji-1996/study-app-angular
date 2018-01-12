@@ -28,9 +28,11 @@ export class AddDialog {
                 userid: JSON.parse(localStorage.getItem('userObject'))._id,
                 title: this.data.name
             };
+
             this.postData.postDATA(global.url + '/api/tests', body).subscribe(dataResult => {
                 this.dataEmit.pushUpdateArray(dataResult.message);
-                this.dialogRef.close();
+
+                this.dialogRef.close(dataResult.data._id);
             });
 
         }

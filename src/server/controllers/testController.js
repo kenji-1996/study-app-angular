@@ -100,8 +100,13 @@ exports.deleteTest = function(req, res) {
                              });
                          }
                          test.remove();
-                         userQ1.update({ $pull: { "testsModel": req.params.testId } }, { safe: true, upsert: true },
-                             function(err) { if (err) { return res.status(500).json({message: "Couldnt find a test to remove", data: err}); }});
+                         userQ1.update({ $pull: { "tests": req.params.testId } }, { safe: true, upsert: true }, function(err) {
+                             try {
+                                 if (err) {
+                                     return res.status(500).json({message: "Couldnt find a test to remove", data: err});
+                                 }
+                             } catch (err) {console.log(err);}
+                         });
                          return res.status(200).json({message: ('Test deleted'), data: test});
                  });
              });

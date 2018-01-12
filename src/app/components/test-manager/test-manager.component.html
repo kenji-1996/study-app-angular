@@ -14,10 +14,10 @@
   </mat-grid-tile>
 </mat-grid-list>
 
-<button class="settingsButton" color="accent" mat-fab="" style="z-index: 9;">
-  <mat-icon class="mat-24 mat-icon material-icons" role="img" aria-hidden="true" [matMenuTriggerFor]="testOptions">settings</mat-icon>
+<button class="settingsButton" color="accent" mat-fab="" style="z-index: 9;" [matMenuTriggerFor]="testOptions" >
+  <mat-icon class="mat-24 mat-icon material-icons" role="img" aria-hidden="true" >settings</mat-icon>
 </button>
 
-<mat-menu #testOptions="matMenu">
+<mat-menu #testOptions="matMenu" yPosition="above">
   <button mat-menu-item (click)="addTest()"><mat-icon aria-hidden="true">add_circle</mat-icon>Add test</button>
 </mat-menu>
