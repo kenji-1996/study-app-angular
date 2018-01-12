@@ -18,4 +18,4 @@ var questionSchema  = new Schema({
     date: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('Question', questionSchema);
+module.exports = mongoose.model('questions', questionSchema);

@@ -4,9 +4,9 @@
 let settings = require('../misc/settings');
 
 let mongoose = require('mongoose');
-let TEST = require('../models/test');
-let USER = require('../models/user');
-let QUESTION = require('../models/question');
+let tests = require('../models/tests');
+let users = require('../models/users');
+let questions = require('../models/questions');
 
 /**
  * /api/tests [GET]
@@ -17,7 +17,7 @@ let QUESTION = require('../models/question');
  *  {'test.private': false} --> Argument for only showing public tests
  */
 exports.listTests = function(req, res) {
-    TEST.find({}, function(err, tests) {
+    tests.find({}, function(err, tests) {
         if (err) return res.status(500).json({message: "Find test query failed", data: err});
 
         return res.status(200).json({message: "Tests retrieved", data: tests});
@@ -32,9 +32,9 @@ exports.listTests = function(req, res) {
  */
 exports.createTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (user) {
-        USER.findOne({unique_id: user['sub']}, function (err, user) {
+        users.findOne({unique_id: user['sub']}, function (err, user) {
             if (err) return res.status(500).json({message: "Find user query failed", data: err});
-            let test = new TEST({
+            let test = new tests({
                 _id: new mongoose.Types.ObjectId(),
                 title: req.body.title,
                 authorID: user.id,
@@ -60,7 +60,7 @@ exports.createTest = function(req, res) {
  * @param res
  */
 exports.listTest = function(req, res) {
-    TEST.find({_id: req.params.testId}, function(err, test) {
+    tests.find({_id: req.params.testId}, function(err, test) {
         if (err) return res.status(500).json({message: "Find test query failed", data: err});
 
         return res.status(200).json({message: "Test found", data: test});
@@ -74,7 +74,7 @@ exports.listTest = function(req, res) {
  */
 exports.updateTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (user) {
-        TEST.findOneAndUpdate({_id: req.params.testId}, req.body, {new: true}, function (err, test) {
+        tests.findOneAndUpdate({_id: req.params.testId}, req.body, {new: true}, function (err, test) {
             if (err) return res.status(500).json({message: "Save test query failed", data: err});
             return res.status(200).json({message: ('Test ' + test._id + ' updated'), data: test});
         });
@@ -89,13 +89,13 @@ exports.updateTest = function(req, res) {
  */
 exports.deleteTest = function(req, res) {
      settings.ensureAuthorized(req,res).then(function (authUser) {
-         USER.findOne({unique_id: authUser['sub']})
+         users.findOne({unique_id: authUser['sub']})
              .exec(function (err,userQ1) {
-                 TEST.findById(req.params.testId)
+                 tests.findById(req.params.testId)
                      .exec( function(err, test) {
                          if (err) return res.status(500).json({message:"Delete test query failed", data: err});
                          if(test.questions) {
-                             QUESTION.remove({_id: {$in: test.questions}}, function (err) {
+                             questions.remove({_id: {$in: test.questions}}, function (err) {
                                  if (err) return res.status(500).json({message: "Question query failed", data: null});
                              });
                          }
@@ -116,9 +116,9 @@ exports.deleteTest = function(req, res) {
  * @return JSON {message,data}
  */
 exports.listQuestions = function(req, res) {
-    TEST.findById(req.params.testId)
+    tests.findById(req.params.testId)
         .exec(function (err, result) {
-            QUESTION.find({'_id': { $in: result.questions}})
+            questions.find({'_id': { $in: result.questions}})
                 .exec(function (err,questionFindQuery) {
                     if (err) { return res.status(404).json({message: "No questions found", data: err}) }
                     return res.status(200).json({message: 'Questions found', data: questionFindQuery});
@@ -135,17 +135,17 @@ exports.listQuestions = function(req, res) {
  * @return JSON {message,data}
  */
 exports.updateQuestions = function(req, res) {
-    TEST.findById(req.params.testId)
+    tests.findById(req.params.testId)
         .exec(function (err, test) {
             if (err) return res.status(404).json({message:"Test find id query failed", data: null});
-            QUESTION.deleteMany({_id: {$in: test.questions}}, function (err) {
+            questions.deleteMany({_id: {$in: test.questions}}, function (err) {
                 if (err) return res.status(500).json({message:"Question delete query failed questions.", data: null});
             });
             test.questions = [];
             if (req.body.questions) {
                 var questions = req.body.questions;
                 for (var i = 0; i < questions.length; i++) {
-                    var question = new QUESTION({
+                    var question = new questions({
                         _id: new mongoose.Types.ObjectId(),
                         question: questions[i].question,
                         answer: questions[i].answer,

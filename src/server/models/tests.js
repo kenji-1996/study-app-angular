@@ -18,4 +18,4 @@ var testSchema  = new Schema({
     private: { type: Boolean, default:true },
 });
 
-module.exports = mongoose.model('Test', testSchema);
+module.exports = mongoose.model('tests', testSchema);
