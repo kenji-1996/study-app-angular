@@ -4,27 +4,27 @@
 let settings = require('../misc/settings');
 
 let mongoose = require('mongoose');
-let tests = require('../models/tests');
-let users = require('../models/users');
-let questions = require('../models/questions');
+let testsModel = require('../models/tests');
+let usersModel = require('../models/users');
+let questionsModel = require('../models/questions');
 
 /**
- * /api/tests [GET]
- * List ALL tests in DB.
+ * /api/testsModel [GET]
+ * List ALL testsModel in DB.
  * @param req
  * @param res
  * @return JSON {message,data}
- *  {'test.private': false} --> Argument for only showing public tests
+ *  {'test.private': false} --> Argument for only showing public testsModel
  */
 exports.listTests = function(req, res) {
-    tests.find({}, function(err, tests) {
+    testsModel.find({}, function(err, tests) {
         if (err) return res.status(500).json({message: "Find test query failed", data: err});
 
         return res.status(200).json({message: "Tests retrieved", data: tests});
     });
 };
 /**
- * /api/tests [POST]
+ * /api/testsModel [POST]
  * A user can add a test to their user if authorised
  * @param req
  * @param res
@@ -32,9 +32,9 @@ exports.listTests = function(req, res) {
  */
 exports.createTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (user) {
-        users.findOne({unique_id: user['sub']}, function (err, user) {
+        usersModel.findOne({unique_id: user['sub']}, function (err, user) {
             if (err) return res.status(500).json({message: "Find user query failed", data: err});
-            let test = new tests({
+            let test = new testsModel({
                 _id: new mongoose.Types.ObjectId(),
                 title: req.body.title,
                 authorID: user.id,
@@ -54,27 +54,27 @@ exports.createTest = function(req, res) {
 };
 
 /**
- * /api/tests/:testId [GET]
+ * /api/testsModel/:testId [GET]
  * Gets information about a specific test
  * @param req
  * @param res
  */
 exports.listTest = function(req, res) {
-    tests.find({_id: req.params.testId}, function(err, test) {
+    testsModel.find({_id: req.params.testId}, function(err, test) {
         if (err) return res.status(500).json({message: "Find test query failed", data: err});
 
         return res.status(200).json({message: "Test found", data: test});
     });
 };
 /**
- * /api/tests/:testId [PUT]
+ * /api/testsModel/:testId [PUT]
  * Update a TEST by ID, only if authorised
  * @param req
  * @param res
  */
 exports.updateTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (user) {
-        tests.findOneAndUpdate({_id: req.params.testId}, req.body, {new: true}, function (err, test) {
+        testsModel.findOneAndUpdate({_id: req.params.testId}, req.body, {new: true}, function (err, test) {
             if (err) return res.status(500).json({message: "Save test query failed", data: err});
             return res.status(200).json({message: ('Test ' + test._id + ' updated'), data: test});
         });
@@ -82,77 +82,77 @@ exports.updateTest = function(req, res) {
 };
 
 /**
- * /api/tests/:testId [DELETE]
+ * /api/testsModel/:testId [DELETE]
  * Deletes an inputted
  * @param req
  * @param res
  */
 exports.deleteTest = function(req, res) {
      settings.ensureAuthorized(req,res).then(function (authUser) {
-         users.findOne({unique_id: authUser['sub']})
+         usersModel.findOne({unique_id: authUser['sub']})
              .exec(function (err,userQ1) {
-                 tests.findById(req.params.testId)
+                 testsModel.findById(req.params.testId)
                      .exec( function(err, test) {
                          if (err) return res.status(500).json({message:"Delete test query failed", data: err});
                          if(test.questions) {
-                             questions.remove({_id: {$in: test.questions}}, function (err) {
+                             questionsModel.remove({_id: {$in: test.questions}}, function (err) {
                                  if (err) return res.status(500).json({message: "Question query failed", data: null});
                              });
                          }
                          test.remove();
-                         userQ1.update({ $pull: { "tests": req.params.testId } }, { safe: true, upsert: true },
+                         userQ1.update({ $pull: { "testsModel": req.params.testId } }, { safe: true, upsert: true },
                              function(err) { if (err) { return res.status(500).json({message: "Couldnt find a test to remove", data: err}); }});
                          return res.status(200).json({message: ('Test deleted'), data: test});
                  });
              });
     });
 };
-//----------------------------- Now listing questions of 'id' test ------------------------------
+//----------------------------- Now listing questionsModel of 'id' test ------------------------------
 /**
- * /api/tests/:testId/questions [GET]
- * List the questions for selected ID
+ * /api/testsModel/:testId/questionsModel [GET]
+ * List the questionsModel for selected ID
  * @param req
  * @param res
  * @return JSON {message,data}
  */
 exports.listQuestions = function(req, res) {
-    tests.findById(req.params.testId)
+    testsModel.findById(req.params.testId)
         .exec(function (err, result) {
-            questions.find({'_id': { $in: result.questions}})
+            questionsModel.find({'_id': { $in: result.questions}})
                 .exec(function (err,questionFindQuery) {
-                    if (err) { return res.status(404).json({message: "No questions found", data: err}) }
+                    if (err) { return res.status(404).json({message: "No questionsModel found", data: err}) }
                     return res.status(200).json({message: 'Questions found', data: questionFindQuery});
                 });
-            if (err) return res.status(500).json({message: "Find questions query failed", data: err});
+            if (err) return res.status(500).json({message: "Find questionsModel query failed", data: err});
         });
 };
 
 /**
- * /api/tests/:testId/questions [POST]
- * Removes all current questions then inputs the given JSON array
+ * /api/testsModel/:testId/questionsModel [POST]
+ * Removes all current questionsModel then inputs the given JSON array
  * @param req
  * @param res
  * @return JSON {message,data}
  */
 exports.updateQuestions = function(req, res) {
-    tests.findById(req.params.testId)
+    testsModel.findById(req.params.testId)
         .exec(function (err, test) {
             if (err) return res.status(404).json({message:"Test find id query failed", data: null});
-            questions.deleteMany({_id: {$in: test.questions}}, function (err) {
-                if (err) return res.status(500).json({message:"Question delete query failed questions.", data: null});
+            questionsModel.deleteMany({_id: {$in: test.questions}}, function (err) {
+                if (err) return res.status(500).json({message:"Question delete query failed questionsModel.", data: null});
             });
             test.questions = [];
             if (req.body.questions) {
                 var questions = req.body.questions;
                 for (var i = 0; i < questions.length; i++) {
-                    var question = new questions({
+                    var question = new questionsModel({
                         _id: new mongoose.Types.ObjectId(),
                         question: questions[i].question,
                         answer: questions[i].answer,
                         category: questions[i].category,
                     });
                     test.questions.push(question.id);
-                    question.save(function (err, result) {
+                    question.save(function (err) {
                         if (err) return res.status(500).json({message:"Question save query failed", data: null});
                     });
                 }
@@ -161,7 +161,7 @@ exports.updateQuestions = function(req, res) {
                     return res.status(200).json({message:"Test saved successfully", data: testQuery});
                 });
             } else {
-                return res.status(404).json({message:"No questions found", data: null});
+                return res.status(404).json({message:"No questionsModel found", data: null});
             }
         });
 };

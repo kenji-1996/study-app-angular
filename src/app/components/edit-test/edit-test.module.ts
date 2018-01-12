@@ -31,7 +31,6 @@ export class EditTestComponent implements OnInit {
     this.route.params.subscribe((params: Params) => {
       let testId = params['testId'];
       this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(dataResult=> {
-        console.log(dataResult.data);
         var questions:Array<Question> = [];
         let test = new TestToQuestion(dataResult.data[0]._id,dataResult.data[0].title,questions,dataResult.data[0].author);
         this.dataManagement.getDATA(global.url + '/api/tests/' + testId + '/questions').subscribe(dataResult=> {
@@ -44,8 +43,8 @@ export class EditTestComponent implements OnInit {
     });
   }
 
-  removeTest() {
-    const index: number = this.test.questions.indexOf(this.selectedQuestion);
+  removeTest(test:any) {
+    const index: number = this.test.questions.indexOf(test);
     if (index !== -1) {
       this.test.questions.splice(index, 1);
     }
@@ -68,8 +67,8 @@ export class EditTestComponent implements OnInit {
     });
   }
 
-  upsertQuestion() {
-    let dialogRef = this.dialog.open(EditQuestionDialog, { width: '100%', data: (this.selectedQuestion? this.selectedQuestion : new Question('','','','','',[]))});
+  upsertQuestion(test:any) {
+    let dialogRef = this.dialog.open(EditQuestionDialog, { width: '100%', data: (test? test : new Question('','','','','',[]))});
     dialogRef.afterClosed().subscribe(result => {
       if(result) {
         if(this.selectedQuestion) {

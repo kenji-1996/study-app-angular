@@ -1,14 +1,16 @@
-<mat-grid-list [cols]="cols | async" rowHeight="115px" style="margin-bottom: 80px;">
-  <mat-grid-tile *ngFor="let t of tests" >
-      <mat-grid-tile-header [routerLink]="['/test', t._id]" style="cursor: pointer">
-        <img src="https://svgshare.com/i/4vH.svg">
-        <h3 mat-line>{{t.title}}</h3>
-        <span mat-line>Author: {{t.author}}</span>
-      </mat-grid-tile-header>
-      <mat-grid-tile-footer >
-        <button mat-button [routerLink]="['/edit-test', t._id]">Edit</button>
-        <button mat-button (click)="removeTest(t)">Remove</button>
-      </mat-grid-tile-footer>
+<mat-grid-list [cols]="cols | async" rowHeight="155px" style="margin-bottom: 80px;" gutterSize="10px">
+  <mat-grid-tile *ngFor="let t of tests" class="mat-elevation-z5">
+    <div style="width:100%;" >
+        <img src="../../../assets/questionmark.svg" style=" opacity: 0.2;filter: alpha(opacity=20); /* For IE8 and earlier */transform: rotate(45deg);">
+        <div [routerLink]="['/test', t._id]" style="cursor: pointer; position: absolute; top:10px; left:10px;">
+            <h3>{{t.title}}</h3>
+            <span style="font-size: small;">Author: {{t.author}}</span>
+        </div>
+        <div style="position: absolute;right:0;bottom:0;">
+            <button mat-button [routerLink]="['/edit-test', t._id]">Edit</button>
+            <button mat-button (click)="removeTest(t)">Remove</button>
+        </div>
+    </div>
   </mat-grid-tile>
 </mat-grid-list>
 
