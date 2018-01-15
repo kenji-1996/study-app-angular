@@ -114,7 +114,7 @@ exports.deleteTest = function(req, res) {
 };
 //----------------------------- Now listing questionsModel of 'id' test ------------------------------
 /**
- * /api/testsModel/:testId/questionsModel [GET]
+ * /api/testsModel/:testId/questions [GET]
  * List the questionsModel for selected ID
  * @param req
  * @param res
@@ -133,40 +133,47 @@ exports.listQuestions = function(req, res) {
 };
 
 /**
- * /api/testsModel/:testId/questionsModel [POST]
+ * /api/testsModel/:testId/questions [POST]
  * Removes all current questionsModel then inputs the given JSON array
  * @param req
  * @param res
  * @return JSON {message,data}
  */
 exports.updateQuestions = function(req, res) {
-    testsModel.findById(req.params.testId)
-        .exec(function (err, test) {
-            if (err) return res.status(404).json({message:"Test find id query failed", data: null});
-            questionsModel.deleteMany({_id: {$in: test.questions}}, function (err) {
-                if (err) return res.status(500).json({message:"Question delete query failed questionsModel.", data: null});
-            });
-            test.questions = [];
-            if (req.body.questions) {
-                var questions = req.body.questions;
-                for (var i = 0; i < questions.length; i++) {
-                    var question = new questionsModel({
-                        _id: new mongoose.Types.ObjectId(),
-                        question: questions[i].question,
-                        answer: questions[i].answer,
-                        category: questions[i].category,
+    settings.ensureAuthorized(req,res).then(function (authUser) {
+        testsModel.findById(req.params.testId)
+            .exec(function (err, test) {
+                if (err) return res.status(404).json({message: "Test find id query failed", data: null});
+                questionsModel.deleteMany({_id: {$in: test.questions}}, function (err) {
+                    if (err) return res.status(500).json({
+                        message: "Question delete query failed questionsModel.",
+                        data: null
                     });
-                    test.questions.push(question.id);
-                    question.save(function (err) {
-                        if (err) return res.status(500).json({message:"Question save query failed", data: null});
-                    });
-                }
-                test.save(function (err, testQuery) {
-                    if (err) return res.status(500).json({message:"Test save query failed"});
-                    return res.status(200).json({message:"Test saved successfully", data: testQuery});
                 });
-            } else {
-                return res.status(404).json({message:"No questionsModel found", data: null});
-            }
-        });
+                test.questions = [];
+                if (req.body.questions) {
+                    var questions = req.body.questions;
+                    for (var i = 0; i < questions.length; i++) {
+                        var question = new questionsModel({
+                            _id: new mongoose.Types.ObjectId(),
+                            question: questions[i].question,
+                            answer: questions[i].answer,
+                            category: questions[i].category,
+                            hint: questions[i].hint,
+                            keywords: questions[i].keywords,
+                        });
+                        test.questions.push(question.id);
+                        question.save(function (err) {
+                            if (err) return res.status(500).json({message: "Question save query failed", data: null});
+                        });
+                    }
+                    test.save(function (err, testQuery) {
+                        if (err) return res.status(500).json({message: "Test save query failed"});
+                        return res.status(200).json({message: "Test saved successfully", data: testQuery});
+                    });
+                } else {
+                    return res.status(404).json({message: "No questionsModel found", data: null});
+                }
+            });
+    });
 };

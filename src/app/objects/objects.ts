@@ -43,14 +43,16 @@ export class testQuestion {
     category: String;
     givenAnswer: String;
     timeLeft: number;
-    mark: number;
-    constructor(__id:string,_question:string,_answer:string,_category:string,_givenAnswer:string,_timeLeft:number,_mark:number) {
+    markPercent: number;
+    markCount: number;
+    constructor(__id:string,_question:string,_answer:string,_category:string,_givenAnswer:string,_timeLeft:number,_markPercent:number,_markCount:number) {
         this._id = __id;
         this.question = _question;
         this.answer = _answer;
         this.category = _category;
         this.givenAnswer = _givenAnswer;
         this.timeLeft = _timeLeft;
-        this.mark = _mark;
+        this.markPercent = _markPercent;
+        this.markCount = _markCount;
     }
 }

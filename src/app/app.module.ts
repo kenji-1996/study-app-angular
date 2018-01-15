@@ -17,6 +17,7 @@ import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
 import {EditTestNameDialog} from "./dialogs/editTestName/edit-test-name";
 import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
 import {AuthGuard} from "./guards/auth.guard";
+import { ResultComponent } from './components/result/result.component';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {AuthGuard} from "./guards/auth.guard";
     AddDialog,
     EditTestNameDialog,
     EditQuestionDialog,
+    ResultComponent,
   ],
   imports: [
     BrowserModule,

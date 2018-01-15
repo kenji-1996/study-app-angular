@@ -1,7 +1,7 @@
 <mat-grid-list [cols]="cols | async" rowHeight="155px" style="margin-bottom: 80px;" gutterSize="10px">
-  <mat-grid-tile *ngFor="let t of tests" class="mat-elevation-z5">
+  <mat-grid-tile *ngFor="let t of tests" class="mat-elevation-z5" id="tile">
     <div style="width:100%;" >
-        <img src="../../../assets/questionmark.svg" style=" opacity: 0.2;filter: alpha(opacity=20); /* For IE8 and earlier */transform: rotate(45deg);">
+        <img src="../../../assets/questionmark.svg" class="questionSVG">
         <div [routerLink]="['/test', t._id]" style="cursor: pointer; position: absolute; top:10px; left:10px;">
             <h3>{{t.title}}</h3>
             <span style="font-size: small;">Author: {{t.author}}</span>

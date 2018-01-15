@@ -1,3 +1,4 @@
+@import "../../../theme";
 .settingsButton {
   z-index: 9;
   box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
@@ -7,20 +8,21 @@
   left: auto;
   position: fixed;
 }
-.logo {
-  content: "";
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  top: -50%;
-  left: -50%;
-  z-index: -1;
-  background: url(https://svgshare.com/i/4vH.svg) 0 0 repeat;
-  -webkit-transform: rotate(30deg);
-  -moz-transform: rotate(30deg);
-  -ms-transform: rotate(30deg);
-  -o-transform: rotate(30deg);
-  transform: rotate(30deg);
+.questionSVG {
+  opacity: 0.2;filter: alpha(opacity=20); /* For IE8 and earlier */transform: rotate(45deg); height: 100%; width: 100%;
+  transition: 200ms;
+  transition-timing-function: ease-in-out;
+  -webkit-transition: 200ms;
+  -webkit-transition-timing-function: ease-in-out;
+}
+#tile:hover .questionSVG {
+  opacity: 0.8;
+}
+@keyframes hideshow {
+  0% { opacity: 0.2; }
+  10% { opacity: 0.4; }
+  15% { opacity: 0.6; }
+  100% { opacity: 1; }
 }
 mat-grid-tile {
   background: white;

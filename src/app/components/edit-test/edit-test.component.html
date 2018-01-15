@@ -1,16 +1,10 @@
 <div *ngIf="test">
     <h2 (click)="updateTest()" style="cursor: text;"><span matTooltip="Click to edit!" matTooltipPosition="below">{{ test.title | uppercase }} Details </span><span class="text-muted" style="font-size: small">[{{test._id}} - {{test.author}}]</span></h2>
     <hr>
-    <!--<div>
-        <button *ngIf="selectedQuestion" mat-button (click)="upsertQuestion(selectedQuestion)">Edit Question</button>
-        <button *ngIf="selectedQuestion" mat-button (click)="removeTest(selectedQuestion)">Remove Question</button>
-        <button mat-button (click)="upsertQuestion()">Add Question</button>
-        <button mat-button (click)="submitQuestions()">Save questions</button>
-    </div>-->
     <div class="parentDiv">
-        <div class="search-results mat-elevation-z5" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50">
+        <div class="search-results mat-elevation-z5" style="background-color: white;" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50">
             <mat-list dense *ngFor="let q of test.questions">
-                <mat-list-item (click)="selectQuestion(q)">
+                <mat-list-item>
                     <mat-icon mat-list-icon>question_answer</mat-icon>
                     <span mat-line>{{ q.question }}</span>
                     <span mat-line class="text-muted"> {{q.category}} </span>
@@ -22,7 +16,7 @@
                     </button>
                 </mat-list-item>
             </mat-list>
-            <button style="position:absolute; left:43px; bottom:-25px;" mat-mini-fab matTooltip="Insert new question" (click)="upsertQuestion()">
+            <button style="position:absolute; left:43px; bottom:-25px;" mat-mini-fab matTooltip="Insert new question" (click)="upsertQuestion(null)">
                 <mat-icon>add</mat-icon>
             </button>
             <button style="position:absolute; left:0px; bottom:-25px;" color="primary" mat-mini-fab matTooltip="Save and submit question list" (click)="submitQuestions()">

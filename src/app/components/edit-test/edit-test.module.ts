@@ -19,7 +19,6 @@ import {DataEmitterService} from "../../services/data-emitter.service";
 export class EditTestComponent implements OnInit {
 
   test;
-  selectedQuestion;
 
   constructor(private route: ActivatedRoute,
               private dataManagement: DataManagementService,
@@ -50,10 +49,6 @@ export class EditTestComponent implements OnInit {
     }
   }
 
-  selectQuestion(selected:any) {
-    this.selectedQuestion = selected;
-  }
-
   updateTest() {
     let dialogRef = this.dialog.open(EditTestNameDialog, { data: this.test});
   }
@@ -67,17 +62,15 @@ export class EditTestComponent implements OnInit {
     });
   }
 
-  upsertQuestion(test:any) {
-    let dialogRef = this.dialog.open(EditQuestionDialog, { width: '100%', data: (test? test : new Question('','','','','',[]))});
+  upsertQuestion(question:any) {
+    let dialogRef = this.dialog.open(EditQuestionDialog, { width: '100%', data: (question? question : new Question('','','','','',[]))});
     dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
       if(result) {
-        if(this.selectedQuestion) {
-          this.selectedQuestion = result;
-
-        }else{
-          this.test.questions.push(result);
+        if(question) {
+          this.removeTest(question);
         }
-        this.selectedQuestion = null;
+        this.test.questions.push(result);
       }
     });
   }
