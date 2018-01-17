@@ -16,6 +16,7 @@ var UserSchema  = new Schema({
     picture: String,
     permissions: { type: Number, default: 0 },
     tests: [String],
+    results: [String],
     lastLogin: { type: Date, default: Date.now },
     dateCreated: { type: Date, default: Date.now },
 });

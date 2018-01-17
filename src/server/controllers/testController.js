@@ -9,7 +9,7 @@ let usersModel = require('../models/users');
 let questionsModel = require('../models/questions');
 
 /**
- * /api/testsModel [GET]
+ * /api/tests [GET]
  * List ALL testsModel in DB.
  * @param req
  * @param res
@@ -24,7 +24,7 @@ exports.listTests = function(req, res) {
     });
 };
 /**
- * /api/testsModel [POST]
+ * /api/tests [POST]
  * A user can add a test to their user if authorised
  * @param req
  * @param res
@@ -54,7 +54,7 @@ exports.createTest = function(req, res) {
 };
 
 /**
- * /api/testsModel/:testId [GET]
+ * /api/tests/:testId [GET]
  * Gets information about a specific test
  * @param req
  * @param res
@@ -67,7 +67,7 @@ exports.listTest = function(req, res) {
     });
 };
 /**
- * /api/testsModel/:testId [PUT]
+ * /api/tests/:testId [PUT]
  * Update a TEST by ID, only if authorised
  * @param req
  * @param res
@@ -82,7 +82,7 @@ exports.updateTest = function(req, res) {
 };
 
 /**
- * /api/testsModel/:testId [DELETE]
+ * /api/tests/:testId [DELETE]
  * Deletes an inputted
  * @param req
  * @param res
@@ -114,7 +114,7 @@ exports.deleteTest = function(req, res) {
 };
 //----------------------------- Now listing questionsModel of 'id' test ------------------------------
 /**
- * /api/testsModel/:testId/questions [GET]
+ * /api/tests/:testId/questions [GET]
  * List the questionsModel for selected ID
  * @param req
  * @param res
@@ -133,7 +133,7 @@ exports.listQuestions = function(req, res) {
 };
 
 /**
- * /api/testsModel/:testId/questions [POST]
+ * /api/tests/:testId/questions [POST]
  * Removes all current questionsModel then inputs the given JSON array
  * @param req
  * @param res
