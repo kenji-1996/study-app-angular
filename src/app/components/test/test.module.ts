@@ -9,6 +9,7 @@ import * as global from '../../globals';
 import {DataManagementService} from "../../services/data-management.service";
 import {Subscription} from "rxjs/Subscription";
 import {DataEmitterService} from "../../services/data-emitter.service";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-test',
@@ -45,9 +46,11 @@ export class TestComponent implements OnInit, OnDestroy {
       private route: ActivatedRoute,
       private dataManagement: DataManagementService,
       private dataEmitter: DataEmitterService,
+      private titleService: Title,
   ) { }
 
   ngOnInit() {
+
     this.route.params.subscribe((params: Params) => {
       let testId = params['testId'];
       this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(dataResult=> {
@@ -59,6 +62,7 @@ export class TestComponent implements OnInit, OnDestroy {
           }
           this.test$ = Observable.of(test);
           this.test = test;
+          this.titleService.setTitle(this.test.title + ' - DigitalStudy');
         });
       });
     });
@@ -86,6 +90,10 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   private submitQuestion() {
+    if(!this.answer) {
+      this.dataEmitter.pushUpdateArray('Please put an answer of sort sort even if you are unsure!');
+      return;
+    }
     if(this.subscription) { this.subscription.unsubscribe(); }
     if(this.selectedId < this.test.questions.length) {
       this.selectedId++;
@@ -93,7 +101,7 @@ export class TestComponent implements OnInit, OnDestroy {
       var percentResult = ((markCount/this.selectedQuestion.keywords.length * 100));
       this.result.push(new testQuestion(this.selectedQuestion._id, this.selectedQuestion.question, this.selectedQuestion.answer, this.selectedQuestion.category, this.answer, (this.timeLimit ? this.timeLeft : 0),percentResult, markCount));
       if (this.instantResult) {
-        this.dataEmitter.pushUpdateArray('Percentage answer result: ' + percentResult)
+        this.dataEmitter.pushUpdateArray('Percentage answer result: ' + percentResult + '%')
       }
       this.progress = '0';
       this.answer = '';
@@ -143,8 +151,7 @@ export class TestComponent implements OnInit, OnDestroy {
     return this.intersect_safe(answerSorted,inputSorted);
   }
 
-  intersect_safe(a, b)
-  {
+  intersect_safe(a, b) {
     var ai=0, bi=0;
     var result = [];
 

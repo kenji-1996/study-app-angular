@@ -1,13 +1,17 @@
-import {Component, HostListener, NgZone, OnInit} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {AuthenticateService} from "../services/authenticate.service";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {DataEmitterService} from "../services/data-emitter.service";
 import {MatSnackBar} from "@angular/material";
-import {Router} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {NavList} from "../objects/objects";
+import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  providers: [Location, {provide: LocationStrategy, useClass: PathLocationStrategy}],
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit{
@@ -19,13 +23,31 @@ export class AppComponent implements OnInit{
   height;
   mode:string = 'side';
   open = 'true';
+  navList: NavList[];
 
   constructor(private auth: AuthenticateService,
               public dataEmit: DataEmitterService,
               public snackBar: MatSnackBar,
               public route: Router,
+              private activatedRoute: ActivatedRoute,
+              private location: Location,
               public ngZone:NgZone
   ) {
+    this.navList = [
+      { categoryName: 'User',dropDown:false, subCategory:
+          [
+            { subCategoryName: 'Home', subCategoryLink:'/user', visable: true, },
+            { subCategoryName: 'Profile', subCategoryLink:'/profile', visable: true, },
+          ]
+      },
+      { categoryName: 'Tests',dropDown:true, subCategory:
+          [
+            { subCategoryName: 'Your list', subCategoryLink:'/test-manager', visable: true, },
+            { subCategoryName: 'Selected', subCategoryLink:'/test', visable: false, },
+            { subCategoryName: 'Editing', subCategoryLink:'/edit-test', visable: false, }
+          ]
+      },
+    ];
     this.auth.initAuth();
     this.logged = this.auth.localLoggedIn();
     this.dataEmit.$loggedIn.subscribe(data => { this.logged = data;});
@@ -60,9 +82,34 @@ export class AppComponent implements OnInit{
     if(this.logged) {
       this.photo.next(JSON.parse(localStorage.getItem('userObject')).picture);
     }
-    this.photo.subscribe(value => {
-      console.log(value);
-    })
+    this.route.events.subscribe(event => {
+      if (event instanceof NavigationEnd ) {
+        for(var i = 0; i < this.navList.length; i++) {
+          this.navList[i].dropDown = false;
+        }
+        this.navList[1].subCategory[2].visable = false;
+        this.navList[1].subCategory[1].visable = false;
+        let path = event.url;
+        switch (true)
+        {
+          case path.startsWith('/test-manager'):
+            this.navList[1].dropDown = true;
+            break;
+          case path.startsWith('/edit-test'):
+            this.navList[1].subCategory[2].visable = true;
+            this.navList[1].dropDown = true;
+            break;
+          case path.startsWith('/test'):
+            this.navList[1].subCategory[1].visable = true;
+            this.navList[1].dropDown = true;
+            break;
+          case path.startsWith('/user'):
+            this.navList[0].dropDown = true;
+            break;
+          default:
+        }
+      }
+    });
   }
 }
 

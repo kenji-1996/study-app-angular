@@ -2,6 +2,7 @@ import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {AuthenticateService} from "../../services/authenticate.service";
 import {Router} from "@angular/router";
 import {DataEmitterService} from "../../services/data-emitter.service";
+import {Title} from "@angular/platform-browser";
 declare const gapi: any;
 
 @Component({
@@ -21,10 +22,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
                 private route: Router,
                 private zone:NgZone,
                 public dataEmit: DataEmitterService,
+                private titleService: Title,
     ) { }
 
     ngOnInit() {
         this.logged = this.auth.localLoggedIn();
+        this.titleService.setTitle('Login - DigitalStudy');
     }
 
     ngAfterViewInit() {

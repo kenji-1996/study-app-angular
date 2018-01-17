@@ -10,6 +10,7 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {EditQuestionDialog} from "../../dialogs/editQuestion/edit-question";
 import {isNullOrUndefined} from "util";
 import {DataEmitterService} from "../../services/data-emitter.service";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-edit-test',
@@ -23,7 +24,8 @@ export class EditTestComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private dataManagement: DataManagementService,
               private dialog: MatDialog,
-              public dataEmit: DataEmitterService
+              public dataEmit: DataEmitterService,
+              private titleService: Title,
   ) { }
 
   ngOnInit() {
@@ -37,6 +39,7 @@ export class EditTestComponent implements OnInit {
             questions.push(new Question(dataResult.data[i]._id,dataResult.data[i].question,dataResult.data[i].answer,dataResult.data[i].category,dataResult.data[i].hint,dataResult.data[i].keywords));
           }
           this.test = test;
+          this.titleService.setTitle(this.test.title + ' test edit - DigitalStudy');
         });
       });
     });

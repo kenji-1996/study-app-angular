@@ -56,3 +56,20 @@ export class testQuestion {
         this.markCount = _markCount;
     }
 }
+
+export class NavList {
+    categoryName: String;
+    dropDown: boolean;
+    subCategory: NavListItem[];
+    constructor(_categoryName:string,_dropDown:boolean,_subCategory:NavListItem[]) {
+        this.categoryName = _categoryName;
+        this.dropDown = _dropDown;
+        this.subCategory = _subCategory;
+    }
+}
+
+export class NavListItem {
+    subCategoryName: String;
+    subCategoryLink: String;
+    visable: boolean;
+}

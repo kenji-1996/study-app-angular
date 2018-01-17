@@ -3,7 +3,7 @@
 .sidenav-container {
   position: absolute;
   top: 0;
-  bottom: 0;
+  bottom: -140px;
   left: 0;
   right: 0;
 }
@@ -37,7 +37,11 @@
 }
 .mat-icon-active mat-icon {
   transition: color 0.2s linear;
-  color: mat-color($accent) !important;
+  color: mat-color($primary) !important;
+}
+.nav-category-open {
+  transition: color 0.2s linear;
+  color: mat-color($primary) !important;
 }
 .nav-list-item:hover {
   cursor: pointer;
@@ -53,15 +57,6 @@
   margin-left: 5px;
 }
 
-/*mat-expansion-panel {
-  background-color: #FFF;
-  transition: background 0.2s linear;
-}
-
-mat-expansion-panel:hover {
-  background-color: #c5c5c5;
-}
-*/
 
 mat-toolbar {
   height:  64px !important;

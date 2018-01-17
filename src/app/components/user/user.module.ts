@@ -4,6 +4,7 @@ import {AuthenticateService} from '../../services/authenticate.service';
 import {DataManagementService} from "../../services/data-management.service";
 import * as global from '../../globals';
 import {ImportsModule} from "../../modules/imports.module";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-user',
@@ -16,10 +17,12 @@ export class UserComponent implements OnInit {
 
   constructor(
               public auth: AuthenticateService,
-              private route: Router
+              private route: Router,
+              private titleService: Title,
   ) {  }
 
   ngOnInit() {
+    this.titleService.setTitle('Home - DigitalStudy');
     this.name = JSON.parse(localStorage.getItem('userObject')).name;
     this.idtoken = localStorage.getItem('idtoken');
   }

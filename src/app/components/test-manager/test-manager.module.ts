@@ -13,6 +13,7 @@ import { Observable } from "rxjs/Observable";
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/takeWhile";
 import "rxjs/add/operator/startWith";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-test-manager',
@@ -28,7 +29,9 @@ export class TestManagerComponent implements OnInit {
                private data: DataManagementService,
                private dialog: MatDialog,
                private observableMedia: ObservableMedia,
-               private router: Router
+               private router: Router,
+               private titleService: Title,
+
   ) {
     dataEmit.$updateArray.subscribe(() => {
       this.refreshData();
@@ -36,6 +39,7 @@ export class TestManagerComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Your tests - DigitalStudy');
     const grid = new Map([
       ["xs", 1],
       ["sm", 2],

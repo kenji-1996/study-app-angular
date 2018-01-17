@@ -10,7 +10,7 @@
   <span class="fill-remaining-space"></span>
 
   <button mat-icon-button class="icon-padding">
-      <mat-icon aria-hidden="true">notifications</mat-icon>
+    <mat-icon aria-hidden="true">notifications</mat-icon>
   </button>
 
   <button *ngIf="logged" mat-icon-button class="icon-padding" [matMenuTriggerFor]="menu"><!--style="border-radius: 50%; height: 80%;width:80%;"-->
@@ -23,39 +23,36 @@
 
   <mat-sidenav class="mat-elevation-z10" #start [opened]="open" fixedTopGap="64" [mode]="mode" fixedInViewport="true" style="width:240px;">
 
-    <mat-list>
-      <mat-list-item class="nav-list-item" routerLink="/user" routerLinkActive="mat-icon-active"><mat-icon mat-list-icon  class="nav-list-icon">home</mat-icon>
-        <span class="nav-list-item-text">Home</span>
-      </mat-list-item>
-
-      <mat-list-item class="nav-list-item" routerLink="/test-manager" routerLinkActive="mat-icon-active"><mat-icon mat-list-icon class="nav-list-icon">question_answer</mat-icon>
-        <span class="nav-list-item-text">Test list</span>
-      </mat-list-item>
-
-      <mat-list-item class="nav-list-item" routerLink="/test" routerLinkActive="mat-icon-active"><mat-icon mat-list-icon class="nav-list-icon">question_answer</mat-icon>
-        <span class="nav-list-item-text">Test</span>
-      </mat-list-item>
-      <!--<mat-expansion-panel class="mat-elevation-z0">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon mat-list-icon>question_answer</mat-icon>
-            <span class="nav-list-item-text">Tests</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <mat-form-field>
-          <input matInput placeholder="First name">
-        </mat-form-field>
-
-        <mat-form-field>
-          <input matInput placeholder="Age">
-        </mat-form-field>
-      </mat-expansion-panel>-->
+    <mat-list dense>
+      <ng-container *ngFor="let nav of navList">
+        <mat-expansion-panel class="mat-elevation-z0" hideToggle="true" [expanded]="nav.dropDown">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon mat-list-icon [class.nav-category-open]="nav.dropDown" [class.text-muted]="!nav.dropDown">question_answer</mat-icon>
+              <span class="nav-list-item-text">{{nav.categoryName}}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list>
+            <ng-container *ngFor="let subCategory of nav.subCategory">
+              <ng-container *ngIf="subCategory.visable"> <!--Sub category list-->
+                <mat-list-item [routerLink]="subCategory.subCategoryLink" routerLinkActive="mat-icon-active">
+                  <span mat-line >{{subCategory.subCategoryName}}</span>
+                  <button mat-icon-button >
+                    <mat-icon>info</mat-icon>
+                  </button>
+                </mat-list-item>
+              </ng-container>
+            </ng-container>
+          </mat-nav-list>
+        </mat-expansion-panel>
+      </ng-container>
     </mat-list>
+
   </mat-sidenav>
 
-  <mat-sidenav-content style="margin-top:64px;padding: 10px;">
-    <router-outlet></router-outlet>
+  <mat-sidenav-content style="margin-top:64px;padding: 10px; ">
+    <router-outlet>
+    </router-outlet>
   </mat-sidenav-content>
 
 </mat-sidenav-container>
@@ -66,3 +63,19 @@
   <button mat-menu-item routerLink="/dashboard"><mat-icon aria-hidden="true">account_box</mat-icon>Profile</button>
   <button mat-menu-item (click)="handleLogOut()"><mat-icon aria-hidden="true">exit_to_app</mat-icon>Sign out</button>
 </mat-menu>
+
+<!--
+<ng-container *ngFor="let nav of navList">
+<mat-list-item>{{nav.categoryName}}</mat-list-item>
+<mat-nav-list>
+  <ng-container *ngFor="let subCategory of nav.subCategory">
+    <mat-list-item [routerLink]="subCategory.subCategoryLink" routerLinkActive="mat-icon-active">
+      <span mat-line style="margin-left:30px;">{{subCategory.subCategoryName}}</span>
+      <button mat-icon-button >
+        <mat-icon>info</mat-icon>
+      </button>
+    </mat-list-item>
+  </ng-container>
+</mat-nav-list>
+</ng-container>
+-->
