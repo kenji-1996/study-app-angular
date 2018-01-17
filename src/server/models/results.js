@@ -10,8 +10,10 @@ var Schema = mongoose.Schema;
 var resultSchema  = new Schema({
     _id: Schema.Types.ObjectId,
     testId: { type:String, required: true },
-    testName: String,
-    questionsToResult: [{questionId: String, mark: String}],
+    testTitle: String,
+    questionsToResult: [ { _id: String, mark: String }],
+    mark: String,
+    percent: Number,
     date: { type: Date, default: Date.now },
     private: { type: Boolean, default:true },
 });

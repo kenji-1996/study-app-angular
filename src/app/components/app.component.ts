@@ -42,9 +42,9 @@ export class AppComponent implements OnInit{
       },
       { categoryName: 'Tests',dropDown:true, subCategory:
           [
-            { subCategoryName: 'Your list', subCategoryLink:'/test-manager', visable: true, },
-            { subCategoryName: 'Selected', subCategoryLink:'/test', visable: false, },
-            { subCategoryName: 'Editing', subCategoryLink:'/edit-test', visable: false, }
+            { subCategoryName: 'Your list', subCategoryLink:'/tests/manager', visable: true, },
+            { subCategoryName: 'Selected', subCategoryLink:'/tests/selected', visable: false, },
+            { subCategoryName: 'Editing', subCategoryLink:'/tests/edit', visable: false, }
           ]
       },
     ];
@@ -92,15 +92,15 @@ export class AppComponent implements OnInit{
         let path = event.url;
         switch (true)
         {
-          case path.startsWith('/test-manager'):
+          case path.startsWith('/tests/manager'):
             this.navList[1].dropDown = true;
             break;
-          case path.startsWith('/edit-test'):
-            this.navList[1].subCategory[2].visable = true;
-            this.navList[1].dropDown = true;
-            break;
-          case path.startsWith('/test'):
+          case path.startsWith('/tests/selected'):
             this.navList[1].subCategory[1].visable = true;
+            this.navList[1].dropDown = true;
+            break;
+          case path.startsWith('/tests/edit'):
+            this.navList[1].subCategory[2].visable = true;
             this.navList[1].dropDown = true;
             break;
           case path.startsWith('/user'):

@@ -6,7 +6,7 @@ import {DataManagementService} from "../../services/data-management.service";
 import * as global from '../../globals';
 import { Test } from '../../objects/objects';
 import {MatDialog} from "@angular/material";
-import {AddDialog} from "../../dialogs/addDialog/add-dialog";
+import {AddTest} from "../../dialogs/addTest/add-test";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import { ObservableMedia } from '@angular/flex-layout';
 import { Observable } from "rxjs/Observable";
@@ -59,21 +59,14 @@ export class TestManagerComponent implements OnInit {
   }
 
   addTest(): void{
-    let dialogRef = this.dialog.open(AddDialog, {data: {name: '',} });
+    let dialogRef = this.dialog.open(AddTest, {data: {name: '',} });
       dialogRef.afterClosed().subscribe(result => {
-          this.router.navigate(['/edit-test',result]);
+          this.router.navigate(['/tests/edit',result]);
       });
   }
 
   removeTest(test:any) {
     this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });
-  }
-
-  editTest(test:any): void {
-    /*let dialogRef = this.dialog.open(EditTestDialog, { width: '100%',  data: test });
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshData();
-    });*/
   }
 
   refreshData() {

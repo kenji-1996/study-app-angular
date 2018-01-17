@@ -10,7 +10,7 @@ import {DataManagementService} from "./services/data-management.service";
 import {ImportsModule} from "./modules/imports.module";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ReactiveFormsModule} from "@angular/forms";
-import {AddDialog} from "./dialogs/addDialog/add-dialog";
+import {AddTest} from "./dialogs/addTest/add-test";
 import {DataEmitterService} from "./services/data-emitter.service";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
@@ -24,7 +24,7 @@ import { ResultComponent } from './components/result/result.component';
   declarations: [
     AppComponent,
     HomeComponent,
-    AddDialog,
+    AddTest,
     EditTestNameDialog,
     EditQuestionDialog,
     ResultComponent,
@@ -37,7 +37,7 @@ import { ResultComponent } from './components/result/result.component';
     ReactiveFormsModule,
   ],
   entryComponents: [
-    AddDialog,
+    AddTest,
     EditTestNameDialog,
     EditQuestionDialog,
   ],

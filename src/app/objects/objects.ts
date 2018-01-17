@@ -36,7 +36,7 @@ export class Question {
     }
 }
 
-export class testQuestion {
+export class Result {
     _id: String;
     question: String;
     answer: String;

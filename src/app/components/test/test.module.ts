@@ -2,7 +2,7 @@ import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {Observable} from "rxjs/Observable";
-import {Question, testQuestion, TestToQuestion} from "../../objects/objects";
+import {Question, Result, TestToQuestion} from "../../objects/objects";
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
 import * as global from '../../globals';
@@ -19,7 +19,7 @@ import {Title} from "@angular/platform-browser";
 export class TestComponent implements OnInit, OnDestroy {
   //Loaded in test
   test$: Observable<TestToQuestion>;
-  result:testQuestion[] = [];
+  result:Result[] = [];
   test;
   started = false;
   progress = '0';
@@ -45,7 +45,8 @@ export class TestComponent implements OnInit, OnDestroy {
   constructor(
       private route: ActivatedRoute,
       private dataManagement: DataManagementService,
-      private dataEmitter: DataEmitterService,
+      private postData: DataManagementService,
+      public dataEmitter: DataEmitterService,
       private titleService: Title,
   ) { }
 
@@ -99,7 +100,7 @@ export class TestComponent implements OnInit, OnDestroy {
       this.selectedId++;
       var markCount = this.checkAnswer();
       var percentResult = ((markCount/this.selectedQuestion.keywords.length * 100));
-      this.result.push(new testQuestion(this.selectedQuestion._id, this.selectedQuestion.question, this.selectedQuestion.answer, this.selectedQuestion.category, this.answer, (this.timeLimit ? this.timeLeft : 0),percentResult, markCount));
+      this.result.push(new Result(this.selectedQuestion._id, this.selectedQuestion.question, this.selectedQuestion.answer, this.selectedQuestion.category, this.answer, (this.timeLimit ? this.timeLeft : 0),percentResult, markCount));
       if (this.instantResult) {
         this.dataEmitter.pushUpdateArray('Percentage answer result: ' + percentResult + '%')
       }
@@ -130,6 +131,23 @@ export class TestComponent implements OnInit, OnDestroy {
     this.percentResult = avg;
     this.finished = true;
     this.started = false;
+
+    //Submit question to database
+    let questionToResult = [];
+    for(let i = 0; i < this.result.length; i++) {
+      questionToResult.push({_id:this.result[i]._id,mark:this.result[i].markCount + '/' + this.test.questions[i].keywords.length})
+    }
+    var body = {
+      testId: this.test._id,
+      testTitle: this.test.title,
+      questionsToResult: questionToResult,
+      mark: this.givenKeywords + '/' + this.totalKeywords,
+      percent: parseInt(this.percentResult),
+      private: false,
+    };
+    this.postData.postDATA(global.url + '/api/results', body).subscribe(dataResult => {
+      this.dataEmitter.pushUpdateArray(dataResult.message);
+    });
   }
 
   checkAnswer() {

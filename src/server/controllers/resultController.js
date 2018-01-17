@@ -4,9 +4,7 @@
 let settings = require('../misc/settings');
 
 let mongoose = require('mongoose');
-let testsModel = require('../models/tests');
 let usersModel = require('../models/users');
-let questionsModel = require('../models/questions');
 let resultsModel = require('../models/results');
 
 /**
@@ -27,7 +25,7 @@ exports.listResults = function(req, res) {
 /**
  * /api/results [POST]
  * A user submits their results (Needs authentication)
- * Results body needs: {testId: STRING , testName: STRING, questionsToResult: [{questionId: STRING, mark: STRING}] },
+ * Results body needs: {testId: STRING , testTitle: STRING, questionsToResult: [{questionId: STRING, mark: STRING}] },
  * @param req
  * @param res
  * @return JSON {message,data}
@@ -37,13 +35,14 @@ exports.createResult = function(req, res) {
         usersModel.findOne({unique_id: user['sub']}, function (err, user) {
             if (err) return res.status(500).json({message: "Find user query failed", data: err});
             let result = new resultsModel(req.body);
+            result._id = new mongoose.Types.ObjectId();
             result.save(function (err, result) {
-                if (err) return res.status(500).json({message: "Save test query failed", data: null});
+                if (err) return res.status(500).json({message: "Save result query failed", data: err});
                 user.results.push(result.id);
                 user.save(function (err) {
-                    if (err) return res.status(500).json({message: "Save user query failed", data: null});
+                    if (err) return res.status(500).json({message: "Save user query failed", data: err});
                 });
-                return res.status(200).json({message: "Test generated successfully", data: result});
+                return res.status(200).json({message: "Result saved to database successfully", data: result});
             });
         });
     });

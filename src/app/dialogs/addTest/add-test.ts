@@ -5,18 +5,19 @@ import * as global from '../../globals';
 import {DataEmitterService} from "../../services/data-emitter.service";
 
 @Component({
-    selector: 'add-dialog',
-    templateUrl: './add-dialog.html',
+    selector: 'add-test',
+    templateUrl: './add-test.html',
 })
-export class AddDialog {
+export class AddTest {
 
     constructor(
-        public dialogRef: MatDialogRef<AddDialog>,
+        public dialogRef: MatDialogRef<AddTest>,
         @Inject(MAT_DIALOG_DATA) public data: any,
         private postData: DataManagementService,
         public dataEmit: DataEmitterService
     ) {
     }
+
     objectKeys = Object.keys;
     onNoClick(): void {
         this.dialogRef.close();
@@ -34,7 +35,6 @@ export class AddDialog {
 
                 this.dialogRef.close(dataResult.data._id);
             });
-
         }
 
     }

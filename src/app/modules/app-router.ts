@@ -6,9 +6,9 @@ import {AuthGuard} from "../guards/auth.guard";
 const routes: Routes = [
     { path: '', component: HomeComponent, canActivate:[AuthGuard] },
     { path: 'user', loadChildren: '../components/user/user.module#UserModule' },
-    { path: 'test-manager', loadChildren: '../components/test-manager/test-manager.module#TestManagerModule' },
-    { path: 'test/:testId', loadChildren: '../components/test/test.module#TestModule' },
-    { path: 'edit-test/:testId', loadChildren: '../components/edit-test/edit-test.module#EditTestModule' },
+    { path: 'tests/manager', loadChildren: '../components/test-manager/test-manager.module#TestManagerModule' },
+    { path: 'tests/selected/:testId', loadChildren: '../components/test/test.module#TestModule' },
+    { path: 'tests/edit/:testId', loadChildren: '../components/edit-test/edit-test.module#EditTestModule' },
     { path: '**', redirectTo: '404' },
 ];
 

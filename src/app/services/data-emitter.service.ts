@@ -1,12 +1,12 @@
 import {EventEmitter, Injectable} from '@angular/core';
-import {testQuestion} from "../objects/objects";
+import {Result} from "../objects/objects";
 
 @Injectable()
 export class DataEmitterService {
 
   public $updateArray: EventEmitter<any>;
   public $loggedIn: EventEmitter<Boolean>;
-  public $results: EventEmitter<testQuestion[]>
+  public $results: EventEmitter<Result[]>
 
   constructor() {
     this.$updateArray = new EventEmitter();
@@ -22,7 +22,7 @@ export class DataEmitterService {
      this.$loggedIn.emit(item);
   }
 
-  public pushResults(results:testQuestion[]) {
+  public pushResults(results:Result[]) {
     this.$results.emit(results);
   }
 

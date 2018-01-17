@@ -2,12 +2,12 @@
   <mat-grid-tile *ngFor="let t of tests" class="mat-elevation-z5" id="tile">
     <div style="width:100%;" >
         <img src="../../../assets/questionmark.svg" class="questionSVG">
-        <div [routerLink]="['/test', t._id]" style="cursor: pointer; position: absolute; top:10px; left:10px;">
+        <div [routerLink]="['/tests/selected', t._id]" style="cursor: pointer; position: absolute; top:10px; left:10px;">
             <h3>{{t.title}}</h3>
             <span style="font-size: small;">Author: {{t.author}}</span>
         </div>
         <div style="position: absolute;right:0;bottom:0;">
-            <button mat-button [routerLink]="['/edit-test', t._id]">Edit</button>
+            <button mat-button [routerLink]="['/tests/edit', t._id]">Edit</button>
             <button mat-button (click)="removeTest(t)">Remove</button>
         </div>
     </div>
