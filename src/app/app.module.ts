@@ -18,6 +18,7 @@ import {EditTestNameDialog} from "./dialogs/editTestName/edit-test-name";
 import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
 import {AuthGuard} from "./guards/auth.guard";
 import { ResultComponent } from './components/result/result.component';
+import { FourOhFourPage } from './components/404-page/404-page.component';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { ResultComponent } from './components/result/result.component';
     EditTestNameDialog,
     EditQuestionDialog,
     ResultComponent,
+    FourOhFourPage,
   ],
   imports: [
     BrowserModule,

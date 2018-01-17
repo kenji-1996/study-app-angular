@@ -3,7 +3,7 @@ import {AuthenticateService} from "../services/authenticate.service";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {DataEmitterService} from "../services/data-emitter.service";
 import {MatSnackBar} from "@angular/material";
-import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {NavigationEnd, Router} from "@angular/router";
 import {NavList} from "../objects/objects";
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
 
@@ -17,7 +17,7 @@ import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common'
 export class AppComponent implements OnInit{
 
   photo = new BehaviorSubject("https://i.imgur.com/7OGK7HA.jpg");
-  title = 'DigitalStudy.io';
+  title = 'DIGITALSTUDY';
   logged = false;
   width;
   height;
@@ -29,8 +29,6 @@ export class AppComponent implements OnInit{
               public dataEmit: DataEmitterService,
               public snackBar: MatSnackBar,
               public route: Router,
-              private activatedRoute: ActivatedRoute,
-              private location: Location,
               public ngZone:NgZone
   ) {
     this.navList = [
