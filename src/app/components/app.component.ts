@@ -32,13 +32,13 @@ export class AppComponent implements OnInit{
               public ngZone:NgZone
   ) {
     this.navList = [
-      { categoryName: 'User',dropDown:false, subCategory:
+      { categoryName: 'User', icon: 'face', dropDown:false, subCategory:
           [
             { subCategoryName: 'Home', subCategoryLink:'/home', visable: true, },
             { subCategoryName: 'Profile', subCategoryLink:'/profile', visable: true, },
           ]
       },
-      { categoryName: 'Tests',dropDown:true, subCategory:
+      { categoryName: 'Tests', icon: 'question_answer', dropDown:true, subCategory:
           [
             { subCategoryName: 'Your list', subCategoryLink:'/tests/manager', visable: true, },
             { subCategoryName: 'Results', subCategoryLink:'/tests/results', visable: true, },

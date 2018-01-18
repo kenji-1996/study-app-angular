@@ -12,6 +12,7 @@ let user = require('../routes/user');
 //var question = require('../routes/question');
 let test = require('../routes/test');
 let result = require('../routes/result');
+let news = require('../routes/news')
 
 //Router settings, ensuring json parsing
 router.use(settings.bodyParser.urlencoded({ extended: true }));
@@ -22,5 +23,6 @@ router.use(settings.bodyParser.json());
 router.use(user);
 router.use(test);
 router.use(result);
+router.use(news);
 
 module.exports = router;

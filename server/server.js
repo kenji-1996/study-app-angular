@@ -4,10 +4,16 @@
 var express = require('express');
 const app = express();
 const cors = require('cors');
+const html = __dirname + '/dist';
 
 app.use(cors());
 app.options('*', cors());
 app.use('/api', require('./server/misc/routemanager'));
+app.use(express.static(html));
+app.get('*', function(req, res) {
+    res.sendFile(html + '/index.html')
+});
+
 
 
 app.listen(8080, () => {

@@ -10,6 +10,23 @@
             <textarea class="form-control" id="exampleTextarea" rows="3">{{idtoken}}</textarea>
         </div>-->
         <hr>
+        <div *ngIf="news">
+            <div class="parentDiv">
+                <div class="search-results mat-elevation-z5" style="background-color: white;" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50">
+                    <div dense *ngFor="let n of news" style=" margin: 20px;">
+                        <span><h1 class="display-2">{{ n.headline | uppercase}}</h1> </span>
+                        <p class="text-muted" style="font-size:small">By {{n.authorName}} on {{n.date | date:'fullDate'}}</p>
+                        <p mat-line> {{ n.content }} </p>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="staff">
+            <hr style="margin-top: 40px;margin-bottom: 15px;">
+            <app-add-news></app-add-news>
+        </div>
     </div>
 </div>
 

@@ -14,6 +14,7 @@ import "rxjs/add/operator/map";
 import "rxjs/add/operator/takeWhile";
 import "rxjs/add/operator/startWith";
 import {Title} from "@angular/platform-browser";
+import {NgIfMediaQuery} from "../../misc/media-query-directive";
 
 @Component({
   selector: 'app-test-manager',
@@ -82,7 +83,7 @@ export class TestManagerComponent implements OnInit {
     RouterModule.forChild([
       { path: '', component: TestManagerComponent, pathMatch: 'full'}
     ]),
-    ImportsModule
+    ImportsModule,
   ]
 })
 export class TestManagerModule {

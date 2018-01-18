@@ -19,6 +19,9 @@ import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
 import {AuthGuard} from "./guards/auth.guard";
 import { FourOhFourPage } from './components/404-page/404-page.component';
 import { StringtodatePipe } from './pipes/stringtodate.pipe';
+import { AddNewsComponent } from './components/add-news/add-news.component';
+import {NgIfMediaQuery} from "./misc/media-query-directive";
+import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
 
 
 @NgModule({
@@ -26,10 +29,12 @@ import { StringtodatePipe } from './pipes/stringtodate.pipe';
     AppComponent,
     LoginComponent,
     AddTest,
+    EditTestDialog,
     EditTestNameDialog,
     EditQuestionDialog,
     FourOhFourPage,
     StringtodatePipe,
+    NgIfMediaQuery,
   ],
   imports: [
     BrowserModule,

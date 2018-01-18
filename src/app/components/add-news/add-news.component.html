@@ -1,0 +1,30 @@
+<mat-card class="demo-card demo-basic">
+  <mat-toolbar color="primary">Submit news/updates</mat-toolbar>
+  <mat-card-content>
+      <table style="width: 100%" cellspacing="0"><tr>
+        <td>
+          <mat-form-field style="width: 100%" floatLabel="never">
+            <input matInput placeholder="Headline" [(ngModel)]="headline">
+          </mat-form-field>
+        </td>
+      </tr></table>
+      <mat-form-field style="width: 100%;">
+        <textarea matInput autofocus placeholder="Content" rows="15" [(ngModel)]="content"></textarea>
+      </mat-form-field>
+    <mat-chip-list #chipList>
+      <mat-chip *ngFor="let tag of tags" [selectable]="selectable" [removable]="removable" (remove)="removeTag(tag)">
+        {{tag}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+      <input placeholder="New keyword..."
+             [matChipInputFor]="chipList"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             [matChipInputAddOnBlur]="addOnBlur"
+             (matChipInputTokenEnd)="addTag($event)" />
+    </mat-chip-list>
+    <mat-divider></mat-divider>
+  </mat-card-content>
+  <mat-card-footer>
+    <button mat-button (click)="submitNews()" tabindex="-1">Submit</button>
+  </mat-card-footer>
+</mat-card>
