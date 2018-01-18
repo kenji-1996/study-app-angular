@@ -1,3 +1,19 @@
-<p>
-  result works!
-</p>
+<div *ngIf="test">
+  <h2>{{ test.title | uppercase }} Results</h2>
+  <div class="parentDiv">
+    <div class="search-results mat-elevation-z5" style="background-color: white;" infiniteScroll infiniteScrollDistance="2" infiniteScrollThrottle="50">
+      <mat-list dense *ngFor="let q of result">
+        <mat-list-item>
+          <mat-icon mat-list-icon>sort</mat-icon>
+          <span mat-line>{{ q.markPercent }} %</span>
+          <span mat-line class="text-muted"> {{q.givenAnswer}} </span>
+        </mat-list-item>
+      </mat-list>
+    </div>
+    <div class="mat-elevation-z2" style="position:absolute; left: -3px; bottom:-10px; background-color: white;">
+      <div style="margin:10px;">
+        <span><span class="text-muted">Marks: </span> {{mark}} <span class="text-muted">Result: </span> {{percentResult}}%</span>
+      </div>
+    </div>
+  </div>
+</div>

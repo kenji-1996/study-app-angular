@@ -6,6 +6,7 @@ let settings = require('../misc/settings');
 let mongoose = require('mongoose');
 let testsModel = require('../models/tests');
 let usersModel = require('../models/users');
+let resultsModel = require('../models/results');
 let questionsModel = require('../models/questions');
 
 /**
@@ -25,15 +26,16 @@ exports.listTests = function(req, res) {
 };
 /**
  * /api/tests [POST]
- * A user can add a test to their user if authorised
+ * A home can add a test to their home if authorised
  * @param req
  * @param res
  * @return JSON {message,data}
  */
 exports.createTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (user) {
+        if(!user) { return null; }
         usersModel.findOne({unique_id: user['sub']}, function (err, user) {
-            if (err) return res.status(500).json({message: "Find user query failed", data: err});
+            if (err) return res.status(500).json({message: "Find home query failed", data: err});
             let test = new testsModel({
                 _id: new mongoose.Types.ObjectId(),
                 title: req.body.title,
@@ -45,7 +47,7 @@ exports.createTest = function(req, res) {
                 if (err) return res.status(500).json({message: "Save test query failed", data: null});
                 user.tests.push(test.id);
                 user.save(function (err) {
-                    if (err) return res.status(500).json({message: "Save user query failed", data: null});
+                    if (err) return res.status(500).json({message: "Save home query failed", data: null});
                 });
                 return res.status(200).json({message: "Test generated successfully", data: result});
             });
@@ -74,6 +76,7 @@ exports.listTest = function(req, res) {
  */
 exports.updateTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (user) {
+        if(!user) { return null; }
         testsModel.findOneAndUpdate({_id: req.params.testId}, req.body, {new: true}, function (err, test) {
             if (err) return res.status(500).json({message: "Save test query failed", data: err});
             return res.status(200).json({message: ('Test ' + test._id + ' updated'), data: test});
@@ -89,6 +92,7 @@ exports.updateTest = function(req, res) {
  */
 exports.deleteTest = function(req, res) {
      settings.ensureAuthorized(req,res).then(function (authUser) {
+         if(!user) { return null; }
          usersModel.findOne({unique_id: authUser['sub']})
              .exec(function (err,userQ1) {
                  testsModel.findById(req.params.testId)
@@ -141,6 +145,7 @@ exports.listQuestions = function(req, res) {
  */
 exports.updateQuestions = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (authUser) {
+        if(!authUser) { return null; }
         testsModel.findById(req.params.testId)
             .exec(function (err, test) {
                 if (err) return res.status(404).json({message: "Test find id query failed", data: null});

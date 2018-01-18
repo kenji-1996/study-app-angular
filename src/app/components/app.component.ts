@@ -34,15 +34,16 @@ export class AppComponent implements OnInit{
     this.navList = [
       { categoryName: 'User',dropDown:false, subCategory:
           [
-            { subCategoryName: 'Home', subCategoryLink:'/user', visable: true, },
+            { subCategoryName: 'Home', subCategoryLink:'/home', visable: true, },
             { subCategoryName: 'Profile', subCategoryLink:'/profile', visable: true, },
           ]
       },
       { categoryName: 'Tests',dropDown:true, subCategory:
           [
             { subCategoryName: 'Your list', subCategoryLink:'/tests/manager', visable: true, },
+            { subCategoryName: 'Results', subCategoryLink:'/tests/results', visable: true, },
             { subCategoryName: 'Selected', subCategoryLink:'/tests/selected', visable: false, },
-            { subCategoryName: 'Editing', subCategoryLink:'/tests/edit', visable: false, }
+            { subCategoryName: 'Editing', subCategoryLink:'tests/edit', visable: false, },
           ]
       },
     ];
@@ -80,13 +81,14 @@ export class AppComponent implements OnInit{
     if(this.logged) {
       this.photo.next(JSON.parse(localStorage.getItem('userObject')).picture);
     }
+    console.log(JSON.parse(localStorage.getItem('userObject')));
     this.route.events.subscribe(event => {
       if (event instanceof NavigationEnd ) {
         for(var i = 0; i < this.navList.length; i++) {
           this.navList[i].dropDown = false;
         }
         this.navList[1].subCategory[2].visable = false;
-        this.navList[1].subCategory[1].visable = false;
+        this.navList[1].subCategory[3].visable = false;
         let path = event.url;
         switch (true)
         {
@@ -94,14 +96,14 @@ export class AppComponent implements OnInit{
             this.navList[1].dropDown = true;
             break;
           case path.startsWith('/tests/selected'):
-            this.navList[1].subCategory[1].visable = true;
-            this.navList[1].dropDown = true;
-            break;
-          case path.startsWith('/tests/edit'):
             this.navList[1].subCategory[2].visable = true;
             this.navList[1].dropDown = true;
             break;
-          case path.startsWith('/user'):
+          case path.startsWith('/tests/edit'):
+            this.navList[1].subCategory[3].visable = true;
+            this.navList[1].dropDown = true;
+            break;
+          case path.startsWith('/home'):
             this.navList[0].dropDown = true;
             break;
           default:

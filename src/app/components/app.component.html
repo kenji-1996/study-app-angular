@@ -35,7 +35,7 @@
             <div style="margin-top: -20px;">
               <ng-container *ngFor="let subCategory of nav.subCategory">
                 <ng-container *ngIf="subCategory.visable"> <!--Sub category list-->
-                  <mat-list-item [routerLink]="subCategory.subCategoryLink" routerLinkActive="mat-icon-active" style="margin-left: -30px;margin-right: -30px;">
+                  <mat-list-item [routerLink]="subCategory.subCategoryLink" routerLinkActive="mat-icon-active" style="margin-left: -30px;margin-right: -24px;">
                     <span mat-line style="margin-left: 30px;">{{subCategory.subCategoryName}}</span>
                     <button mat-icon-button >
                       <mat-icon>info</mat-icon>

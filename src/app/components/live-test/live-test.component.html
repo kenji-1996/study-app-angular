@@ -1,0 +1,27 @@
+<div *ngIf="test" (keydown)="keyDownFunction($event)">
+  <mat-card *ngIf="selectedQuestion">
+    <mat-card-subtitle>{{selectedQuestion.category}}</mat-card-subtitle>
+    <mat-card-title>{{selectedQuestion.question}}</mat-card-title>
+    <mat-card-content>
+      <mat-form-field style="width: 100%;">
+        <textarea matInput autofocus placeholder="Answer" rows="15" [(ngModel)]="answer"></textarea>
+      </mat-form-field>
+      <mat-expansion-panel *ngIf="giveHint">
+        <mat-expansion-panel-header>
+          Hint
+        </mat-expansion-panel-header>
+        {{selectedQuestion.hint}}
+      </mat-expansion-panel>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions>
+    </mat-card-actions>
+    <mat-card-footer>
+      <button mat-button (click)="submitQuestion()">Submit</button>
+      <mat-progress-bar *ngIf="timeLimit" mode="determinate" [value]="progress"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+  <div>
+    <h4 class="text-center text-muted lead" *ngIf="selectedQuestion">{{selectedId + 1}} of {{test.questions.length}}</h4>
+  </div>
+</div>

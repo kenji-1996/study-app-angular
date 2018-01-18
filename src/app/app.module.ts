@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './components/app.component';
 import {AppRouterModule} from "./modules/app-router";
-import { HomeComponent } from './components/home/home.component';
+import { LoginComponent } from './components/login/login.component';
 
 import {AuthenticateService} from "./services/authenticate.service";
 import {DataManagementService} from "./services/data-management.service";
@@ -17,19 +17,19 @@ import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
 import {EditTestNameDialog} from "./dialogs/editTestName/edit-test-name";
 import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
 import {AuthGuard} from "./guards/auth.guard";
-import { ResultComponent } from './components/result/result.component';
 import { FourOhFourPage } from './components/404-page/404-page.component';
+import { StringtodatePipe } from './pipes/stringtodate.pipe';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    LoginComponent,
     AddTest,
     EditTestNameDialog,
     EditQuestionDialog,
-    ResultComponent,
     FourOhFourPage,
+    StringtodatePipe,
   ],
   imports: [
     BrowserModule,

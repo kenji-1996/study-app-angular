@@ -7,10 +7,10 @@ declare const gapi: any;
 
 @Component({
     selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss']
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class LoginComponent implements OnInit, AfterViewInit {
 
     clientid:string = '***REMOVED***';
     auth2:any;
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
                     this.dataEmit.pushLoggedIn(true);
                     localStorage.setItem('logged', 'true');
                     //Zone needed to properly load
-                    this.zone.run(() => this.route.navigate(['/user']));
+                    this.zone.run(() => this.route.navigate(['/home']));
                 });
             }, function (error) {
                 alert("Error: " + error.error);

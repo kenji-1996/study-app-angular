@@ -1,4 +1,4 @@
-<div *ngIf="!started && test && !finished">
+<div *ngIf="test">
   <h2>{{ test.title | uppercase }} Test <span class="text-muted" style="font-size: small">[{{test._id}} - {{test.author}}]</span></h2>
   <hr>
   <div class="parentDiv">
@@ -20,61 +20,21 @@
       <button style="position:absolute; left:-3px; bottom:-25px;" mat-raised-button (click)="testStarted()">
         <mat-icon>format_list_bulleted</mat-icon>Start test
       </button>
-
     </div>
   </div>
-</div>
-
-
-<div *ngIf="started && !finished">
-  <mat-card *ngIf="selectedQuestion">
-    <mat-card-subtitle>{{selectedQuestion.category}}</mat-card-subtitle>
-    <mat-card-title>{{selectedQuestion.question}}</mat-card-title>
-    <mat-card-content>
-      <mat-form-field style="width: 100%;">
-        <textarea matInput placeholder="Answer" rows="15" [(ngModel)]="answer"></textarea>
-      </mat-form-field>
-      <mat-expansion-panel *ngIf="giveHint">
-        <mat-expansion-panel-header>
-          Hint
-        </mat-expansion-panel-header>
-        {{selectedQuestion.hint}}
-      </mat-expansion-panel>
-    </mat-card-content>
-    <mat-divider></mat-divider>
-    <mat-card-actions>
-
-    </mat-card-actions>
-    <mat-card-footer>
-      <button mat-button (click)="submitQuestion()">Submit</button>
-      <mat-progress-bar *ngIf="timeLimit" mode="determinate" [value]="progress"></mat-progress-bar>
-    </mat-card-footer>
-  </mat-card>
-  <div>
-    <h4 class="text-center text-muted lead" *ngIf="selectedQuestion">{{selectedId + 1}} of {{test.questions.length}}</h4>
-  </div>
-</div>
-
-
-<!-- Finished test -->
-<div *ngIf="!started && finished">
-  <h2>{{ test.title | uppercase }} Results</h2>
-  <div class="parentDiv">
+  <hr style="margin-top: 40px;margin-bottom: 15px;">
+  <div *ngIf="databaseResult" class="parentDiv"><!-- Results for this test -->
     <div class="search-results mat-elevation-z5" style="background-color: white;" infiniteScroll infiniteScrollDistance="2" infiniteScrollThrottle="50">
-      <mat-list dense *ngFor="let q of result">
-        <mat-list-item>
-          <mat-icon mat-list-icon>sort</mat-icon>
-          <span mat-line>{{ q.markPercent }} %</span>
-          <span mat-line class="text-muted"> {{q.givenAnswer}} </span>
+      <mat-list dense>
+        <h3 mat-subheader>Results</h3>
+        <mat-list-item *ngFor="let item of databaseResult.slice().reverse() let i = index;">
+          <i class="fa fa-graduation-cap fa-lg" [ngStyle]="setMyStyles(item.percent)"></i>
+          <h4 mat-line>Percent: {{item.percent}}%</h4>
+          <p mat-line>Mark {{item.mark}}</p>
+          <p mat-line class="text-muted" style="font-size:small">{{item.date | date:'full'}}</p>
+
         </mat-list-item>
       </mat-list>
     </div>
-    <div class="mat-elevation-z2" style="position:absolute; left: -3px; bottom:-10px; background-color: white;">
-      <div style="margin:10px;">
-        <span><span class="text-muted">Marks: </span> {{givenKeywords}} / {{totalKeywords}} <span class="text-muted">Result: </span> {{percentResult}}%</span>
-      </div>
-
-    </div>
   </div>
 </div>
-

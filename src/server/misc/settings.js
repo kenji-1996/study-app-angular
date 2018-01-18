@@ -26,7 +26,7 @@ module.exports.bodyParser = bodyParser;
 
 //Now we have 'global' functions that are used alot, so we can call them multiple times for our methods
 /**
- * Here we verify that the given token is valid, thus the user has permissions.
+ * Here we verify that the given token is valid, thus the home has permissions.
  * We use googles auth lib to pushUpdateArray it, then resolve the promise true or false
  * @param token
  * @returns {Promise}
@@ -47,7 +47,7 @@ module.exports.verify = function verify(token) {
 
 /**
  * Here is a very similar method except we return a userID of the token, sort of a depreciated method as we can simply use userPayLoad
- * and return the whole user JSON object and extract it in another place.
+ * and return the whole home JSON object and extract it in another place.
  * @param token
  * @returns {Promise}
  */
@@ -69,7 +69,7 @@ module.exports.getUserID = function getUserID(token) {
 };
 
 /**
- * This method simply returns the whole user object with google auth
+ * This method simply returns the whole home object with google auth
  * @param token
  * @returns {Promise}
  */
@@ -92,7 +92,7 @@ module.exports.userPayload = function userPayload(token) {
 
 let User = require('../models/users');
 /**
- * Here we authenticate a user against a database, use their token to verify its from them,
+ * Here we authenticate a home against a database, use their token to verify its from them,
  * then check their ID against the database permissions.
  * @param token
  * @returns {Promise}
