@@ -4,7 +4,7 @@ import {AuthenticateService} from "../services/authenticate.service";
 import {DataEmitterService} from "../services/data-emitter.service";
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class LoginGuard implements CanActivate {
 
     constructor(
         private router: Router,
@@ -15,11 +15,11 @@ export class AuthGuard implements CanActivate {
 
     }
     canActivate(next:ActivatedRouteSnapshot, state:RouterStateSnapshot) {
-        if(this.authService.localLoggedIn()) {
+        if(!this.authService.localLoggedIn()) {
             return true;
         }
-        this.dataEmitter.pushUpdateArray('You need to be logged in to access this page.');
-        this.router.navigate(['/']);
+        this.dataEmitter.pushUpdateArray('Welcome ' + JSON.parse(localStorage.getItem('userObject')).name);
+        this.router.navigate(['/home']);
         return false;
     }
 }

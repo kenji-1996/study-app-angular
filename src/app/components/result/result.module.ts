@@ -1,11 +1,13 @@
 import { Component, OnInit, NgModule } from '@angular/core';
 import {RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
+import {fadeAnimate} from "../../misc/animation";
 
 @Component({
   selector: 'app-result',
   templateUrl: './result.component.html',
-  styleUrls: ['./result.component.scss']
+  styleUrls: ['./result.component.scss'],
+  animations: [ fadeAnimate ],
 })
 export class ResultComponent implements OnInit {
 
@@ -19,7 +21,6 @@ export class ResultComponent implements OnInit {
 
   ngOnInit() {
     let resultJSON = JSON.parse(localStorage.getItem('result'));
-    console.log(resultJSON);
     this.test = resultJSON[0].test;
     this.result = resultJSON[0].result;
     this.percentResult = resultJSON[0].percentResult;

@@ -1,27 +1,34 @@
+<div style="padding:10px;">
 <div *ngIf="test">
-    <h2 (click)="updateTest()" style="cursor: text;"><span matTooltip="Click to edit!" matTooltipPosition="below">{{ test.title | uppercase }} Details </span><span class="text-muted" style="font-size: small">[{{test._id}} - {{test.author}}]</span></h2>
-    <hr>
+    <div>
+        <h2 (click)="updateTest()" style="cursor: text;"><span matTooltip="Click to edit!" matTooltipPosition="below">{{ test.title | uppercase }} Details </span>
+        </h2>
+        <!--<span class="fill-remaining-space"></span>-->
+        <button  mat-raised-button matTooltip="Insert new question" (click)="upsertQuestion(null)" style="height: 35px;margin: 5px;">
+            <mat-icon>add</mat-icon>Add question
+        </button>
+        <button color="primary" mat-raised-button matTooltip="Save and submit question list" (click)="submitQuestions()" style="height: 35px;margin: 5px;">
+            <mat-icon>save</mat-icon>Save questions
+        </button>
+    </div>
+    <div style="height: 10px;"></div>
+
     <div class="parentDiv">
-        <div class="search-results mat-elevation-z5" style="background-color: white;" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50">
+        <div class="search-results mat-elevation-z1" style="background-color: white;" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50">
             <mat-list dense *ngFor="let q of test.questions">
                 <mat-list-item>
                     <mat-icon mat-list-icon>question_answer</mat-icon>
                     <span mat-line>{{ q.question }}</span>
                     <span mat-line class="text-muted"> {{q.category}} </span>
-                    <button mat-icon-button (click)="upsertQuestion(q)">
+                    <button mat-icon-button (click)="upsertQuestion(q)" style="z-index: 3;">
                         <mat-icon>mode_edit</mat-icon>
                     </button>
-                    <button mat-icon-button (click)="removeTest(q)">
+                    <button mat-icon-button (click)="removeTest(q)" style="z-index: 3;">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </mat-list-item>
             </mat-list>
-            <button style="position:absolute; left:43px; bottom:-25px;" mat-mini-fab matTooltip="Insert new question" (click)="upsertQuestion(null)">
-                <mat-icon>add</mat-icon>
-            </button>
-            <button style="position:absolute; left:0px; bottom:-25px;" color="primary" mat-mini-fab matTooltip="Save and submit question list" (click)="submitQuestions()">
-                <mat-icon>save</mat-icon>
-            </button>
+
         </div>
     </div>
 </div>

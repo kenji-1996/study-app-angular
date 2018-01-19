@@ -16,12 +16,13 @@ import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
 import {EditTestNameDialog} from "./dialogs/editTestName/edit-test-name";
 import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
-import {AuthGuard} from "./guards/auth.guard";
+import {LoginGuard} from "./guards/login.guard";
 import { FourOhFourPage } from './components/404-page/404-page.component';
 import { StringtodatePipe } from './pipes/stringtodate.pipe';
 import { AddNewsComponent } from './components/add-news/add-news.component';
 import {NgIfMediaQuery} from "./misc/media-query-directive";
 import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
+import {AuthGuard} from "./guards/auth.guard";
 
 
 @NgModule({
@@ -51,6 +52,7 @@ import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
   providers: [
     AuthenticateService,
     DataManagementService,
+    LoginGuard,
     AuthGuard,
     DataEmitterService,
     {

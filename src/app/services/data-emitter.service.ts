@@ -7,7 +7,7 @@ export class DataEmitterService {
   public $updateArray: EventEmitter<any>;
   public $pushTestResult: EventEmitter<any>;
   public $loggedIn: EventEmitter<Boolean>;
-  public $results: EventEmitter<Result[]>
+  public $results: EventEmitter<Result[]>;
 
   constructor() {
     this.$updateArray = new EventEmitter();

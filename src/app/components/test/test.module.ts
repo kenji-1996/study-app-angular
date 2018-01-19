@@ -10,11 +10,13 @@ import {DataManagementService} from "../../services/data-management.service";
 import {Subscription} from "rxjs/Subscription";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import {Title} from "@angular/platform-browser";
+import {fadeAnimate} from "../../misc/animation";
 
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
-  styleUrls: ['./test.component.scss']
+  styleUrls: ['./test.component.scss'],
+  animations: [ fadeAnimate ],
 })
 export class TestComponent implements OnInit {
   //Loaded in test
@@ -75,8 +77,14 @@ export class TestComponent implements OnInit {
 
   populateResults() {
     this.dataManagement.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/results/' + this.test._id).subscribe(dataResult=> {
-      this.databaseResult = dataResult.data;
+      if(!this.isEmptyObject(dataResult.data)) {
+        this.databaseResult = dataResult.data;
+      }
     });
+  }
+
+  isEmptyObject(obj) {
+    return (obj && (Object.keys(obj).length === 0));
   }
 
   setMyStyles(result:any) {

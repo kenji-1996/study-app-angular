@@ -168,6 +168,7 @@ exports.listTestResults = function(req, res) {
     usersModel.findById(req.params.userId)
         .exec(function (err, result) {
             resultsModel.find({'_id': { $in: result.results},'testId' : req.params.testId})
+                .sort({date: -1})
                 .exec(function (err,resultFindQuery) {
 
                     if (err) { return res.status(404).json({message: "No tests found", data: err}) }

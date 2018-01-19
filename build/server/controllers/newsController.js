@@ -16,7 +16,9 @@ let usersModel = require('../models/users');
  *  {'result.private': false} --> Argument for only showing public testsModel
  */
 exports.listAllNews = function(req, res) {
-    newsModel.find({}, function(err, results) {
+    newsModel.find({})
+        .sort({date: -1})
+        .exec(function(err,results) {
         if (err) return res.status(500).json({message: "Find results query failed", data: err});
 
         return res.status(200).json({message: "Results retrieved", data: results});

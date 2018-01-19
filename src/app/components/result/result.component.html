@@ -1,4 +1,5 @@
-<div *ngIf="test">
+<div style="padding:10px;">
+<div *ngIf="test" [@fadeInOut]>
   <h2>{{ test.title | uppercase }} Results</h2>
   <div class="parentDiv">
     <div class="search-results mat-elevation-z5" style="background-color: white;" infiniteScroll infiniteScrollDistance="2" infiniteScrollThrottle="50">
@@ -16,4 +17,5 @@
       </div>
     </div>
   </div>
+</div>
 </div>

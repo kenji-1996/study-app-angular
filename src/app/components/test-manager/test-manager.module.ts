@@ -15,11 +15,13 @@ import "rxjs/add/operator/takeWhile";
 import "rxjs/add/operator/startWith";
 import {Title} from "@angular/platform-browser";
 import {NgIfMediaQuery} from "../../misc/media-query-directive";
+import {fadeAnimate} from "../../misc/animation";
 
 @Component({
   selector: 'app-test-manager',
   templateUrl: './test-manager.component.html',
-  styleUrls: ['./test-manager.component.scss']
+  styleUrls: ['./test-manager.component.scss'],
+  animations: [ fadeAnimate ],
 })
 export class TestManagerComponent implements OnInit {
 

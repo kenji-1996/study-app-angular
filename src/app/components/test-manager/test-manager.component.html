@@ -1,3 +1,15 @@
+<div style="padding:10px;">
+<div fxLayout>
+    <h2>Test manager</h2>
+    <span class="fill-remaining-space"></span>
+    <button  mat-mini-fab matTooltip="Insert new question" (click)="upsertQuestion(null)">
+        <mat-icon>add</mat-icon>
+    </button>
+    <button color="primary" mat-mini-fab matTooltip="Save and submit question list" (click)="submitQuestions()">
+        <mat-icon>save</mat-icon>
+    </button>
+</div>
+<div [@fadeInOut] *ngIf="tests">
 <mat-grid-list [cols]="cols | async" rowHeight="155px"  gutterSize="10px">
   <mat-grid-tile *ngFor="let t of tests" class="mat-elevation-z5" id="tile">
     <div style="width:100%;" >
@@ -13,6 +25,7 @@
     </div>
   </mat-grid-tile>
 </mat-grid-list>
+</div>
 
 <button class="settingsButton" color="accent" mat-fab="" style="z-index: 9;" [matMenuTriggerFor]="testOptions" >
   <mat-icon class="mat-24 mat-icon material-icons" role="img" aria-hidden="true" >settings</mat-icon>
@@ -21,3 +34,4 @@
 <mat-menu #testOptions="matMenu" yPosition="above">
   <button mat-menu-item (click)="addTest()"><mat-icon aria-hidden="true">add_circle</mat-icon>Add test</button>
 </mat-menu>
+</div>

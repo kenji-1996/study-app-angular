@@ -1,4 +1,4 @@
-import {Component, NgZone, OnInit} from '@angular/core';
+import {Component, EventEmitter, NgZone, OnInit} from '@angular/core';
 import {AuthenticateService} from "../services/authenticate.service";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {DataEmitterService} from "../services/data-emitter.service";
@@ -6,17 +6,20 @@ import {MatSnackBar} from "@angular/material";
 import {NavigationEnd, Router} from "@angular/router";
 import {NavList} from "../objects/objects";
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
+import {fadeAnimate} from "../misc/animation";
 
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   providers: [Location, {provide: LocationStrategy, useClass: PathLocationStrategy}],
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  animations: [ fadeAnimate ],
 })
 export class AppComponent implements OnInit{
 
-  photo = new BehaviorSubject("https://i.imgur.com/7OGK7HA.jpg");
+  public $photo: EventEmitter<any> = new EventEmitter();
+  photo;
   title = 'DIGITALSTUDY';
   logged = false;
   width;
@@ -50,6 +53,7 @@ export class AppComponent implements OnInit{
     this.auth.initAuth();
     this.logged = this.auth.localLoggedIn();
     this.dataEmit.$loggedIn.subscribe(data => { this.logged = data;});
+    this.$photo.subscribe(value => { this.photo = value;console.log(this.photo); });
     dataEmit.$updateArray.subscribe(data => { this.snackBar.open(data, 'close', { duration: 2000 }); });
     this.changeMode();
     window.onresize = (e) => {
@@ -66,7 +70,7 @@ export class AppComponent implements OnInit{
       this.mode = 'over';
       this.open = 'false';
     }
-    if(this.width > 680) {
+    if(this.width > 800) {
       this.mode = 'side';
       this.open = 'true';
     }
@@ -79,9 +83,8 @@ export class AppComponent implements OnInit{
 
   ngOnInit() {
     if(this.logged) {
-      this.photo.next(JSON.parse(localStorage.getItem('userObject')).picture);
+      this.$photo.emit(JSON.parse(localStorage.getItem('userObject')).picture);
     }
-    console.log(JSON.parse(localStorage.getItem('userObject')));
     this.route.events.subscribe(event => {
       if (event instanceof NavigationEnd ) {
         for(var i = 0; i < this.navList.length; i++) {

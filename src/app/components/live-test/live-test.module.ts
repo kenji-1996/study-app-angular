@@ -9,11 +9,13 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
 import {Title} from "@angular/platform-browser";
 import {DataEmitterService} from "../../services/data-emitter.service";
+import {fadeAnimate} from "../../misc/animation";
 
 @Component({
   selector: 'app-live-test',
   templateUrl: './live-test.component.html',
-  styleUrls: ['./live-test.component.scss']
+  styleUrls: ['./live-test.component.scss'],
+  animations: [ fadeAnimate ],
 })
 export class LiveTestComponent implements OnInit, OnDestroy {
 

@@ -7,11 +7,14 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {ImportsModule} from "../../modules/imports.module";
 import {Title} from "@angular/platform-browser";
 import {AddNewsComponent} from "../add-news/add-news.component";
+import {fadeAnimate} from "../../misc/animation";
+import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  animations: [ fadeAnimate ],
 })
 export class HomeComponent implements OnInit {
   name;
@@ -24,6 +27,7 @@ export class HomeComponent implements OnInit {
               private route: Router,
               private titleService: Title,
               private data: DataManagementService,
+              private sanitizer: DomSanitizer,
   ) {  }
 
   ngOnInit() {
