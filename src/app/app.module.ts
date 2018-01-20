@@ -23,6 +23,7 @@ import { AddNewsComponent } from './components/add-news/add-news.component';
 import {NgIfMediaQuery} from "./misc/media-query-directive";
 import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
 import {AuthGuard} from "./guards/auth.guard";
+import {NbSidebarService, NbThemeModule} from "@nebular/theme";
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import {AuthGuard} from "./guards/auth.guard";
     BrowserModule,
     AppRouterModule,
     ImportsModule,
-    BrowserAnimationsModule,
+      NbThemeModule.forRoot({ name: 'default' }),
+      BrowserAnimationsModule,
     ReactiveFormsModule,
   ],
   entryComponents: [
@@ -54,12 +56,14 @@ import {AuthGuard} from "./guards/auth.guard";
     DataManagementService,
     LoginGuard,
     AuthGuard,
+
     DataEmitterService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AddHeaderInterceptor,
       multi: true,
-    }
+    },
+      NbSidebarService,
   ],
   bootstrap: [AppComponent]
 })

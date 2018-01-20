@@ -14,6 +14,7 @@ import {
 } from "@angular/material";
 import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
+import {NbLayoutModule, NbSidebarModule} from "@nebular/theme";
 
 @NgModule({
     imports: [
@@ -40,6 +41,8 @@ import {FlexLayoutModule} from "@angular/flex-layout";
         MatTooltipModule,
         MatGridListModule,
         FlexLayoutModule,
+        NbLayoutModule,
+        NbSidebarModule,
     ],
     exports: [
         CommonModule,
@@ -65,6 +68,8 @@ import {FlexLayoutModule} from "@angular/flex-layout";
         MatTooltipModule,
         MatGridListModule,
         FlexLayoutModule,
+        NbLayoutModule,
+        NbSidebarModule,
     ],
     declarations: []
 })
