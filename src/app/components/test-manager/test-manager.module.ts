@@ -27,6 +27,15 @@ export class TestManagerComponent implements OnInit {
 
   tests: Test[];
   public cols: Observable<number>;
+  cameras: any[] = [];
+
+  selectedCamera: any = this.cameras[0];
+  isSingleView = false;
+
+  selectCamera(camera: any) {
+    this.selectedCamera = camera;
+    this.isSingleView = true;
+  }
 
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
@@ -74,7 +83,11 @@ export class TestManagerComponent implements OnInit {
 
   refreshData() {
     this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests').subscribe(dataResult=> {
+
       this.tests = dataResult.data;
+      for(let i = 0; i < dataResult.data.length;i++) {
+        this.cameras.push({title: dataResult.data[i].title,source: 'http://ichef.bbci.co.uk/wwfeatures/wm/live/1280_640/images/live/p0/51/v8/p051v8z4.jpg'});
+      }
     });
   }
 }

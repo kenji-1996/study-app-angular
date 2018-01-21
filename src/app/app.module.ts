@@ -19,11 +19,12 @@ import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
 import {LoginGuard} from "./guards/login.guard";
 import { FourOhFourPage } from './components/404-page/404-page.component';
 import { StringtodatePipe } from './pipes/stringtodate.pipe';
-import { AddNewsComponent } from './components/add-news/add-news.component';
 import {NgIfMediaQuery} from "./misc/media-query-directive";
 import {EditTestDialog} from "./dialogs/editTest/edit-test.component";
 import {AuthGuard} from "./guards/auth.guard";
-import {NbSidebarService, NbThemeModule} from "@nebular/theme";
+import { NbMenuService, NbSidebarService, NbThemeModule} from '@nebular/theme';
+import {StateService} from "./services/state.service";
+import {NbMenuInternalService} from "@nebular/theme/components/menu/menu.service";
 
 
 @NgModule({
@@ -42,9 +43,9 @@ import {NbSidebarService, NbThemeModule} from "@nebular/theme";
     BrowserModule,
     AppRouterModule,
     ImportsModule,
-      NbThemeModule.forRoot({ name: 'default' }),
-      BrowserAnimationsModule,
+    BrowserAnimationsModule,
     ReactiveFormsModule,
+    NbThemeModule.forRoot({ name: 'default' }),
   ],
   entryComponents: [
     AddTest,
@@ -56,14 +57,16 @@ import {NbSidebarService, NbThemeModule} from "@nebular/theme";
     DataManagementService,
     LoginGuard,
     AuthGuard,
-
+    NbSidebarService,
+    NbMenuService,
+    NbMenuInternalService,
+    StateService,
     DataEmitterService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AddHeaderInterceptor,
       multi: true,
     },
-      NbSidebarService,
   ],
   bootstrap: [AppComponent]
 })

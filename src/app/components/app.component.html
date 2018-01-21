@@ -1,3 +1,96 @@
+<nb-layout [center]="layout.id === 'center-column'" windowMode>
+  <nb-layout-header fixed>
+    <!--<ngx-header [position]="sidebar.id === 'left' ? 'normal': 'inverse'"></ngx-header>-->
+    <a (click)="toggleSidebar()" href="#" class="navigation" style="padding-right: 5px;"><i class="fa fa-bars"></i></a>
+    <div class="logo" routerLink="/" style="margin-top:-5px;">DIGITAL<span>STUDY</span></div>
+    <span class="fill-remaining-space"></span>
+    <nb-actions size="small" class="header-container">
+      <nb-action class="control-item" disabled icon="nb-notifications"></nb-action>
+      <nb-action class="control-item">
+        <nb-search type="rotate-layout" (click)="startSearch()"></nb-search>
+      </nb-action>
+      <nb-action>
+        <nb-user *ngIf="logged && photo" [menu]="userMenu" [name]="user?.name" [picture]="photo"></nb-user>
+      </nb-action>
+    </nb-actions>
+  </nb-layout-header>
+
+  <nb-sidebar class="menu-sidebar"
+              tag="menu-sidebar"
+              responsive
+              [right]="sidebar.id === 'right'">
+    <nb-sidebar-header style="margin-bottom: -25px;">
+      <a href="#" class="btn btn-hero-success main-btn">
+        <i class="fa fa-question-circle"></i> <span>Learn more</span>
+      </a>
+    </nb-sidebar-header>
+    <nb-menu [items]="menu"></nb-menu>
+  </nb-sidebar>
+
+  <nb-layout-column class="main-content">
+    <router-outlet></router-outlet>
+  </nb-layout-column>
+
+  <nb-layout-column left class="small" *ngIf="layout.id === 'two-column' || layout.id === 'three-column'">
+    <nb-menu [items]="subMenu"></nb-menu>
+  </nb-layout-column>
+
+  <nb-layout-column right class="small" *ngIf="layout.id === 'three-column'">
+    <nb-menu [items]="subMenu"></nb-menu>
+  </nb-layout-column>
+
+  <nb-layout-footer fixed>
+  </nb-layout-footer>
+
+  <nb-sidebar class="settings-sidebar"
+              tag="settings-sidebar"
+              state="collapsed"
+              fixed
+              [right]="sidebar.id !== 'right'">
+  </nb-sidebar>
+</nb-layout>
+<!--<nb-layout windowMode>
+  <nb-layout-header fixed>
+    Company Name
+
+  </nb-layout-header>
+
+  <nb-sidebar responsive>
+    <nb-sidebar-header>Header</nb-sidebar-header>
+    <nb-sidebar-footer>
+      Footer components here
+    </nb-sidebar-footer>
+  </nb-sidebar>
+
+    <nb-layout-column>
+      <nb-card>
+        <nb-card-header>
+          <nb-actions>
+            fawf
+            <nb-action>
+              awfaw
+            </nb-action>
+          </nb-actions>
+        </nb-card-header>
+        <nb-card-body>
+          <nb-tabset>
+            <nb-tab tabTitle="Simple Tab #1">
+              Tab content 1
+            </nb-tab>
+            <nb-tab tabTitle="Simple Tab #2">
+              Tab content 2
+            </nb-tab>
+          </nb-tabset>
+        </nb-card-body>
+        <nb-card-footer>
+          <nb-route-tabset [tabs]="tabs"></nb-route-tabset>
+        </nb-card-footer>
+      </nb-card>
+    </nb-layout-column>
+
+  <nb-layout-footer>Contact us</nb-layout-footer>
+</nb-layout>
+
 <mat-toolbar color="primary" class="main-nav mat-elevation-z4">
 
   <button mat-icon-button (click)="start.toggle()" class="icon-padding">
@@ -5,14 +98,13 @@
   </button>
   <button mat-button routerLink="/"><strong>{{title}}</strong></button>
 
-  <!-- This fills the remaining space of the current row -->
   <span class="fill-remaining-space"></span>
 
   <button mat-icon-button class="icon-padding">
     <mat-icon aria-hidden="true">notifications</mat-icon>
   </button>
 
-  <button [@fadeInOut] *ngIf="logged && photo" mat-icon-button class="icon-padding" [matMenuTriggerFor]="menu"><!--style="border-radius: 50%; height: 80%;width:80%;"-->
+  <button [@fadeInOut] *ngIf="logged && photo" mat-icon-button class="icon-padding" [matMenuTriggerFor]="menu">
     <img class="img-fluid" style="border-radius: 60%;" [src]="photo">
   </button>
 
@@ -34,7 +126,7 @@
           <mat-nav-list>
             <div style="margin-top: -20px;">
               <ng-container *ngFor="let subCategory of nav.subCategory">
-                <ng-container *ngIf="subCategory.visable"> <!--Sub category list-->
+                <ng-container *ngIf="subCategory.visable">
                   <mat-list-item [routerLink]="subCategory.subCategoryLink" (click)="mode === 'over'? start.close() : null" routerLinkActive="mat-icon-active" style="margin-left: -30px;margin-right: -24px;">
                     <span mat-line style="margin-left: 30px;">{{subCategory.subCategoryName}}</span>
                     <button mat-icon-button >
@@ -60,11 +152,7 @@
 </mat-sidenav-container>
 
 
-<mat-menu x-position="before" #menu="matMenu">
-  <button mat-menu-item routerLink="/products"><mat-icon aria-hidden="true">settings</mat-icon>Settings</button>
-  <button mat-menu-item routerLink="/dashboard"><mat-icon aria-hidden="true">account_box</mat-icon>Profile</button>
-  <button mat-menu-item (click)="handleLogOut()"><mat-icon aria-hidden="true">exit_to_app</mat-icon>Sign out</button>
-</mat-menu>
+-->
 
 <!--
 <ng-container *ngFor="let nav of navList">

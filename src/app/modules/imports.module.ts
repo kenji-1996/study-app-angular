@@ -14,7 +14,11 @@ import {
 } from "@angular/material";
 import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
-import {NbLayoutModule, NbSidebarModule} from "@nebular/theme";
+import {
+    NbActionsModule, NbCardModule, NbCheckboxModule, NbLayoutModule, NbMenuModule, NbRouteTabsetModule, NbSearchModule,
+    NbSidebarModule, NbTabsetModule, NbThemeModule, NbUserModule
+} from "@nebular/theme";
+import {NbSharedModule} from "@nebular/theme/components/shared/shared.module";
 
 @NgModule({
     imports: [
@@ -42,7 +46,13 @@ import {NbLayoutModule, NbSidebarModule} from "@nebular/theme";
         MatGridListModule,
         FlexLayoutModule,
         NbLayoutModule,
+        NbCardModule,
         NbSidebarModule,
+        NbTabsetModule,
+        NbRouteTabsetModule,
+        NbActionsModule,
+        NbMenuModule,
+        NbUserModule,
     ],
     exports: [
         CommonModule,
@@ -69,7 +79,14 @@ import {NbLayoutModule, NbSidebarModule} from "@nebular/theme";
         MatGridListModule,
         FlexLayoutModule,
         NbLayoutModule,
+        NbCardModule,
+        NbSearchModule,
         NbSidebarModule,
+        NbTabsetModule,
+        NbRouteTabsetModule,
+        NbActionsModule,
+        NbMenuModule,
+        NbUserModule,
     ],
     declarations: []
 })

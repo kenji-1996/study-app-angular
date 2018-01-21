@@ -1,28 +1,24 @@
-<div style="padding:10px;">
 <div class="row">
     <div class="col-md-12">
-        <div class="jumbotron">
-            <h3 class="display-3 text-center">Welcome {{name}}</h3>
-            <p class="lead text-center">Welcome to 'DigitalStudy' (Still not sure what I will call this project), developed by <a href="https://techgorilla.io">TechGorilla</a> , I hope this can be of use, feedback is appreciated!</p>
-        </div>
-        <hr>
+        <h3 class="display-3 text-center">Hi {{name}}</h3>
         <div *ngIf="news" [@fadeInOut]>
-            <div class="parentDiv">
-                <div class="search-results mat-elevation-z5" style="background-color: white;" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50">
-                    <div dense *ngFor="let n of news" style=" margin: 20px;">
-                        <span><h4>{{ n.headline | uppercase}}</h4> </span>
-                        <p class="text-muted" style="font-size:small">By {{n.authorName}} on {{n.date | date:'fullDate'}}</p>
-                        <p mat-line [innerHtml]="sanitizer.bypassSecurityTrustHtml(n.content)"></p>
-                        <hr>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div *ngIf="staff">
-            <hr style="margin-top: 40px;margin-bottom: 15px;">
-            <app-add-news></app-add-news>
+            <nb-card>
+                <nb-tabset>
+                    <nb-tab tabTitle="News">
+                        <nb-card-body style="max-height: 600px;">
+                            <div dense *ngFor="let n of news" style=" margin: 20px;">
+                                <span><h4>{{ n.headline | uppercase}}</h4> </span>
+                                <p class="text-muted" style="font-size:small">By {{n.authorName}} on {{n.date | date:'fullDate'}}</p>
+                                <p mat-line [innerHtml]="sanitizer.bypassSecurityTrustHtml(n.content)"></p>
+                                <hr>
+                            </div>
+                        </nb-card-body>
+                    </nb-tab>
+                    <nb-tab tabTitle="Staff panel" *ngIf="staff">
+                        <app-add-news></app-add-news>
+                    </nb-tab>
+                </nb-tabset>
+            </nb-card>
         </div>
     </div>
 </div>
-
-

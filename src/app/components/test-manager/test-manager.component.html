@@ -1,37 +1,48 @@
-<div style="padding:10px;">
-<div fxLayout>
-    <h2>Test manager</h2>
-    <span class="fill-remaining-space"></span>
-    <button  mat-mini-fab matTooltip="Insert new question" (click)="upsertQuestion(null)">
-        <mat-icon>add</mat-icon>
-    </button>
-    <button color="primary" mat-mini-fab matTooltip="Save and submit question list" (click)="submitQuestions()">
-        <mat-icon>save</mat-icon>
-    </button>
-</div>
-<div [@fadeInOut] *ngIf="tests">
-<mat-grid-list [cols]="cols | async" rowHeight="155px"  gutterSize="10px">
-  <mat-grid-tile *ngFor="let t of tests" class="mat-elevation-z5" id="tile">
-    <div style="width:100%;" >
-        <img src="../../../assets/questionmark.svg" class="questionSVG">
-        <div [routerLink]="['/tests/selected', t._id]" style="cursor: pointer; position: absolute; top:10px; left:10px;">
-            <h3>{{t.title}}</h3>
-            <span style="font-size: small;">Author: {{t.author}}</span>
+
+<nb-card size="xlarge">
+    <nb-card-header>
+        <div class="cameras-card-header">
+            <span class="cameras-card-title">Tests</span>
+            <span class="cameras-filter">
+      </span>
         </div>
-        <div style="position: absolute;right:0;bottom:0;">
-            <button mat-button [routerLink]="['/tests/edit', t._id]">Edit</button>
-            <button mat-button (click)="removeTest(t)">Remove</button>
+    </nb-card-header>
+    <nb-card-body [@fadeInOut]>
+        <div class="row" *ngIf="tests" >
+            <div *ngFor="let t of tests; let i = index" class="col-lg-4">
+                <nb-card>
+                    <nb-card-header>{{t.title}}</nb-card-header>
+                    <nb-card-body>Questions: {{t.questions.length}}</nb-card-body>
+                    <nb-card-footer>
+                        <button class="btn btn-hero-info btn-tn" [routerLink]="['/tests/edit', t._id]">Edit</button>
+                        <button class="btn btn-hero-danger btn-tn" (click)="removeTest(t)">Remove</button>
+                    </nb-card-footer>
+                </nb-card>
+            </div>
         </div>
-    </div>
-  </mat-grid-tile>
-</mat-grid-list>
-</div>
+    </nb-card-body>
+    <nb-card-footer>
+        <nb-actions size="medium" fullWidth>
+            <nb-action>
+                <i class="nb-pause-outline"></i><span>Pause</span>
+            </nb-action>
+            <nb-action>
+                <i class="nb-list"></i><span>Logs</span>
+            </nb-action>
+            <nb-action>
+                <i class="nb-search"></i><span>Search</span>
+            </nb-action>
+            <nb-action>
+                <i class="nb-gear"></i><span>Setup</span>
+            </nb-action>
+        </nb-actions>
+    </nb-card-footer>
+</nb-card>
 
 <button class="settingsButton" color="accent" mat-fab="" style="z-index: 9;" [matMenuTriggerFor]="testOptions" >
-  <mat-icon class="mat-24 mat-icon material-icons" role="img" aria-hidden="true" >settings</mat-icon>
+    <mat-icon class="mat-24 mat-icon material-icons" role="img" aria-hidden="true" >settings</mat-icon>
 </button>
 
 <mat-menu #testOptions="matMenu" yPosition="above">
-  <button mat-menu-item (click)="addTest()"><mat-icon aria-hidden="true">add_circle</mat-icon>Add test</button>
+    <button mat-menu-item (click)="addTest()"><mat-icon aria-hidden="true">add_circle</mat-icon>Add test</button>
 </mat-menu>
-</div>

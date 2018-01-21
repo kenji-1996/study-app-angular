@@ -27,3 +27,7 @@
 mat-grid-tile {
   background: white;
 }
+
+//Nebular
+@import '~@nebular/theme/styles/global/bootstrap/breakpoints';
+@import '~bootstrap/scss/mixins/breakpoints';
