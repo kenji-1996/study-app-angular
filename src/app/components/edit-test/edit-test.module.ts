@@ -106,7 +106,7 @@ export class EditTestComponent implements OnInit  {
 
 }
 @NgModule({
-  declarations: [EditTestComponent],
+  declarations: [],
   imports: [
     RouterModule.forChild([
       { path: '', component: EditTestComponent, pathMatch: 'full', canDeactivate: [ConfirmChangesGuard] }
