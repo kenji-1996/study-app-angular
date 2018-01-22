@@ -23,6 +23,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
                 title: 'Results',
                 link: '/tests/results',
             },
+            {
+                title: 'Test',
+                link: '/tests/selected',
+                hidden: true,
+            },
         ],
     },
     {

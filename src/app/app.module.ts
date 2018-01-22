@@ -25,6 +25,8 @@ import {AuthGuard} from "./guards/auth.guard";
 import { NbMenuService, NbSidebarService, NbThemeModule} from '@nebular/theme';
 import {StateService} from "./services/state.service";
 import {NbMenuInternalService} from "@nebular/theme/components/menu/menu.service";
+import {DialogsModule} from "./dialogs/confirmDialog/dialogs.module";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 
 @NgModule({
@@ -46,6 +48,8 @@ import {NbMenuInternalService} from "@nebular/theme/components/menu/menu.service
     BrowserAnimationsModule,
     ReactiveFormsModule,
     NbThemeModule.forRoot({ name: 'default' }),
+    NgbModule.forRoot(),
+    DialogsModule,
   ],
   entryComponents: [
     AddTest,
@@ -71,3 +75,4 @@ import {NbMenuInternalService} from "@nebular/theme/components/menu/menu.service
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+

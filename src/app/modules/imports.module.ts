@@ -19,6 +19,7 @@ import {
     NbSidebarModule, NbTabsetModule, NbThemeModule, NbUserModule
 } from "@nebular/theme";
 import {NbSharedModule} from "@nebular/theme/components/shared/shared.module";
+import {NgbCollapseModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
     imports: [
@@ -26,6 +27,7 @@ import {NbSharedModule} from "@nebular/theme/components/shared/shared.module";
         FormsModule,
         HttpClientModule,
         NgHttpLoaderModule,
+
         MatChipsModule,
         MatFormFieldModule,
         MatInputModule,
@@ -44,7 +46,9 @@ import {NbSharedModule} from "@nebular/theme/components/shared/shared.module";
         MatCheckboxModule,
         MatTooltipModule,
         MatGridListModule,
+
         FlexLayoutModule,
+
         NbLayoutModule,
         NbCardModule,
         NbSidebarModule,
@@ -53,12 +57,16 @@ import {NbSharedModule} from "@nebular/theme/components/shared/shared.module";
         NbActionsModule,
         NbMenuModule,
         NbUserModule,
+
+        NgbModule,
+        NgbCollapseModule,
     ],
     exports: [
         CommonModule,
         FormsModule,
         HttpClientModule,
         NgHttpLoaderModule,
+
         MatChipsModule,
         MatFormFieldModule,
         MatInputModule,
@@ -77,7 +85,9 @@ import {NbSharedModule} from "@nebular/theme/components/shared/shared.module";
         MatCheckboxModule,
         MatTooltipModule,
         MatGridListModule,
+
         FlexLayoutModule,
+
         NbLayoutModule,
         NbCardModule,
         NbSearchModule,
@@ -87,6 +97,10 @@ import {NbSharedModule} from "@nebular/theme/components/shared/shared.module";
         NbActionsModule,
         NbMenuModule,
         NbUserModule,
+
+        NgbModule,
+        NgbCollapseModule,
+
     ],
     declarations: []
 })

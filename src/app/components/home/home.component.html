@@ -5,7 +5,7 @@
             <nb-card>
                 <nb-tabset>
                     <nb-tab tabTitle="News">
-                        <nb-card-body style="max-height: 600px;">
+                        <nb-card-body style="max-height: 400px;">
                             <div dense *ngFor="let n of news" style=" margin: 20px;">
                                 <span><h4>{{ n.headline | uppercase}}</h4> </span>
                                 <p class="text-muted" style="font-size:small">By {{n.authorName}} on {{n.date | date:'fullDate'}}</p>

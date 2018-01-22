@@ -11,6 +11,13 @@ import {Subscription} from "rxjs/Subscription";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import {Title} from "@angular/platform-browser";
 import {fadeAnimate} from "../../misc/animation";
+import {SearchPipe} from "../../pipes/search.pipe";
+import {EditTestComponent} from "../edit-test/edit-test.module";
+import {InfiniteScrollModule} from "ngx-infinite-scroll";
+import {DialogsService} from "../../services/dialogs.service";
+import {ConfirmChangesGuard} from "../../guards/confirm-changes.guard";
+import {NgbCheckBox} from "@ng-bootstrap/ng-bootstrap";
+import {NbCheckboxModule} from "@nebular/theme";
 
 @Component({
   selector: 'app-test',
@@ -19,7 +26,9 @@ import {fadeAnimate} from "../../misc/animation";
   animations: [ fadeAnimate ],
 })
 export class TestComponent implements OnInit {
-  //Loaded in test
+
+
+  //Test variables
   test$: Observable<TestToQuestion>;
   test;
   started = false;
@@ -29,14 +38,18 @@ export class TestComponent implements OnInit {
   selectedId = 0;
   answer;
   timeLeft = 0;
+  query;
 
-  //Options
+  //Test options
   giveHint = false;
   timeLimit = false;
   instantResult = false;
   randomOrder = false;//To-do1
 
+  //Format
+  isCollapsed = true;
   databaseResult;
+  dirty: boolean;
 
   //Recent results
   private subscription: Subscription;
@@ -47,6 +60,7 @@ export class TestComponent implements OnInit {
       private databaseManagementService: DataManagementService,
       public dataEmitter: DataEmitterService,
       private titleService: Title,
+      private dialogsService: DialogsService,
   ) { }
 
   ngOnInit() {
@@ -69,6 +83,15 @@ export class TestComponent implements OnInit {
         });
       });
     });
+    this.dataEmitter.$dirty.subscribe(dirty=>this.dirty = dirty);
+  }
+
+
+  canDeactivate(): Observable<boolean> | boolean {
+    if (!this.dirty) {
+      return true;
+    }
+    return this.dialogsService.confirm('Unsaved test', 'You have unsaved changes, are you sure you want to leave this page?');
   }
 
   testStarted() {
@@ -85,6 +108,38 @@ export class TestComponent implements OnInit {
 
   isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length === 0));
+  }
+
+  setMyClasses(result:any) {
+    let percent = parseInt(result);
+    let styles;
+    switch (true)
+    {
+      case percent <= 30:
+        styles = {
+
+          'color': 'red',
+        };
+        return 'btn  btn-block btn-hero-danger';
+      case percent <= 60:
+        styles = {
+
+          'color': 'orange',
+        };
+        return 'btn  btn-block btn-hero-warning';
+      case percent <= 80:
+        styles = {
+
+          'color': 'yellow',
+        };
+        return 'btn  btn-block btn-hero-info';
+      case percent > 80:
+        styles = {
+          'color': 'green',
+        };
+        return 'btn  btn-block btn-hero-success';
+      default:
+    }
   }
 
   setMyStyles(result:any) {
@@ -123,12 +178,21 @@ export class TestComponent implements OnInit {
 
 }
 @NgModule({
-  declarations: [TestComponent],
+  declarations: [
+    TestComponent,
+    SearchPipe,
+    EditTestComponent,
+  ],
   imports: [
     RouterModule.forChild([
-      { path: '', component: TestComponent, pathMatch: 'full'}
+      { path: '', component: TestComponent, pathMatch: 'full', canDeactivate: [ConfirmChangesGuard]}
     ]),
-    ImportsModule
+    ImportsModule,
+    InfiniteScrollModule,
+    NbCheckboxModule,
+  ],
+  providers: [
+    ConfirmChangesGuard,
   ]
 })
 export class TestModule {

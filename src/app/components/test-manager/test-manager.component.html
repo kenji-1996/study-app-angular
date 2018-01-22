@@ -1,5 +1,5 @@
 
-<nb-card size="xlarge">
+<nb-card size="xlarge" style="max-height: 500px;">
     <nb-card-header>
         <div class="cameras-card-header">
             <span class="cameras-card-title">Tests</span>
@@ -10,12 +10,20 @@
     <nb-card-body [@fadeInOut]>
         <div class="row" *ngIf="tests" >
             <div *ngFor="let t of tests; let i = index" class="col-lg-4">
-                <nb-card>
+                <nb-card><!--[routerLink]="['/tests/selected', t._id]" style="cursor: pointer;"-->
                     <nb-card-header>{{t.title}}</nb-card-header>
                     <nb-card-body>Questions: {{t.questions.length}}</nb-card-body>
                     <nb-card-footer>
-                        <button class="btn btn-hero-info btn-tn" [routerLink]="['/tests/edit', t._id]">Edit</button>
-                        <button class="btn btn-hero-danger btn-tn" (click)="removeTest(t)">Remove</button>
+                        <div class="dropdown btn-group" ngbDropdown>
+                            <button type="button" class="btn btn-primary btn-tn" [routerLink]="['/tests/selected', t._id]">Run test</button>
+                            <button type="button" class="btn btn-primary" ngbDropdownToggle></button>
+                            <ul class="dropdown-menu" ngbDropdownMenu>
+                                <li class="dropdown-item" [routerLink]="['/tests/edit', t._id]">Edit</li>
+                                <li class="dropdown-item" (click)="removeTest(t)">Remove</li>
+                            </ul>
+                        </div>
+                        <!--<button class="btn btn-hero-info btn-tn" [routerLink]="['/tests/edit', t._id]">Edit</button>
+                        <button class="btn btn-hero-danger btn-tn" (>Remove</button>-->
                     </nb-card-footer>
                 </nb-card>
             </div>
