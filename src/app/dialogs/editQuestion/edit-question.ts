@@ -36,7 +36,6 @@ export class EditQuestionDialog {
 
     questionField = new FormControl('', Validators.required);
     answerField = new FormControl('', Validators.required);
-    categoryField = new FormControl('', Validators.required);
 
     add(event: MatChipInputEvent): void {
         let input = event.input;

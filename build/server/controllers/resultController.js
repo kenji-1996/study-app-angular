@@ -4,33 +4,45 @@
 let settings = require('../misc/settings');
 
 let mongoose = require('mongoose');
-let usersModel = require('../models/users');
-let resultsModel = require('../models/results');
+let usersModel = require('../models/user');
+
+/**
+ * let resultsModel = require('../models/result');
+ * Individual results currently stored in user.[submittedTests] (contains feedback, mark, original test._id)
+ * Test results (all results for a certain test) are contained in test.testResults (An array of submittedTests), only accessible for the author(s) to mark and reference
+ */
 
 /**
  * /api/results [GET]
  * List ALL results in DB.
+ *
+ * DEPRECIATED!!
  * @param req
  * @param res
  * @return JSON {message,data}
- *  {'result.private': false} --> Argument for only showing public testsModel
  */
-exports.listResults = function(req, res) {
-    resultsModel.find({}, function(err, results) {
-        if (err) return res.status(500).json({message: "Find results query failed", data: err});
+exports.listResultsDepreciated = function(req, res) {
+    /*settings.ensureAuthorized(req,res).then(function (user) {
+        if (!user) { return null; }
 
-        return res.status(200).json({message: "Results retrieved", data: results});
-    });
+        resultsModel.find({}, function(err, results) {
+            if (err) return res.status(500).json({message: "Find results query failed", data: err});
+
+            return res.status(200).json({message: "Results retrieved", data: results});
+        });
+    });*/
+    return res.status(404).json({message: "No longer providing all results", data: null});
 };
 /**
  * /api/results [POST]
- * A home submits their results (Needs authentication)
- * Results body needs: {testId: STRING , testTitle: STRING, questionsToResult: [{questionId: STRING, mark: STRING}] },
+ * A user submits their individual results (Needs authentication)
+ * Creates submittedTest[submittedQuestion] adds submittedTests._id to user.submittedTests[]
+ * req.body.result object required example: "result": { "type": 'keywords, "name": "Diana Faulkner"}
  * @param req
  * @param res
  * @return JSON {message,data}
  */
-exports.createResult = function(req, res) {
+exports.submitUserResult = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (user) {
         if(!user) { return null; }
         usersModel.findOne({unique_id: user['sub']}, function (err, user) {

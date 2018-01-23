@@ -13,7 +13,6 @@ export class QuestionValidationService implements ValidatorService {
         return new FormGroup({
             'question': new FormControl(null, Validators.required),
             'answer': new FormControl(null, Validators.required),
-            'category': new FormControl(),
         });
     }
 }
@@ -31,7 +30,7 @@ export class EditTestDialog {
 
     @Input() questionList = [];
 
-    displayedColumns = ['question', 'answer', 'category', 'hint', 'keywords'];
+    displayedColumns = ['question', 'answer', 'hint', 'keywords'];
     @Output() questionListChange = new EventEmitter<Question[]>();
 
     public dataSource: TableDataSource<Question>;

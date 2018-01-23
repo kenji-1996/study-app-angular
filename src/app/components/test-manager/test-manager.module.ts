@@ -73,11 +73,14 @@ export class TestManagerComponent implements OnInit {
   addTest(): void{
     let dialogRef = this.dialog.open(AddTest, {data: {name: '',} });
       dialogRef.afterClosed().subscribe(result => {
-          this.router.navigate(['/tests/edit',result]);
+        if(result) {
+          this.router.navigate(['/tests/selected', result]);
+        }
       });
   }
 
   removeTest(test:any) {
+    console.log('attempting to remove ' + JSON.stringify(test));
     this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });
   }
 

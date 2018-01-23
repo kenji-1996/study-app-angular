@@ -90,7 +90,7 @@ module.exports.userPayload = function userPayload(token) {
 };
 
 
-let User = require('../models/users');
+let User = require('../models/user');
 /**
  * Here we authenticate a home against a database, use their token to verify its from them,
  * then check their ID against the database permissions.
@@ -119,6 +119,13 @@ module.exports.authenticate = function authenticate(token) {
         );
     });
 };
+/**
+ * Here is the only authentication I now use, as it is the proper way to authenticate.
+ * I check the headers for auth, then validate it against JWT verification, if its valid we return the user object, otherwise we return an error.
+ * @param req
+ * @param res
+ * @return {Promise}
+ */
 module.exports.ensureAuthorized = function ensureAuthorized(req, res) {
     return new Promise((resolve) => {
         let bearerToken;
@@ -129,16 +136,26 @@ module.exports.ensureAuthorized = function ensureAuthorized(req, res) {
             req.token = bearerToken;
             this.userPayload(req.token).then((result) => {
                 if (!result) {
-                    resolve(false);
+                    //resolve(false);
                     return res.status(403).json({message:"Failed to verify token supplied in authorization header", data: null});
                 }else{
                     resolve(result);
                 }
             });
         } else {
-            resolve(false);
+            //resolve(false);
             return res.status(403).json({message:"Failed to supply token in authorization header.", data: null});
         }
     });
+};
 
+/**
+ * Input the amount of days to add to current date, get new date returned.
+ * @param days
+ * @return {Date}
+ */
+module.exports.addDays = function(days) {
+    var dat = new Date(this.valueOf());
+    dat.setDate(dat.getDate() + days);
+    return dat;
 }

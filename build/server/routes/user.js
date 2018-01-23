@@ -30,7 +30,7 @@ router.route('/users/:userId/tests')
 
 router.route('/users/:userId/results')
     .get(function(req,res) {
-        testController.listAllResults(req,res);
+        testController.listAllTestResults(req,res);
     });
 
 router.route('/users/:userId/results/:testId')

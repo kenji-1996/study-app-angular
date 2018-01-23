@@ -1,31 +1,39 @@
-<div style="padding:10px;">
 <div [@fadeInOut] *ngIf="selectedQuestion && test">
-<div *ngIf="test" (keydown)="keyDownFunction($event)">
-  <mat-card *ngIf="selectedQuestion">
-    <mat-card-subtitle>{{selectedQuestion.category}}</mat-card-subtitle>
-    <mat-card-title>{{selectedQuestion.question}}</mat-card-title>
-    <mat-card-content>
-      <mat-form-field style="width: 100%;">
-        <textarea matInput autofocus placeholder="Answer" rows="15" [(ngModel)]="answer"></textarea>
-      </mat-form-field>
-      <mat-expansion-panel *ngIf="giveHint">
-        <mat-expansion-panel-header>
-          Hint
-        </mat-expansion-panel-header>
-        {{selectedQuestion.hint}}
-      </mat-expansion-panel>
-    </mat-card-content>
-    <mat-divider></mat-divider>
-    <mat-card-actions>
-    </mat-card-actions>
-    <mat-card-footer>
-      <button mat-button (click)="submitQuestion()">Submit</button>
-      <mat-progress-bar *ngIf="timeLimit" mode="determinate" [value]="progress"></mat-progress-bar>
-    </mat-card-footer>
-  </mat-card>
-  <div>
-    <h4 class="text-center text-muted lead" *ngIf="selectedQuestion">{{selectedId + 1}} of {{test.questions.length}}</h4>
+  <div (keydown)="keyDownFunction($event)">
+    <nb-card>
+      <nb-card-header>
+        {{selectedQuestion.question}}
+      </nb-card-header>
+
+      <nb-card-body>
+        <div class="input-group">
+          <textarea rows="10" placeholder="Answer" class="form-control" [(ngModel)]="answer"></textarea>
+        </div>
+        <div *ngIf="giveHint">
+          <div class="alert alert-hint" role="alert">
+            <strong>Hint</strong> <span style="font-style: italic">{{selectedQuestion.hint}}</span>
+          </div>
+
+        </div>
+      </nb-card-body>
+
+      <nb-card-footer >
+        <div fxLayout="row">
+          <button class="btn btn-hero-success" (click)="submitQuestion()">Submit</button>
+
+
+          <span class="fill-remaining-space"></span>
+          <div fxLayout="row" fxFlexAlign="end">
+            <h4 class="text-center text-muted lead" *ngIf="selectedQuestion">{{selectedId + 1}} of {{test.questions.length}}</h4>
+          </div>
+        </div>
+        <div style="margin-top:20px;"></div>
+        <mat-progress-bar  mode="determinate" [value]="progress" color="accent"></mat-progress-bar>
+
+      </nb-card-footer>
+    </nb-card>
+    <div>
+
+    </div>
   </div>
-</div>
-</div>
 </div>

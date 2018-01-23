@@ -30,7 +30,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
             },
         ],
     },
-    {
+    /*{
         title: 'UI Features',
         icon: 'nb-keypad',
         link: '/pages/ui-features',
@@ -159,5 +159,5 @@ export const MENU_ITEMS: NbMenuItem[] = [
                 link: '/auth/reset-password',
             },
         ],
-    },
+    },*/
 ];

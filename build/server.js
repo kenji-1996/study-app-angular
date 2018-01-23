@@ -9,10 +9,13 @@ const html = __dirname + '/dist';
 app.use(cors());
 app.options('*', cors());
 app.use('/api', require('./server/misc/routemanager'));
-app.use(express.static(html));
+/**
+ * Uncomment when going live
+ */
+/*app.use(express.static(html));
 app.get('*', function(req, res) {
     res.sendFile(html + '/index.html')
-});
+});*/
 
 
 

@@ -1,5 +1,5 @@
 
-<nb-card size="xlarge" style="max-height: 500px;">
+<nb-card size="xlarge" style="max-height: 800px;">
     <nb-card-header>
         <div class="cameras-card-header">
             <span class="cameras-card-title">Tests</span>
@@ -14,14 +14,20 @@
                     <nb-card-header>{{t.title}}</nb-card-header>
                     <nb-card-body>Questions: {{t.questions.length}}</nb-card-body>
                     <nb-card-footer>
-                        <div class="dropdown btn-group" ngbDropdown>
+                        <div class="btn-group btn-group-full-width" role="group">
+                            <button type="button" class="btn btn-hero-info" [routerLink]="['/tests/selected', t._id]">Run test</button>
+                            <button type="button" class="btn btn-hero-danger btn-group-icon btn-group-divider btn-fixed" (click)="removeTest(t)">
+                                <i class="nb-trash"></i>
+                            </button>
+                        </div>
+                        <!--<div class="dropdown btn-group" ngbDropdown>
                             <button type="button" class="btn btn-primary btn-tn" [routerLink]="['/tests/selected', t._id]">Run test</button>
                             <button type="button" class="btn btn-primary" ngbDropdownToggle></button>
                             <ul class="dropdown-menu" ngbDropdownMenu>
                                 <li class="dropdown-item" [routerLink]="['/tests/edit', t._id]">Edit</li>
                                 <li class="dropdown-item" (click)="removeTest(t)">Remove</li>
                             </ul>
-                        </div>
+                        </div>-->
                         <!--<button class="btn btn-hero-info btn-tn" [routerLink]="['/tests/edit', t._id]">Edit</button>
                         <button class="btn btn-hero-danger btn-tn" (>Remove</button>-->
                     </nb-card-footer>
@@ -31,26 +37,12 @@
     </nb-card-body>
     <nb-card-footer>
         <nb-actions size="medium" fullWidth>
-            <nb-action>
-                <i class="nb-pause-outline"></i><span>Pause</span>
-            </nb-action>
-            <nb-action>
-                <i class="nb-list"></i><span>Logs</span>
+            <nb-action (click)="addTest()">
+                <i class="nb-plus"></i><span>Add</span>
             </nb-action>
             <nb-action>
                 <i class="nb-search"></i><span>Search</span>
             </nb-action>
-            <nb-action>
-                <i class="nb-gear"></i><span>Setup</span>
-            </nb-action>
         </nb-actions>
     </nb-card-footer>
 </nb-card>
-
-<button class="settingsButton" color="accent" mat-fab="" style="z-index: 9;" [matMenuTriggerFor]="testOptions" >
-    <mat-icon class="mat-24 mat-icon material-icons" role="img" aria-hidden="true" >settings</mat-icon>
-</button>
-
-<mat-menu #testOptions="matMenu" yPosition="above">
-    <button mat-menu-item (click)="addTest()"><mat-icon aria-hidden="true">add_circle</mat-icon>Add test</button>
-</mat-menu>

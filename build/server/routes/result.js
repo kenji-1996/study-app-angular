@@ -7,10 +7,10 @@ let resultController = require('../controllers/resultController');
 
 router.route('/results')
     .get(function(req,res) {
-        resultController.listResults(req,res);
+        resultController.listResultsDepreciated(req,res);
     })
     .post(function(req,res) {
-        resultController.createResult(req,res);
+        resultController.submitUserResult(req,res);
     });
 
 router.route('/results/:resultId')

@@ -7,10 +7,6 @@
         <input [formControl]="answerField" matInput placeholder="Answer" [(ngModel)]="data.answer">
         <mat-error *ngIf="answerField.invalid">Required field</mat-error>
     </mat-form-field></div>
-    <div><mat-form-field style="width: 100%;">
-        <input [formControl]="categoryField" matInput placeholder="Category" [(ngModel)]="data.category">
-        <mat-error *ngIf="categoryField.invalid">Required field</mat-error>
-    </mat-form-field></div>
     <div><mat-form-field style="width: 100%;"><input matInput placeholder="Hint" [(ngModel)]="data.hint"></mat-form-field></div>
     <mat-form-field style="width: 100%;">
         <mat-chip-list #chipList>
@@ -29,6 +25,6 @@
 </div>
 <div mat-dialog-actions>
 
-    <button mat-button *ngIf="!questionField.invalid && !answerField.invalid && !categoryField.invalid" [mat-dialog-close]="data" tabindex="2">Submit</button>
+    <button mat-button *ngIf="!questionField.invalid" [mat-dialog-close]="data" tabindex="2">Submit</button>
     <button mat-button (click)="onNoClick()" tabindex="-1">Close</button>
 </div>
