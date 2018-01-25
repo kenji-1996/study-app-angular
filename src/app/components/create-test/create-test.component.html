@@ -118,7 +118,7 @@
                                 <nb-card-header>
                                     All choices
                                 </nb-card-header>
-                                <nb-card-body [dragula]='"choices"' id="allChoices" [dragulaModel]='allChoices' style="touch-action: none" *ngIf="allChoices.length > 0">
+                                <nb-card-body [dragula]='"choices"' id="allChoices" style="touch-action: none" *ngIf="allChoices.length > 0">
                                     <div *ngFor='let text of allChoices' [innerHtml]='text' [id]="text"></div>
                                 </nb-card-body>
                                 <nb-card-footer>
@@ -134,7 +134,7 @@
                                 <nb-card-header>
                                     Correct choices
                                 </nb-card-header>
-                                <nb-card-body [dragula]='"choices"' id="correctChoices" [dragulaModel]='correctChoices' style="touch-action: none">
+                                <nb-card-body [dragula]='"choices"' id="correctChoices" style="touch-action: none">
                                     <div *ngFor='let text of correctChoices' [innerHtml]='text' [id]="text"></div>
                                 </nb-card-body>
                             </nb-card>

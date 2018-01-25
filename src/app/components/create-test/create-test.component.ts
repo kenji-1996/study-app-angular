@@ -23,10 +23,13 @@ export class CreateTestComponent implements OnInit {
         private formBuilder: FormBuilder,
         private dragulaService: DragulaService
     ) {
-        dragulaService.setOptions('choices', { copy: true});
-        dragulaService.drop.subscribe((value) => { this.onDrop(value); });
-        dragulaService.out.subscribe((value) => {
-            this.onOut(value.slice(1));
+        dragulaService.setOptions('choices', {
+            copy: true,
+            copySortSource: true
+        });
+        //determine if drop is allowed
+        dragulaService.drop.subscribe((value) => {
+            this.onDrop(value);
         });
     }
 
@@ -88,6 +91,48 @@ export class CreateTestComponent implements OnInit {
     }
 
     private onOut(value) {
+        let [item, target, source] = value;
+
+    }
+
+
+    //(0 - bagname, 1 - el, 2 - target, 3 - source, 4 - sibling)
+    private onDrop(value) {
+        let [bag,item,target,source,result] = value;
+        console.log(value);
+
+        if (target == null) { //dragged outside any of the bags
+            item.remove();
+            //return;
+        }
+        if(target) {//if a target exists
+            if (target.id !== "correctChoices" && target.id !== source.id) { //dragged to a container that should not add the element
+                item.remove();
+            }
+        }
+        if(source && source.id == 'allChoices' && target == null) {
+            //Remove both all and correct
+            let child = (source.children.id == item.id);
+            for(let i = 0; i < source.children; i++) {
+                source.children[i].remove();
+            }
+            //figure out how to access other list
+            this.deleteItem(this.allChoices,item.id);
+            this.deleteItem(this.correctChoices,item.id);
+        }
+        if(source && source.id == 'correctChoices' && target == null) {
+            //Remove both all and correct
+            let child = (source.children.id == item.id);
+            for(let i = 0; i < source.children; i++) {
+                source.children[i].remove();
+            }
+            this.deleteItem(this.allChoices,item.id);
+            this.deleteItem(this.correctChoices,item.id);
+        }
+
+    }
+
+    /*private onOut(value) {
         let [item,target, source] = value;
         console.log(item);
         console.log(target);
@@ -99,20 +144,19 @@ export class CreateTestComponent implements OnInit {
             //this.deleteItem(this.allChoices,item.id);
             //this.deleteItem(this.correctChoices,item.id);
         }
-        /*if(value[3].id == 'allChoices' && value[2] == null) {//if we drag from all into null (remove)
+        if(value[3].id == 'allChoices' && value[2] == null) {//if we drag from all into null (remove)
             console.log('removing an item from arrays');
 
-        }*/
+        }
     }
 
     private onDrop(value) {
         let [bag,item,target,source,result] = value;
-        /**
          * 1 - item
          * 2 - target
          * 3 - source
          * 4 - result (if nowhere will be null)
-         */
+
         console.log(bag);
         console.log(item);
         console.log(target);
@@ -127,14 +171,14 @@ export class CreateTestComponent implements OnInit {
             this.deleteItem(this.correctChoices,value[1].id);
         }
         //if (value[2] == null) {value[1].remove();return; }
-        /*if (value[2].id !== "correctChoices"
+        if (value[2].id !== "correctChoices"
             && (value[3] !== null)
             && value[2].id !== value[3].id ) {
             this.allChoices =  Array.from(new Set(this.allChoices));
-        }*/
+        }
 
 
-    }
+    }*/
 
     deleteItem(array:any,pointer:any) {
         const index: number = array.indexOf(pointer);
