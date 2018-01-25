@@ -16,6 +16,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
         icon: 'nb-compose',
         children: [
             {
+                title: 'My tests',
+                link: '/tests/my-tests',
+            },
+            {
                 title: 'Manager',
                 link: '/tests/manager',
             },

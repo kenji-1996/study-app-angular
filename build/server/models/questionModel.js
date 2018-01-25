@@ -25,11 +25,12 @@ let questionSchema  = new Schema({
     type: { type:String, required: true, default: 'keywords'},
 
     //Answer/Question variables, only one will be filled out depending on 'type' - Not user submitted (When they complete tests, creates 'submittedQuestion' + submittedTest)
-    keywords: [String],//Actual keywords in answer
+    keywordsAnswer: [String],//Actual keywords in answer
     keywordsQuestion: String,//Question for keyword answer
 
-    choices: [String],//Actual choices (contains only the choices that are correct)
-    choicesQuestion: [String],//Array of choices for one question (recommended 4, minimum of 2)
+    choicesAnswer: [String],//Actual choices (contains only the choices that are correct)
+    choicesAll: [String],//Array of choices for one question (recommended 4, minimum of 2)
+    choicesQuestion: String,
 
     arrangement: [String],//The actual arrangment of the items in normal order
     arrangementQuestion: [String],//The 4-x provided arrangment in random order

@@ -7,11 +7,11 @@
       <textarea type="text" [(ngModel)]="content" class="form-control" placeholder="Content" rows="15"></textarea>
     </div>
     <div class="form-group" >
-    <mat-chip-list #chipList>
-      <mat-chip *ngFor="let tag of tags" [selectable]="selectable" [removable]="removable" (remove)="removeTag(tag)">
-        {{tag}}<mat-icon matChipRemove>cancel</mat-icon>
-      </mat-chip>
-    </mat-chip-list>
+      <mat-chip-list #chipList>
+        <mat-chip *ngFor="let tag of tags" [selectable]="selectable" [removable]="removable" (remove)="removeTag(tag)">
+          {{tag}}<mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
     </div>
     <div class="form-group" >
       <input class="form-control" style="width: 100%;" type="text" placeholder="New keyword..."

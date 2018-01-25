@@ -6,10 +6,12 @@ import { CommonModule } from '@angular/common';
 import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {
+    MatAutocompleteModule,
     MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatDialogModule, MatExpansionModule,
     MatFormFieldModule, MatGridListModule,
     MatIconModule,
     MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatSidenavModule, MatSnackBarModule,
+    MatStepperModule,
     MatTableModule, MatToolbarModule, MatTooltipModule
 } from "@angular/material";
 import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
@@ -20,6 +22,7 @@ import {
 } from "@nebular/theme";
 import {NbSharedModule} from "@nebular/theme/components/shared/shared.module";
 import {NgbCollapseModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {DragulaModule} from "ng2-dragula";
 
 @NgModule({
     imports: [
@@ -46,6 +49,8 @@ import {NgbCollapseModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
         MatCheckboxModule,
         MatTooltipModule,
         MatGridListModule,
+        MatStepperModule,
+        MatAutocompleteModule,
 
         FlexLayoutModule,
 
@@ -57,9 +62,12 @@ import {NgbCollapseModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
         NbActionsModule,
         NbMenuModule,
         NbUserModule,
+        NbCheckboxModule,
 
         NgbModule,
         NgbCollapseModule,
+
+        DragulaModule,
     ],
     exports: [
         CommonModule,
@@ -85,6 +93,8 @@ import {NgbCollapseModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
         MatCheckboxModule,
         MatTooltipModule,
         MatGridListModule,
+        MatStepperModule,
+        MatAutocompleteModule,
 
         FlexLayoutModule,
 
@@ -97,9 +107,12 @@ import {NgbCollapseModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
         NbActionsModule,
         NbMenuModule,
         NbUserModule,
+        NbCheckboxModule,
 
         NgbModule,
         NgbCollapseModule,
+
+        DragulaModule,
 
     ],
     declarations: []

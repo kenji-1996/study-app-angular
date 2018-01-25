@@ -21,14 +21,16 @@ var UserSchema  = new Schema({
     userGroup: { type: String, default: 'user' },
     organization: String,
 
-
-    //Testing related
+    /**
+     * @param test - List of non-editable tests allocated to the user                same ID
+     * @param authoredTests - List of tests that the user has created or can edit    same ID
+     * @param submittedTests - List of test attempts holding submitted answers and pointer to 'test'
+     */
     tests: [String],//Tests that are allocated, no editing freedom but can soft delete them from ones self
     authoredTests: [String],//Tests created by this user, can edit and hard delete this
-    submittedTests: [String], //Array of submitted tests that will hold marks/feedback/etc
+    results: [String], //Array of submitted tests that will hold marks/feedback/etc
     //Retrieve authoredTestResults from authoredTests (after being approved as author by server) -- selectedTest.testResults(testResults is an array of submitted tests)
     //authoredTestResults: [String],//Array of results schema for tests user has authored
-
 
     //Misc
     lastLogin: { type: Date, default: Date.now },

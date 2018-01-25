@@ -4,10 +4,10 @@
 let settings = require('../misc/settings');
 
 let mongoose = require('mongoose');
-let testsModel = require('../models/test');
-let usersModel = require('../models/user');
-let resultsModel = require('../models/result');
-let questionsModel = require('../models/question');
+let testsModel = require('../models/testModel');
+let usersModel = require('../models/userModel');
+let resultsModel = require('../models/resultModel');
+let questionsModel = require('../models/questionModel');
 
 /**
  * /api/tests [GET]
@@ -15,6 +15,7 @@ let questionsModel = require('../models/question');
  * {'test.private': false} --> Argument for only showing public testsModel
  *
  * Note ->Need to control results outputted into pages, probably by 100 seperating.
+ * Note ->Might need to hide this behind checks/fully
  *
  * STATUS: Untested
  * @param req
@@ -30,7 +31,7 @@ exports.listTests = function(req, res) {
 };
 /**
  * /api/tests [POST]
- * A home can add a test to their home if authorised (req.body.test object required example: "test": { "id": 0, "name": "Diana Faulkner"}
+ * A home can add a test to their home if authorised (req.body.test object required example: "test": { "id": 0, "name": "Diana Faulkner"} )
  *
  * STATUS: Untested
  * @param req
@@ -48,20 +49,16 @@ exports.createTest = function(req, res) {
                     _id: new mongoose.Types.ObjectId(),
                     title: req.body.test.title,
                     category: req.body.test.category,
-                    markers: req.body.test.markers, //String array of userIds, doesnt have to contain authors (I.E. students can create a test but not mark it, give it to teachers)
-                    //Author info (verified internally to match request) They can still edit!
-                    authorID: user.id,
-                    author: user.name,
-                    authorIMG: user.picture,
+                    authors: [],
+                    //In future accept array of userIds, displayed as friends on UI
                 });
-                //Test users cannot be set, gets updated when a user adds/receives this test
-                test.users = test.users + 1;
+                test.authors.push(user.id);
                 //Settings, only set if posted.
                 if(req.body.test.expire) {test.expire = req.body.test.expire; }
                 if(req.body.test.expireDate) {test.expireDate = req.body.test.expireDate; }//Date.now type date
                 if(req.body.test.handMarked) {test.handMarked = req.body.test.handMarked; }
                 if(req.body.test.private) {test.private = req.body.test.private; }
-                if(req.body.test.showResult) {test.showResult = req.body.test.showResult; }
+                if(req.body.test.showMarks) {test.showMarks = req.body.test.showMarks; }
                 if(req.body.test.attemptsAllowed) {test.attemptsAllowed = req.body.test.attemptsAllowed; }
                 if(req.body.test.currentAttempts) {test.currentAttempts = req.body.test.currentAttempts; }
                 if(req.body.test.userEditable) {test.userEditable = req.body.test.userEditable; }
@@ -117,7 +114,7 @@ exports.updateTest = function(req, res) {
         //Find the user making the request, if they are the author they can edit it (May need more authors/editors in test model soon)
         usersModel.findOne({unique_id: user['sub']}, function (err, user) {
             if (err) return res.status(404).json({message: "User not found/Valid", data: err});
-            testsModel.findOneAndUpdate({_id: req.params.testId, authorID: user.id}, req.body.test, {new: true}, function (err, test) {
+            testsModel.findOneAndUpdate({_id: req.params.testId, authors: user.id }, req.body.test, {new: true}, function (err, test) {//Find the test where the id is the param and the user is an author
                 if (err) return res.status(500).json({message: "Test updated query failed", data: err});
                 return res.status(200).json({message: ('Test ' + test._id + ' updated'), data: test});
             });
@@ -144,10 +141,10 @@ exports.hardDeleteTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (authUser) {
         if(!authUser) { return null; }
         usersModel.findOne({unique_id: authUser['sub']})
-            .exec(function (err,userQ1) {
+            .exec(function (err,user) {
                 if(err) return res.status(500).json({message: ('Couldnt find user provided'), data: err});
                 //Checking if its the same ID, and the authorID is the person attempting to edit.
-                testsModel.findOne({_id: req.params.testId, authorID: userQ1.id})
+                testsModel.findOne({_id: req.params.testId, authors: user.id})
                     .exec( function(err, test) {
                         if (err) return res.status(500).json({message:"Failed to find test with matched ID and author", data: err});
                         if(test.questions) {
@@ -174,6 +171,7 @@ exports.hardDeleteTest = function(req, res) {
  * List the questionsModel for selected ID
  *
  * List all question details (after formatting removing empty cells) for authors <---
+ * Author has own route/controller for all things author permissions related. (like full answer questions).
  *
  * STATUS: Untested
  * @param req
@@ -184,7 +182,7 @@ exports.listTestQuestions = function(req, res) {
     testsModel.findById(req.params.testId)
         .exec(function (err, result) {
             if(err) return res.status(500).json({message: ('Couldnt find test provided'), data: err});
-            questionsModel.find({'_id': { $in: result.questions}},'_id date resources type')//Only provide resources and type to allow user to preview questions
+            questionsModel.find({'_id': { $in: result.questions}},'_id date resources type')//Only provide resources and type to allow user to preview questions (need each question type presented)
                 .exec(function (err,questionFindQuery) {
                     if (err) { return res.status(404).json({message: "Failed to retrieve questions", data: err}) }
                     return res.status(200).json({message: 'Questions found', data: questionFindQuery});
@@ -208,9 +206,9 @@ exports.updateQuestions = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (authUser) {
         if(!authUser) { return null; }
         usersModel.findOne({unique_id: authUser['sub']})
-            .exec(function (err,userQ1) {
+            .exec(function (err,user) {
                 if(err) return res.status(500).json({message: ('Couldnt find user provided'), data: err});
-                testsModel.find({_id: req.params.testId, authorID: userQ1.id})
+                testsModel.find({_id: req.params.testId, authors: user.id})
                     .exec(function (err, test) {
                         if (err) return res.status(404).json({message: "Test find id query failed", data: null});
                         //After validating all inputs, we delete all current questions

@@ -27,6 +27,7 @@ import {StateService} from "./services/state.service";
 import {NbMenuInternalService} from "@nebular/theme/components/menu/menu.service";
 import {DialogsModule} from "./dialogs/confirmDialog/dialogs.module";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import { CreateTestComponent } from './components/create-test/create-test.component';
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     FourOhFourPage,
     StringtodatePipe,
     NgIfMediaQuery,
+    CreateTestComponent,
   ],
   imports: [
     BrowserModule,

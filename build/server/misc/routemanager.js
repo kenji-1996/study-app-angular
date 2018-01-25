@@ -8,11 +8,11 @@ const router = require('express').Router();
 const settings = require('./settings');
 
 //Route imports
-let user = require('../routes/user');
+let user = require('../routes/userRoute');
 //var question = require('../routes/question');
-let test = require('../routes/test');
-let result = require('../routes/result');
-let news = require('../routes/news')
+let test = require('../routes/testRoute');
+let result = require('../routes/resultRoute');
+let news = require('../routes/newsRoute')
 
 //Router settings, ensuring json parsing
 router.use(settings.bodyParser.urlencoded({ extended: true }));

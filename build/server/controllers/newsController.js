@@ -4,8 +4,8 @@
 let settings = require('../misc/settings');
 
 let mongoose = require('mongoose');
-let newsModel = require('../models/news');
-let usersModel = require('../models/user');
+let newsModel = require('../models/newsModel');
+let usersModel = require('../models/userModel');
 
 /**
  * /api/news [GET]

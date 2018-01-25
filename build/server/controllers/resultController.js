@@ -4,7 +4,7 @@
 let settings = require('../misc/settings');
 
 let mongoose = require('mongoose');
-let usersModel = require('../models/user');
+let usersModel = require('../models/userModel');
 
 /**
  * let resultsModel = require('../models/result');

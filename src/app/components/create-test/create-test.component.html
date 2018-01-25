@@ -1,0 +1,203 @@
+<nb-card style="max-height: 800px;">
+    <nb-card-header>
+        Create new test
+    </nb-card-header>
+
+    <nb-card-body>
+        <mat-vertical-stepper [linear]="false" > <!-- TODO: change to true once complete -->
+            <mat-step [stepControl]="settingsFormGroup" color="accent">
+                <form [formGroup]="settingsFormGroup">
+                    <ng-template matStepLabel>Setttings</ng-template>
+
+                    <!-- TODO: add expire date picker and timer input, Make title + category required -->
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="inputTitle">Title</label>
+                                <input type="text" class="form-control" id="inputTitle" placeholder="Title" formControlName="title" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="inputCategory">Category</label>
+                                <input type="text" class="form-control" id="inputCategory" placeholder="Category" formControlName="category" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <nb-checkbox>Allow hints</nb-checkbox>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <nb-checkbox>Full page</nb-checkbox>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <nb-checkbox>Expire</nb-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <nb-checkbox>Hand marked</nb-checkbox>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <nb-checkbox>Private</nb-checkbox>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <nb-checkbox>User editable</nb-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <nb-checkbox>Shareable</nb-checkbox>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <nb-checkbox>Timer enabled</nb-checkbox>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <nb-checkbox>Show marks</nb-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <button  class="btn btn-hero-success main-btn" matStepperNext>Next</button>
+                    </div>
+                </form>
+            </mat-step>
+
+            <mat-step [stepControl]="addQuestionsFormGroup">
+                <form [formGroup]="addQuestionsFormGroup">
+                    <ng-template matStepLabel>Questions</ng-template>
+                    <div style="max-height: 500px;">
+                        <div *ngFor="let q of questions" style="width:100%;">
+                            <span > {{q.question}}</span>
+                            <p style="font-size: small;margin-top: -15px;">{{q.date | date:'full'}}</p>
+                        </div>
+                    </div> <!-- Question list -->
+
+                    <div class="row"> <!-- Question type for new question -->
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label>Question type</label>
+                                    <select class="form-control" formControlName="type" required>
+                                        <option value="keywords">Keywords</option>
+                                        <option value="choices">Multiple choice</option>
+                                        <option value="arrangement">Arrange order</option>
+                                        <option value="shortAnswer">Short answer</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- new choices question -->
+                    <div class="row" *ngIf="addQuestionsFormGroup.controls.type.value == 'choices'">
+                        <div class="form-group col-sm-12">
+                            <label for="inputChoicesQuestion">Question</label>
+                            <input class="form-control" id="inputChoicesQuestion" placeholder="Question" formControlName="choicesQuestion" required>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <nb-card >
+                                <nb-card-header>
+                                    All choices
+                                </nb-card-header>
+                                <nb-card-body [dragula]='"choices"' id="allChoices" [dragulaModel]='allChoices' style="touch-action: none" *ngIf="allChoices.length > 0">
+                                    <div *ngFor='let text of allChoices' [innerHtml]='text' [id]="text"></div>
+                                </nb-card-body>
+                                <nb-card-footer>
+                                    <div class="input-group" >
+                                        <input class="form-control" type="text" id="inputNewChoice" placeholder="New choice.." formControlName="newChoice" required />
+                                        <span class="input-group-btn"><button class="btn btn-info" (click)="addChoice()">+</button></span>
+                                    </div>
+                                </nb-card-footer>
+                            </nb-card>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <nb-card>
+                                <nb-card-header>
+                                    Correct choices
+                                </nb-card-header>
+                                <nb-card-body [dragula]='"choices"' id="correctChoices" [dragulaModel]='correctChoices' style="touch-action: none">
+                                    <div *ngFor='let text of correctChoices' [innerHtml]='text' [id]="text"></div>
+                                </nb-card-body>
+                            </nb-card>
+                        </div>
+                        <div class="col-sm-12">
+                            <br/>
+                            <div class="alert alert-info" role="alert">
+                                <strong>Heads up!</strong> Not sure how to create a keyword question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- keywords question -->
+                    <div class="row" *ngIf="addQuestionsFormGroup.controls.type.value == 'keywords'">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label for="inputKeywordQuestion">Question</label>
+                                <textarea rows="2" class="form-control" id="inputKeywordQuestion" placeholder="Question" formControlName="keywordQuestion" required></textarea>
+                            </div>
+                        </div> <!-- Keyword question -->
+
+                        <div class="col-sm-12">
+                            <div class="form-group" >
+                                <label>Keywords</label>
+                                <input class="form-control" style="width: 100%;" type="text" placeholder="New keyword..."
+                                       [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                       [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addTag($event)" />
+                            </div>
+                            <mat-chip-list #chipList>
+                                <mat-chip *ngFor="let key of keywords" [selectable]="selectable" [removable]="removable" (remove)="removeTag(key)">
+                                    {{key}}<mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+                            </mat-chip-list>
+                        </div> <!-- adding keywords -->
+                        <div class="col-sm-12">
+                            <br/>
+                            <div class="alert alert-info" role="alert">
+                                <strong>Heads up!</strong> Not sure how to create a keyword question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-hero-info btn-tn" (click)="loginUser()">Insert question</button>
+                    <hr>
+                    <div>
+                        <button mat-button matStepperPrevious>Back</button>
+                        <button mat-button matStepperNext>Next</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step>
+                <ng-template matStepLabel>Confirm</ng-template>
+                You are now done.
+                <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                </div>
+            </mat-step>
+        </mat-vertical-stepper>
+    </nb-card-body>
+
+    <nb-card-footer>
+
+    </nb-card-footer>
+
+</nb-card>

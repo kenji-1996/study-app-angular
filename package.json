@@ -41,6 +41,7 @@
     "ionicons": "^3.0.0",
     "mongoose": "^5.0.0-rc0",
     "ng-http-loader": "^0.6.0",
+    "ng2-dragula": "^1.5.0",
     "ngx-cookie": "^2.0.1",
     "ngx-infinite-scroll": "^0.8.1",
     "roboto-fontface": "^0.8.0",

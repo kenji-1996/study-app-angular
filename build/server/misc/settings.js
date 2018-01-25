@@ -90,7 +90,7 @@ module.exports.userPayload = function userPayload(token) {
 };
 
 
-let User = require('../models/user');
+let User = require('../models/userModel');
 /**
  * Here we authenticate a home against a database, use their token to verify its from them,
  * then check their ID against the database permissions.
