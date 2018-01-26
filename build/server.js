@@ -1,7 +1,8 @@
 /**
  * Created by kenji on 21/11/17.
  */
-var express = require('express');
+let express = require('express');
+
 const app = express();
 const cors = require('cors');
 const html = __dirname + '/dist';
@@ -9,6 +10,9 @@ const html = __dirname + '/dist';
 app.use(cors());
 app.options('*', cors());
 app.use('/api', require('./server/misc/routemanager'));
+
+
+
 /**
  * Uncomment when going live
  */

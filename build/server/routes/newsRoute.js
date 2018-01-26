@@ -7,21 +7,43 @@ let newsController = require('../controllers/newsController');
 
 router.route('/news')
     .get(function(req,res) {
-        newsController.listAllNews(req,res);
+        try {
+            newsController.listAllNews(req,res);
+        } catch (err) {
+            return res.status(500).json({message: "Something went wrong fetching all news", data: err});
+        }
+
     })
     .post(function(req,res) {
-        newsController.createNews(req,res);
+        try {
+            newsController.createNews(req,res);
+        } catch (err) {
+            return res.status(500).json({message: "Something went wrong creating news", data: err});
+        }
+
     });
 
 router.route('/news/:newsId')
     .get(function(req,res) {
-        newsController.listNews(req,res);
+        try {
+            newsController.listNews(req,res);
+        } catch (err) {
+            return res.status(500).json({message: "Something went wrong fetching news", data: err});
+        }
     })
     .put(function(req,res) {
-        newsController.updateResult(req,res);
+        try {
+            newsController.updateNews(req,res);
+        } catch (err) {
+            return res.status(500).json({message: "Something went wrong updating news", data: err});
+        }
     })
     .delete(function(req,res) {
-        newsController.deleteResult(req,res);
+        try {
+            newsController.deleteNews(req,res);
+        } catch (err) {
+            return res.status(500).json({message: "Find results query failed", data: err});
+        }
     });
 
 module.exports = router;

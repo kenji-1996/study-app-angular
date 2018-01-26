@@ -278,14 +278,18 @@ exports.listTestResults = function(req, res) {
                 .sort({date: -1})
                 .exec(function (err,result) {
                     if (err) { return res.status(404).json({message: "No tests found", data: err}) }
-                    let newResult = result;
-                    testsModel.findOne({'_id': newResult.testId})
-                        .exec(function (err,parentTest) {
-                            if (err) { return res.status(500).json({message: "Failed to get parent test", data: err}) }
-                            if(!parentTest.showMarks) { newResult.finalMark = 'hidden'; }
-                            if (!newResult.showMarker) { newResult.markerId = null; }
-                        });
-                    return res.status(200).json({message: 'Results found', data: newResult});
+                    if(result) {
+                        let newResult = result;
+                        testsModel.findOne({'_id': newResult.testId})
+                            .exec(function (err, parentTest) {
+                                if (err) { return res.status(500).json({message: "Failed to get parent test", data: err}) }
+                                if (!parentTest.showMarks) { newResult.finalMark = 'hidden'; }
+                                if (!newResult.showMarker) { newResult.markerId = null; }
+                            });
+                        return res.status(200).json({message: 'Results found', data: newResult});
+                    }else{
+                        return res.status(500).json({message: "Result was null", data: err});
+                    }
                 });
             if (err) return res.status(500).json({message: "Find results query failed", data: err});
         });

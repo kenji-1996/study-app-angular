@@ -44,7 +44,9 @@ let testSchema  = new Schema({
     //Only for overall, need to add individual timer settings
     timerEnabled: { type: Boolean, default:false },
     timer: { type: Number, default:60 },//Number of minutes a test can be live after started, question specific timer in question schema
-    hintAllowed: { type: Boolean, default:true },
+
+
+    hintAllowed: { type: Boolean, default:true },//allow hint
     sponsoredFeedback: { type: Boolean, default:false },//In future, markers can get rewarded for providing info/feedback
 
     markDate: {type: Date }, //If author wants user to have to wait till all users have done the test for it to be auto marked.

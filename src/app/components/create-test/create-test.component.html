@@ -1,15 +1,16 @@
-<nb-card style="max-height: 800px;">
+<nb-card>
     <nb-card-header>
         Create new test
     </nb-card-header>
 
     <nb-card-body>
-        <mat-vertical-stepper [linear]="false" > <!-- TODO: change to true once complete -->
+        <mat-vertical-stepper [linear]="true" > <!-- TODO: change to true once complete -->
+            <!-- Settings step-->
             <mat-step [stepControl]="settingsFormGroup" color="accent">
                 <form [formGroup]="settingsFormGroup">
                     <ng-template matStepLabel>Setttings</ng-template>
 
-                    <!-- TODO: add expire date picker and timer input, Make title + category required -->
+                    <!-- TODO: add expire date picker and timer input, ADD AUTHOR LIST -->
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
@@ -24,79 +25,123 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <nb-checkbox>Allow hints</nb-checkbox>
+                                <nb-checkbox formControlName="allowHint">Allow hints</nb-checkbox>
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <nb-checkbox>Full page</nb-checkbox>
+                                <nb-checkbox formControlName="fullPage">Full page</nb-checkbox>
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <nb-checkbox>Expire</nb-checkbox>
+                                <nb-checkbox formControlName="shareable">Shareable</nb-checkbox>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <nb-checkbox>Hand marked</nb-checkbox>
+                                <nb-checkbox formControlName="handMarked">Hand marked</nb-checkbox>
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <nb-checkbox>Private</nb-checkbox>
+                                <nb-checkbox formControlName="editable">User editable</nb-checkbox>
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <nb-checkbox>User editable</nb-checkbox>
+                                <nb-checkbox formControlName="showMarks">Show marks</nb-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <nb-checkbox formControlName="expire">Expire</nb-checkbox>
+                            </div>
+                            <div *ngIf="settingsFormGroup.controls['expire'].value" (click)="picker.open()">
+                                    <input [matDatepicker]="picker" class="form-control" placeholder="Expiry date" formControlName="expireDate" (dateChange)="addEvent($event)" type="text" (keypress)="onlyDecimalNumberKey($event)">
+                                    <mat-datepicker #picker></mat-datepicker>
+                                <br />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <nb-checkbox formControlName="timerEnabled">Timer enabled</nb-checkbox>
+                            </div>
+                            <div *ngIf="settingsFormGroup.controls['timerEnabled'].value" >
+                                <input class="form-control" placeholder="Test length in minutes" formControlName="timerLength">
+                                <br />
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <nb-checkbox>Shareable</nb-checkbox>
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <nb-checkbox>Timer enabled</nb-checkbox>
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <nb-checkbox>Show marks</nb-checkbox>
-                            </div>
+                        <div class="col-sm-12">
+                            <nb-card>
+                                <nb-card-header>
+                                    Authors
+                                </nb-card-header>
+                                <nb-card-body>
+                                    <ul class="mb-5" *ngIf="test.authors">
+                                        <li *ngFor="let a of test.authors">
+                                            {{a}}
+                                        </li>
+                                    </ul>
+                                </nb-card-body>
+                                <nb-card-footer>
+                                    <div class="input-group" >
+                                        <input class="form-control" type="text" id="inputAuthor" placeholder="Add id" formControlName="authors" />
+                                        <span class="input-group-btn"><button class="btn btn-info" (click)="addAuthor()">+</button></span>
+                                    </div>
+                                </nb-card-footer>
+                            </nb-card>
                         </div>
                     </div>
+
                     <div>
-                        <button  class="btn btn-hero-success main-btn" matStepperNext>Next</button>
+                        <button [disabled]="!settingsFormGroup.valid"  class="btn btn-hero-success main-btn btn-tn" matStepperNext>Next</button>
+                        <div style="padding:5px;">
+                            <p class="text-danger" style="font-size: small" *ngIf="settingsFormGroup.controls.title.errors">Title required</p>
+                            <p class="text-danger" style="font-size: small" *ngIf="settingsFormGroup.controls.category.errors">Category required</p>
+                            <p class="text-danger" style="font-size: small" *ngIf="settingsFormGroup.controls['expire'].value && settingsFormGroup.controls.expireDate.value == null">Expire date required</p>
+                            <p class="text-danger" style="font-size: small" *ngIf="settingsFormGroup.controls['timerEnabled'].value && settingsFormGroup.controls.timerLength.value == null">Time limit required</p>
+                            <p class="text-danger" style="font-size: small" *ngIf="settingsFormGroup.controls.timerLength.errors && settingsFormGroup.controls['timerEnabled'].value">Time limit required to be in minutes</p>
+                        </div>
                     </div>
                 </form>
             </mat-step>
+            <!--end settings step-->
 
+            <!-- Build questions step -->
             <mat-step [stepControl]="addQuestionsFormGroup">
                 <form [formGroup]="addQuestionsFormGroup">
                     <ng-template matStepLabel>Questions</ng-template>
-                    <div style="max-height: 500px;">
-                        <div *ngFor="let q of questions" style="width:100%;">
-                            <span > {{q.question}}</span>
-                            <p style="font-size: small;margin-top: -15px;">{{q.date | date:'full'}}</p>
-                        </div>
-                    </div> <!-- Question list -->
 
-                    <div class="row"> <!-- Question type for new question -->
+                    <!-- Question list -->
+                    <nb-card>
+                        <nb-card-body style="max-height: 200px;" *ngIf="test.questions.length > 0">
+                            <ul class="mb-5">
+                                <li *ngFor="let q of test.questions">
+                                    <p>{{q.question}} <span class="text-muted">{{q.type}}</span></p>
+                                </li>
+                            </ul>
+                        </nb-card-body>
+                    </nb-card>
+
+                    <!-- QUESTION SETTINGS -->
+                    <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <div class="form-group">
                                     <label>Question type</label>
-                                    <select class="form-control" formControlName="type" required>
+                                    <select class="form-control" formControlName="type">
                                         <option value="keywords">Keywords</option>
                                         <option value="choices">Multiple choice</option>
                                         <option value="arrangement">Arrange order</option>
@@ -106,57 +151,32 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- new choices question -->
-                    <div class="row" *ngIf="addQuestionsFormGroup.controls.type.value == 'choices'">
-                        <div class="form-group col-sm-12">
-                            <label for="inputChoicesQuestion">Question</label>
-                            <input class="form-control" id="inputChoicesQuestion" placeholder="Question" formControlName="choicesQuestion" required>
-                        </div>
-                        <div class="form-group col-sm-6">
-                            <nb-card >
-                                <nb-card-header>
-                                    All choices
-                                </nb-card-header>
-                                <nb-card-body [dragula]='"choices"' id="allChoices" style="touch-action: none" *ngIf="allChoices.length > 0">
-                                    <div *ngFor='let text of allChoices' [innerHtml]='text' [id]="text"></div>
-                                </nb-card-body>
-                                <nb-card-footer>
-                                    <div class="input-group" >
-                                        <input class="form-control" type="text" id="inputNewChoice" placeholder="New choice.." formControlName="newChoice" required />
-                                        <span class="input-group-btn"><button class="btn btn-info" (click)="addChoice()">+</button></span>
-                                    </div>
-                                </nb-card-footer>
-                            </nb-card>
-                        </div>
-                        <div class="form-group col-sm-6">
-                            <nb-card>
-                                <nb-card-header>
-                                    Correct choices
-                                </nb-card-header>
-                                <nb-card-body [dragula]='"choices"' id="correctChoices" style="touch-action: none">
-                                    <div *ngFor='let text of correctChoices' [innerHtml]='text' [id]="text"></div>
-                                </nb-card-body>
-                            </nb-card>
-                        </div>
+                    <div *ngIf="addQuestionsFormGroup.controls['type'].value" class="row">
                         <div class="col-sm-12">
-                            <br/>
-                            <div class="alert alert-info" role="alert">
-                                <strong>Heads up!</strong> Not sure how to create a keyword question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                            <div class="form-group">
+                                <label for="inputQuestion">Question</label>
+                                <textarea rows="2" class="form-control" id="inputQuestion" placeholder="Question" formControlName="question"></textarea>
                             </div>
                         </div>
                     </div>
-
+                    <div *ngIf="addQuestionsFormGroup.controls['type'].value" class="row">
+                        <div class="col-md-6">
+                            <nb-checkbox formControlName="enableTimer" (click)="disableTimer()">Timer</nb-checkbox>
+                            <div class="form-group">
+                                <input class="form-control" id="inputTimer" placeholder="Time in seconds" formControlName="timer" type="text" (keypress)="onlyDecimalNumberKey($event)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group" *ngIf="settingsFormGroup.controls['allowHint'].value">
+                                <label for="inputHint">Hint</label>
+                                <input class="form-control" id="inputHint" placeholder="Hint" formControlName="hint">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
 
                     <!-- keywords question -->
                     <div class="row" *ngIf="addQuestionsFormGroup.controls.type.value == 'keywords'">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label for="inputKeywordQuestion">Question</label>
-                                <textarea rows="2" class="form-control" id="inputKeywordQuestion" placeholder="Question" formControlName="keywordQuestion" required></textarea>
-                            </div>
-                        </div> <!-- Keyword question -->
-
                         <div class="col-sm-12">
                             <div class="form-group" >
                                 <label>Keywords</label>
@@ -177,22 +197,116 @@
                             </div>
                         </div>
                     </div>
+                    <!-- keywords question end -->
 
-                    <button class="btn btn-hero-info btn-tn" (click)="loginUser()">Insert question</button>
+                    <!-- new choices question -->
+                    <div class="row" *ngIf="addQuestionsFormGroup.controls.type.value == 'choices'">
+                        <div class="form-group col-sm-6">
+                            <nb-card >
+                                <nb-card-header>
+                                    All choices
+                                </nb-card-header>
+                                <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="allChoices" style="touch-action: none">
+
+                                </nb-card-body>
+                                <nb-card-footer>
+                                    <div class="input-group" >
+                                        <input class="form-control" type="text" id="inputNewChoice" placeholder="New choice.." formControlName="newChoice" />
+                                        <span class="input-group-btn"><button class="btn btn-info" (click)="addChoice()">+</button></span>
+                                    </div>
+                                </nb-card-footer>
+                            </nb-card>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <nb-card>
+                                <nb-card-header>
+                                    Correct choices
+                                </nb-card-header>
+                                <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="correctChoices" style="touch-action: none" >
+
+                                </nb-card-body>
+                            </nb-card>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="alert alert-info" role="alert">
+                                <strong>Heads up!</strong> Not sure how to create a multi-choice question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                            </div>
+                        </div>
+                    </div>
+                    <!-- new choices quiestion end -->
+
+                    <!-- arrange question -->
+                    <div class="row" *ngIf="addQuestionsFormGroup.controls.type.value == 'arrangement'">
+                        <div class="form-group col-sm-12">
+                            <nb-card >
+                                <nb-card-header>
+                                    Correct arrangement order
+                                </nb-card-header>
+                                <nb-card-body [dragula]='"arrange"' [dragulaOptions]="arrangementOptions" id="arrangeOptions" style="touch-action: none"></nb-card-body>
+                                <nb-card-footer>
+                                    <div class="input-group" >
+                                        <input class="form-control" type="text" id="inputNewArrange" placeholder="New item.." formControlName="newArrange" />
+                                        <span class="input-group-btn"><button class="btn btn-info" (click)="addArrange()">+</button></span>
+                                    </div>
+                                </nb-card-footer>
+                            </nb-card>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="alert alert-info" role="alert">
+                                <strong>Heads up!</strong> Not sure how to create an arrangement question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                            </div>
+                        </div>
+                    </div>
+                    <!-- arrange question end -->
+
+                    <!-- short answer question -->
+                    <div class="row" *ngIf="addQuestionsFormGroup.controls.type.value == 'shortAnswer'">
+
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label for="inputShortAnswer">Answer</label>
+                                <textarea rows="2" class="form-control" id="inputShortAnswer" placeholder="Answer" formControlName="shortAnswer"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="alert alert-danger" role="alert" *ngIf="!settingsFormGroup.controls['handMarked'].value">
+                                <strong>Warning</strong> It is strongly recommended that short answer should be used with the setting 'hand marked', read our FAQ on it  <a href="#" class="alert-link">here</a>
+                            </div>
+                            <div class="alert alert-info" role="alert">
+                                <strong>Heads up!</strong> Not sure how to create an short answer question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-hero-info btn-tn" (click)="insertQuestion(addQuestionsFormGroup.controls.type.value)">Add question</button>
                     <hr>
                     <div>
-                        <button mat-button matStepperPrevious>Back</button>
-                        <button mat-button matStepperNext>Next</button>
+                        <button class="btn btn-hero-info main-btn btn-tn" matStepperPrevious>Back</button>
+                        <button [disabled]="test.questions.length < 1" class="btn btn-hero-success main-btn btn-tn" matStepperNext>Next</button>
+                        <div style="padding:5px;">
+                            <p class="text-danger" style="font-size: small" *ngIf="test.questions.length < 1">Atleast one question required</p>
+                        </div>
                     </div>
                 </form>
             </mat-step>
+            <!-- End build questions step -->
+
+            <!-- Confirm step -->
             <mat-step>
                 <ng-template matStepLabel>Confirm</ng-template>
-                You are now done.
-                <div>
-                    <button mat-button matStepperPrevious>Back</button>
+                <div class="row">
+                    <div class="col-sm-12">
+                        Ensure your settings are correct, and then confirm test
+                        <hr>
+                        <div>
+                            <button  class="btn btn-hero-info main-btn btn-tn" matStepperPrevious>Back</button>
+                            <button  class="btn btn-hero-success main-btn btn-tn" [disabled]="test.questions.length < 1" (click)="confirmTest()">Confirm and create test</button>
+                        </div>
+                    </div>
                 </div>
             </mat-step>
+            <!--end confirm step -->
+
         </mat-vertical-stepper>
     </nb-card-body>
 

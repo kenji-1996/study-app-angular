@@ -69,7 +69,8 @@ export class TestComponent implements OnInit {
       let testId = params['testId'];
       this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(dataResult=> {
         var questions:Array<Question> = [];
-        let test = new TestToQuestion(dataResult.data[0]._id,dataResult.data[0].title,questions,dataResult.data[0].author);
+        console.log(dataResult);
+        let test = new TestToQuestion(dataResult.data._id,dataResult.data.title,questions,'');
         this.dataManagement.getDATA(global.url + '/api/tests/' + testId + '/questions').subscribe(dataResult=> {
           for(var i = 0; i < dataResult.data.length; i++) {
             questions.push(new Question(dataResult.data[i]._id,dataResult.data[i].question,dataResult.data[i].answer,dataResult.data[i].category,dataResult.data[i].hint,dataResult.data[i].keywords));

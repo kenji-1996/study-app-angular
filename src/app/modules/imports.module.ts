@@ -7,10 +7,12 @@ import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {
     MatAutocompleteModule,
-    MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatDialogModule, MatExpansionModule,
+    MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatDatepickerModule, MatDialogModule,
+    MatExpansionModule,
     MatFormFieldModule, MatGridListModule,
     MatIconModule,
-    MatInputModule, MatListModule, MatMenuModule, MatProgressBarModule, MatSidenavModule, MatSnackBarModule,
+    MatInputModule, MatListModule, MatMenuModule, MatNativeDateModule, MatProgressBarModule, MatSidenavModule,
+    MatSnackBarModule,
     MatStepperModule,
     MatTableModule, MatToolbarModule, MatTooltipModule
 } from "@angular/material";
@@ -51,6 +53,8 @@ import {DragulaModule} from "ng2-dragula";
         MatGridListModule,
         MatStepperModule,
         MatAutocompleteModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
 
         FlexLayoutModule,
 
@@ -95,6 +99,8 @@ import {DragulaModule} from "ng2-dragula";
         MatGridListModule,
         MatStepperModule,
         MatAutocompleteModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
 
         FlexLayoutModule,
 
