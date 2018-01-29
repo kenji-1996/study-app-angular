@@ -13,6 +13,7 @@ export class allocatedTest {
     feedback: String;
     showMarker: Boolean;//Should the user see who marked them
     markerId: String; //Only shown if above is correct
+    started: boolean;
 }
 
 export class newTest {
@@ -26,6 +27,7 @@ export class newTest {
     handMarked: boolean;//Results not calculated internally but rather by the markers
     private: boolean;//If public, will be available to find on test browser
     attemptsAllowed: Number;//How many attempts allowed
+    instantResult: boolean;
     userEditable: boolean;
     shareable: boolean;
     timerEnabled: boolean;

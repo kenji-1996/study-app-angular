@@ -1,0 +1,27 @@
+<div class="row" (keyup.enter)="onSubmit()">
+  <div class="form-group col-sm-6">
+    <nb-card >
+      <nb-card-header>
+        All choices
+      </nb-card-header>
+      <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="allChoices" style="touch-action: none">
+        <div *ngFor="let c of choicesArray" [innerText]="c" [id]="c" class="alert alert-danger"></div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="form-group col-sm-6">
+    <nb-card>
+      <nb-card-header>
+        Correct choices
+      </nb-card-header>
+      <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="correctChoices" style="touch-action: none" >
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <!--<div class="col-sm-12">
+    <div class="alert alert-info" role="alert">
+      <strong>Heads up!</strong> Not sure how to create a multi-choice question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+    </div>
+  </div>-->
+</div>
+<button class="btn btn-hero-success" (click)="onSubmit()">Submit</button>

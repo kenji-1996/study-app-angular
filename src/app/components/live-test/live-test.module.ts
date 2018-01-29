@@ -2,7 +2,7 @@ import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
-import {Question, Result, TestToQuestion} from "../../objects/objects";
+import {allocatedTest, newQuestion, Question, Result, TestToQuestion} from "../../objects/objects";
 import * as global from '../../globals';
 import {Observable} from "rxjs/Observable";
 import 'rxjs/add/observable/of';
@@ -10,6 +10,10 @@ import 'rxjs/add/observable/timer';
 import {Title} from "@angular/platform-browser";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import {fadeAnimate} from "../../misc/animation";
+import {KeywordQuestionComponent} from "../keyword-question/keyword-question.component";
+import {ChoiceQuestionComponent} from "../choice-question/choice-question.component";
+import {ArrangementComponent} from "../arrangement-question/arrangement-question.component";
+import {ShortanswerQuestionComponent} from "../../component/shortanswer-question/shortanswer-question.component";
 
 @Component({
   selector: 'app-live-test',
@@ -35,10 +39,12 @@ export class LiveTestComponent implements OnInit, OnDestroy {
    * 'answer' - Binded to the 'answer' textarea input field, gets submitted if there is anything in it.
    * 'timeLeft' - The amount of time a question has left when the home is submitting an answer on a timed basis.
    */
-  test;
-  result:Result[] = [];
+  allocatedTest: allocatedTest;
+  selectedQuestion: newQuestion;
+  //Result is now caluclated server side.
+  //result:Result[] = [];
   progress = '0';
-  selectedQuestion;
+
   selectedId;
   answer;
   timeLeft = 0;
@@ -46,50 +52,39 @@ export class LiveTestComponent implements OnInit, OnDestroy {
 
   //Finished
   finished = false;
-  percentResult;
-  totalKeywords = 0;
-  givenKeywords = 0;
 
   //Options
   giveHint = false;
   timeLimit = false;
+  fullPage = false;
   timerLimit = '30';
   instantResult = false;
   randomOrder = false;//To-do1
+  subscriber;
 
   ngOnInit() {
     this.activeRoute.params.subscribe((params: Params) => {
       //Subscribe to the route and get params passed in
       let testId = params['testId'];
-      this.giveHint = (this.activeRoute.snapshot.queryParamMap.get('giveHint') == 'true');
-      if(parseInt(this.activeRoute.snapshot.queryParamMap.get('timeLimit')) > 0) {
-        this.timeLimit = true;
-        this.timerLimit = this.activeRoute.snapshot.queryParamMap.get('timeLimit') + '';
-      }
-      this.instantResult = (this.activeRoute.snapshot.queryParamMap.get('instantResult') == 'true');
-      if(this.activeRoute.snapshot.queryParamMap.get('questionId')) {
-        this.selectedId = parseInt(this.activeRoute.snapshot.queryParamMap.get('questionId'));
-      }
-      this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(dataResult=> {
-        var questions:Array<Question> = [];
-        let test = new TestToQuestion(dataResult.data[0]._id,dataResult.data[0].title,questions,dataResult.data[0].author);
-        this.dataManagement.getDATA(global.url + '/api/tests/' + testId + '/questions').subscribe(dataResult=> {
-          for(var i = 0; i < dataResult.data.length; i++) {
-            questions.push(new Question(dataResult.data[i]._id,dataResult.data[i].question,dataResult.data[i].answer,dataResult.data[i].category,dataResult.data[i].hint,dataResult.data[i].keywords));
-          }
-          this.test = test;
+      this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(allocatedTestResult => {
+        this.allocatedTest = allocatedTestResult.data;
+        console.log(this.allocatedTest);
+        if(this.allocatedTest.test.fullPage) { this.fullPage = true; }
+        if(this.allocatedTest.test.instantResult) { this.instantResult = true; }
+          this.titleService.setTitle(this.allocatedTest.test.title + ' test - DigitalStudy');
+          console.log(this.allocatedTest);
           this.startTest();
-          this.titleService.setTitle(this.test.title + ' live test - DigitalStudy');
-        });
       });
     });
+    this.subscriber = this.dataEmitter.$testAnswer.subscribe(answer => {this.answer = answer; this.submitQuestion(); console.log(answer);});
   }
 
   private startTest() {
+
     if(!this.selectedId) {
       this.selectedId = 0;
     }
-    this.selectedQuestion = this.test.questions[this.selectedId];
+    this.selectedQuestion = this.allocatedTest.test.questions[this.selectedId];
     if(this.timeLimit) {
       this.testTimer();
     }
@@ -107,22 +102,16 @@ export class LiveTestComponent implements OnInit, OnDestroy {
   }
 
   public submitQuestion() {
-    if(!this.answer) {
-      this.dataEmitter.pushUpdateArray('Please put an answer of sort sort even if you are unsure!');
+    if(!this.answer) {//On timer finish, dont give this message but submit empty string/result
+      this.dataEmitter.pushUpdateArray('Please put an answer of sorts even if you are unsure!');
       return;
     }
     if(this.subscription) { this.subscription.unsubscribe(); }
-    if(this.selectedId < this.test.questions.length) {
+    if(this.selectedId < this.allocatedTest.test.questions.length) {
       this.selectedId++;
-      var markCount = this.checkAnswer();
-      var percentResult = ((markCount/this.selectedQuestion.keywords.length * 100));
-      this.result.push(new Result(this.selectedQuestion._id, this.selectedQuestion.question, this.selectedQuestion.answer, this.selectedQuestion.category, this.answer, (this.timeLimit ? this.timeLeft : 0),percentResult, markCount));
-      if (this.instantResult) {
-        this.dataEmitter.pushUpdateArray('Percentage answer result: ' + percentResult + '%')
-      }
       this.progress = '0';
       this.answer = '';
-      this.selectedQuestion = this.test.questions[this.selectedId];
+      this.selectedQuestion = this.allocatedTest.test.questions[this.selectedId];
       if(!this.selectedQuestion) {
         this.testFinished();
       }
@@ -133,7 +122,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
   }
 
   checkAnswer() {
-    var xd = this.answer.match(/\b(\w+)\b/g);
+    /*var xd = this.answer.match(/\b(\w+)\b/g);
     var inputSorted = [];
     if(xd) {
       for (var i = 0; i < xd.length; i++) {
@@ -148,7 +137,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
       }
       answerSorted.sort();
     }
-    return this.intersect_safe(answerSorted,inputSorted);
+    return this.intersect_safe(answerSorted,inputSorted);*/
   }
 
   intersect_safe(a, b) {
@@ -168,6 +157,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
     }
     return result.length;
   }
+
   keyDownFunction(event) {
     if(event.keyCode == 13) {
       this.submitQuestion();
@@ -175,7 +165,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
   }
 
   testFinished() {
-    var answerTotal = 0;
+    /*var answerTotal = 0;
     for(var i = 0; i < this.test.questions.length; i++) {
       answerTotal+= this.test.questions[i].keywords.length;
     }
@@ -207,12 +197,16 @@ export class LiveTestComponent implements OnInit, OnDestroy {
     };
     this.dataManagement.postDATA(global.url + '/api/results', body).subscribe(dataResult => {
       this.dataEmitter.pushUpdateArray(dataResult.message);
-    });
+    });*/
+    alert('server has not yet implimented backend question marking');
   }
 
   ngOnDestroy() {
     if(this.subscription) {
       this.subscription.unsubscribe();
+    }
+    if(this.subscriber) {
+      this.subscriber.unsubscribe();
     }
   }
 
@@ -220,7 +214,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
 
 
 @NgModule({
-  declarations: [LiveTestComponent],
+  declarations: [LiveTestComponent,KeywordQuestionComponent, ChoiceQuestionComponent, ArrangementComponent, ShortanswerQuestionComponent],
   imports: [
     RouterModule.forChild([
       { path: '', component: LiveTestComponent, pathMatch: 'full'}

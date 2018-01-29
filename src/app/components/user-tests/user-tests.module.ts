@@ -25,7 +25,6 @@ export class UserTestsComponent implements OnInit {
 
   allocatedTests: allocatedTest[];
   public cols: Observable<number>;
-  cameras: any[] = [];
 
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
@@ -62,6 +61,7 @@ export class UserTestsComponent implements OnInit {
 
   removeTest(test:any) {
     alert('should check settings to see if removable/usable');
+    //test.test.canSelfRemove?
     /*console.log('attempting to remove ' + JSON.stringify(test));
      this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });*/
   }

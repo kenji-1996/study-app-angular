@@ -1,19 +1,18 @@
-<div *ngIf="test" [@fadeInOut]>
-  <h3 class="display-5 text-center">{{test.title | uppercase}}</h3>
+<div *ngIf="allocatedTest" [@fadeInOut]>
+  <h3 class="display-5 text-center">{{allocatedTest.test.title | uppercase}}</h3>
   <nb-card>
     <nb-tabset fullWidth>
 
-      <nb-tab tabTitle="Take test" style="margin:20px; min-height: 80px;">
+      <nb-tab tabTitle="Start" style="margin:20px; min-height: 80px;">
         <nb-actions size="medium" fullWidth>
           <nb-action>
-            <nb-checkbox [(ngModel)]="giveHint">Give Hint</nb-checkbox>
+            <nb-checkbox [disabled]="true" [(ngModel)]="giveHint">Give Hint</nb-checkbox>
           </nb-action>
           <nb-action>
-            <nb-checkbox [(ngModel)]="instantResult">Instant Result</nb-checkbox>
+            <nb-checkbox [disabled]="true" [(ngModel)]="instantResult">Instant Result</nb-checkbox>
           </nb-action>
         </nb-actions>
-        <hr>
-        <nb-actions size="medium" fullWidth>
+        <!--<nb-actions size="medium" fullWidth>
           <nb-action>
             <nb-checkbox [(ngModel)]="timeLimit">Timer</nb-checkbox>
           </nb-action>
@@ -22,27 +21,18 @@
               <input type="text" [(ngModel)]="timerMax"  class="form-control" placeholder="Timer">
             </div>
           </nb-action>
-        </nb-actions>
+        </nb-actions>-->
         <hr>
         <div class="text-center">
           <button  class="btn btn-hero-success main-btn" (click)="testStarted()">
-            <i class="fa fa-pencil"></i> <span>Start {{test.title}}</span>
+            <i class="fa fa-pencil"></i> <span>Start {{allocatedTest.test.title}}</span>
           </button>
         </div>
       </nb-tab>
 
-      <nb-tab tabTitle="Modify" style="margin:20px;min-height: 200px;">
-        <app-edit-test [search]="query" [@fadeInOut]></app-edit-test>
-      </nb-tab>
-
-      <nb-tab tabTitle="Results" style="margin:20px;min-height: 200px;">
-        <div style="max-height: 500px;">
-          <div *ngFor="let item of databaseResult" style="width:100%;" [ngClass]="setMyClasses(item.percent)"> <!--[ngStyle]="setMyStyles(item.percent)">-->
-            <span > {{item.percent}}% - {{item.mark}}</span>
-            <p style="font-style: italic;"></p>
-            <p style="font-size: small;margin-top: -15px;">{{item.date | date:'full'}}</p>
-          </div>
-        </div>
+      <nb-tab tabTitle="Submitted" style="margin:20px;min-height: 200px;">
+        placeholder for submitted tests of this test
+        <!--<app-edit-test [search]="query" [@fadeInOut]></app-edit-test>-->
       </nb-tab>
 
     </nb-tabset>
@@ -54,7 +44,7 @@
         </nb-action>-->
         <nb-action>
           <div class="input-group">
-            <input [(ngModel)]="query" type="text" class="form-control" placeholder="{{test.title | uppercase}} test">
+            <input [(ngModel)]="query" type="text" class="form-control" placeholder="{{allocatedTest.test.title | uppercase}} test">
             <span class="input-group-btn"><button class="btn btn-hero-info">Search</button></span>
           </div>
         </nb-action>

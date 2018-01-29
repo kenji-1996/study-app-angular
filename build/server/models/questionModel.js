@@ -33,8 +33,8 @@ let questionSchema  = new Schema({
     choicesAll: [String],//Array of choices for one question (recommended 4, minimum of 2)
     //choicesQuestion: String,
 
-    arrangement: [String],//The actual arrangment of the items in normal order
-    //arrangementQuestion: [String],//The 4-x provided arrangment in random order
+    arrangement: [String],//The arrangment in random order
+    //arrangementOriginal: [String],//The 4-x provided arrangment actual order
 
     shortAnswer: String,//Short answer question, THIS SHOULD ONLY BE DONE IN CASE OF 'handMarked' TESTS!
     //shortAnswerQuestion: String,//Short answer question

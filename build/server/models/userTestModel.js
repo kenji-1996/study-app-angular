@@ -19,6 +19,7 @@ var userTestSchema  = new Schema({
     test: {type: Schema.Types.ObjectId, ref: 'tests'},
     userId: String,//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
     allocatedDate: { type: Date, default: Date.now },
+    started: { type: Boolean, default: false },
 
     //List of submitted tests from different users
     submittedTests: [String],//The size of this array is the amount of attempts

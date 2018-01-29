@@ -16,20 +16,9 @@ let testSchema  = new Schema({
     title: {type:String, required: true},
     questions: [{type: Schema.Types.ObjectId, ref: 'questions'}],
     category: String,
-    started: { type: Boolean, default:false },//Stop user bailing from tests
     date: { type: Date, default: Date.now },
-    //Should resultsList hold a user.id with the related result.id
     resultsList: [String],//Array of resultsSchema._id that can hold x amount of submittedTests (depending on attemptsAllowed)
-    //testResults: [String],//Array of submittedTest results
-
-
-    /**
-     * Temp removed authorID and authorIMG as we have multiple author ids.
-     */
-    //authorID: String, //Make this [String] allowing for multiple authors/editors
-    //authorIMG: String,
     authors: [String],
-
 
     //Settings
     expire: { type: Boolean, default:false },//Should the test expire
@@ -38,8 +27,9 @@ let testSchema  = new Schema({
     handMarked: { type: Boolean, default:false },//Results not calculated internally but rather by the markers
     private: { type: Boolean, default:false },//If public, will be available to find on test browser
     attemptsAllowed: { type: Number, default:0 },//If 0, infinite!
-    //currentAttempts: { type: Number, default:0 },//Should be moved
+    instantResult: { type: Boolean, default:false },
     userEditable: { type: Boolean, default:false },
+    canSelfRemove: { type: Boolean, default:false },
     shareable: { type: Boolean, default:true },
     //Only for overall, need to add individual timer settings
     timerEnabled: { type: Boolean, default:false },

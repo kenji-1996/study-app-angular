@@ -201,6 +201,9 @@ export class CreateTestComponent implements OnInit {
         this.addQuestionsFormGroup.controls['question'].setValue('');
         this.addQuestionsFormGroup.controls['shortAnswer'].setValue('');
         this.addQuestionsFormGroup.controls['arrangement'].setValue('');
+        this.addQuestionsFormGroup.controls['timer'].setValue('');
+        this.addQuestionsFormGroup.controls['arrangement'].setValue('');
+        this.addQuestionsFormGroup.controls['enableTimer'].setValue('');
         this.keywords = [];
         let allChoicesNode = document.getElementById("allChoices");
         let correctChoicesNode = document.getElementById("correctChoices");

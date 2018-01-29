@@ -104,6 +104,8 @@ exports.createTest = function(req, res) {
                     if(req.body.test.shareable) {test.shareable = req.body.test.shareable; }
                     if(req.body.test.hintAllowed) {test.hintAllowed = req.body.test.hintAllowed; }
                     if(req.body.test.showMarker) {test.showMarker = req.body.test.showMarker; }
+                    if(req.body.test.canSelfRemove) {test.canSelfRemove = req.body.test.canSelfRemove; }
+                    if(req.body.test.instantResult) {test.instantResult = req.body.test.instantResult; }
 
                     test.save(function (err, result) {
                         if (err) return res.status(500).json({message: "Save test query failed", data: null});
@@ -146,10 +148,23 @@ exports.createTest = function(req, res) {
  */
 exports.listTest = function(req, res) {
     userTestModel.findOne({_id : req.params.testId})//Get all tests with given user ID
-        .populate({path:'test', model:'tests'})
+        .populate({
+            path:'test', model:'tests',
+            populate: { path: 'questions', model: 'questions', select: '_id date resources question type choicesAll arrangement' },//Allows us to populate again within the previous populate!
+        })
         .exec(function (err,userTests) {
             if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
-            return res.status(200).json({message: 'Allocated tests successfully retrieved', data: userTests});
+            if(userTests) {
+                let modifiedResult = userTests;
+                for (let i = 0; i < modifiedResult.test.questions.length; i++) {//Check and shuffle arrangment before returing result
+                    if (modifiedResult.test.questions[i].type === 'arrangement') {
+                        modifiedResult.test.questions[i].arrangement = settings.shuffleArray(modifiedResult.test.questions[i].arrangement);
+                    }
+                }
+                return res.status(200).json({message: 'Allocated tests successfully retrieved', data: modifiedResult});
+            }else{
+                return res.status(404).json({message: "No data found", data: null})
+            }
         });
 };
 /**
@@ -239,13 +254,25 @@ exports.hardDeleteTest = function(req, res) {
  */
 exports.listTestQuestions = function(req, res) {
     userTestModel.findOne({_id : req.params.testId})//Get all tests with given user ID
-        .populate({path:'test', model:'tests'})
+        .populate({
+            path:'test', model:'tests',
+        })
         .exec(function (err,userTests) {
             if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
-            questionsModel.find({'_id': { $in: userTests.test.questions}},'_id date resources type')//Only provide resources and type to allow user to preview questions (need each question type presented)
+            questionsModel.find({'_id': { $in: userTests.test.questions}},'_id date resources question type choicesAll arrangement')//Only provide resources and type to allow user to preview questions (need each question type presented)
                 .exec(function (err,questionFindQuery) {
-                    if (err) { return res.status(404).json({message: "Failed to retrieve questions", data: err}) }
-                    return res.status(200).json({message: 'Questions found', data: questionFindQuery});
+                    if (err) { return res.status(500).json({message: "Failed to retrieve questions", data: err}) }
+                    if(questionFindQuery !== []) {
+                        let modifiedQuestions = questionFindQuery;
+                        for (let i = 0; i < modifiedQuestions.length; i++) {//Check and shuffle arrangment before returing result
+                            if (modifiedQuestions[i].type === 'arrangement') {
+                                modifiedQuestions[i].arrangement = settings.shuffleArray(modifiedQuestions[i].arrangement);
+                            }
+                        }
+                        return res.status(200).json({message: 'Questions found', data: modifiedQuestions});
+                    }else{
+                        return res.status(404).json({message: "No questions found", data: err})
+                    }
                 });
         });
 };

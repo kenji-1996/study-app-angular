@@ -1,0 +1,13 @@
+<div class="row" (keyup.enter)="onSubmit()">
+  <div class="form-group col-sm-12">
+    <nb-card >
+      <nb-card-header>
+        Correct arrangement order
+      </nb-card-header>
+      <nb-card-body [dragula]='"arrange"' [dragulaOptions]="arrangementOptions" id="arrangeOptions" style="touch-action: none">
+        <div *ngFor="let c of arrangementArray" [innerText]="c" [id]="c" class="alert alert-info"></div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+</div>
+<button class="btn btn-hero-success" (click)="onSubmit()">Submit</button>

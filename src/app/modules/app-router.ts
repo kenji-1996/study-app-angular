@@ -12,10 +12,10 @@ const routes: Routes = [
 
     //User
     { path: 'user/tests', loadChildren: '../components/user-tests/user-tests.module#UserTestsModule', canActivate:[AuthGuard] },//List of tests
-    { path: 'user/test/selected/:testId', loadChildren: '../components/test/test.module#TestModule', canActivate:[AuthGuard] },//The edit/result menu of a users view (shows attempts on this test, its settings, etc
+    { path: 'user/test/selected/:testId', loadChildren: '../components/user-test-selected/user-test-selected.module#UserTestSelectedModule', canActivate:[AuthGuard] },//The edit/result menu of a users view (shows attempts on this test, its settings, etc
     { path: 'user/test/live/:testId', loadChildren: '../components/live-test/live-test.module#LiveTestModule', canActivate:[AuthGuard] },//Live attempt page of test
-    { path: 'user/test/edit/:testId', loadChildren: '../components/edit-test/edit-test.module#EditTestModule', canActivate:[AuthGuard] },//Users cant edit tests unless specified
-    { path: 'user/test/result/:testId', loadChildren: '../components/result/result.module#ResultModule', canActivate:[AuthGuard] },//feedback/marks for 1 test
+    //{ path: 'user/test/edit/:testId', loadChildren: '../components/edit-test/edit-test.module#EditTestModule', canActivate:[AuthGuard] },//Users cant edit tests unless specified
+    //{ path: 'user/test/result/:testId', loadChildren: '../components/result/result.module#ResultModule', canActivate:[AuthGuard] },//feedback/marks for 1 test
 
     //Author
     { path: 'author/tests', loadChildren: '../components/test-manager/test-manager.module#TestManagerModule', canActivate:[AuthGuard] },//List, will link out to create and result

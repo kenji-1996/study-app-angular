@@ -1,0 +1,6 @@
+<div class="form-group row" (keyup.enter)="onSubmit()">
+  <div class="col-sm-12">
+    <textarea rows="10" placeholder="Answer" class="form-control" [(ngModel)]="answer" ></textarea>
+  </div>
+</div>
+<button class="btn btn-hero-success" (click)="onSubmit()">Submit</button>

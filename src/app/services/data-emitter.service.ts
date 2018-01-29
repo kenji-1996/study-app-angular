@@ -10,6 +10,7 @@ export class DataEmitterService {
   public $results: EventEmitter<Result[]>;
   public $dirty: EventEmitter<boolean>;
   public $testSearchString: EventEmitter<any>;
+  public $testAnswer: EventEmitter<any>;
 
   constructor() {
     this.$updateArray = new EventEmitter();
@@ -18,6 +19,11 @@ export class DataEmitterService {
     this.$results = new EventEmitter();
     this.$dirty = new EventEmitter();
     this.$testSearchString = new EventEmitter();
+    this.$testAnswer = new EventEmitter();
+  }
+
+  public pushAnswer(answer:any) {
+    this.$testAnswer.emit(answer);
   }
 
   public pushDirty(item:boolean) {

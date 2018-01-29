@@ -2,7 +2,7 @@ import {Component, NgModule, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {Observable} from "rxjs/Observable";
-import {Question, TestToQuestion} from "../../objects/objects";
+import {allocatedTest, newQuestion, Question, TestToQuestion} from "../../objects/objects";
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
 import * as global from '../../globals';
@@ -20,17 +20,16 @@ import {NgbCheckBox} from "@ng-bootstrap/ng-bootstrap";
 import {NbCheckboxModule} from "@nebular/theme";
 
 @Component({
-  selector: 'app-test',
+  selector: 'app-user-selected-test',
   templateUrl: './user-test-selected.component.html',
   styleUrls: ['./user-test-selected.component.scss'],
   animations: [ fadeAnimate ],
 })
-export class TestComponent implements OnInit {
+export class UserTestSelectedComponent implements OnInit {
 
 
   //Test variables
-  test$: Observable<TestToQuestion>;
-  test;
+  allocatedTest: allocatedTest;
   started = false;
   progress = '0';
   timerMax = '30';
@@ -44,12 +43,13 @@ export class TestComponent implements OnInit {
   giveHint = false;
   timeLimit = false;
   instantResult = false;
+  fullPage = false;
   randomOrder = false;//To-do1
 
   //Format
   isCollapsed = true;
   databaseResult;
-  dirty: boolean;
+  //dirty: boolean = false; TODO: Fot stopping the user leaving, needs to be moved
 
   //Recent results
   private subscription: Subscription;
@@ -67,50 +67,42 @@ export class TestComponent implements OnInit {
 
     this.activeRoute.params.subscribe((params: Params) => {
       let testId = params['testId'];
-      this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(dataResult=> {
-        var questions:Array<Question> = [];
-        console.log(dataResult);
-        let test = new TestToQuestion(dataResult.data._id,dataResult.data.title,questions,'');
-        this.dataManagement.getDATA(global.url + '/api/tests/' + testId + '/questions').subscribe(dataResult=> {
-          for(var i = 0; i < dataResult.data.length; i++) {
-            questions.push(new Question(dataResult.data[i]._id,dataResult.data[i].question,dataResult.data[i].answer,dataResult.data[i].category,dataResult.data[i].hint,dataResult.data[i].keywords));
-          }
-          this.test$ = Observable.of(test);
-          this.test = test;
-          if(this.test) {
-            this.populateResults();
-          }
-          this.titleService.setTitle(this.test.title + ' test - DigitalStudy');
-        });
+      this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(allocatedTestResult => {
+        this.allocatedTest = allocatedTestResult.data;
+        //Check here if expired/attempts past due etc
+        if(this.allocatedTest.test.expire && Date.now() > new Date(this.allocatedTest.test.expireDate).getTime()) { alert('test expired'); }// TODO: do something with expired test
+        if(this.allocatedTest.test.attemptsAllowed != 0 && this.allocatedTest.test.attemptsAllowed >= this.allocatedTest.submittedTests.length) { alert('no attempts left'); }
+        this.titleService.setTitle(this.allocatedTest.test.title + ' test - DigitalStudy');
       });
     });
-    this.dataEmitter.$dirty.subscribe(dirty=>this.dirty = dirty);
   }
 
 
   canDeactivate(): Observable<boolean> | boolean {
-    if (!this.dirty) {
+    /*if (!this.dirty) {
       return true;
     }
-    return this.dialogsService.confirm('Unsaved test', 'You have unsaved changes, are you sure you want to leave this page?');
+    return this.dialogsService.confirm('Unsaved test', 'You have unsaved changes, are you sure you want to leave this page?');*/
+    return true;
   }
 
   testStarted() {
-    this.route.navigate( ['tests/live', this.test._id], {queryParams: { giveHint:this.giveHint,timeLimit: this.timeLimit? this.timerMax : 0,instantResult: this.instantResult,questionId:this.selectedId }});
+    this.route.navigate( ['user/test/live', this.allocatedTest._id]);//, {queryParams: { giveHint:this.giveHint,timeLimit: this.timeLimit? this.timerMax : 0,instantResult: this.instantResult,questionId:this.selectedId }});
   }
 
-  populateResults() {
+  /*populateResults() {
     this.dataManagement.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/results/' + this.test._id).subscribe(dataResult=> {
       if(!this.isEmptyObject(dataResult.data)) {
         this.databaseResult = dataResult.data;
       }
     });
-  }
+  }*/
 
   isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length === 0));
   }
 
+  /*
   setMyClasses(result:any) {
     let percent = parseInt(result);
     let styles;
@@ -175,18 +167,18 @@ export class TestComponent implements OnInit {
     }
 
   }
-
+  */
 
 }
 @NgModule({
   declarations: [
-    TestComponent,
+    UserTestSelectedComponent,
     SearchPipe,
     EditTestComponent,
   ],
   imports: [
     RouterModule.forChild([
-      { path: '', component: TestComponent, pathMatch: 'full', canDeactivate: [ConfirmChangesGuard]}
+      { path: '', component: UserTestSelectedComponent, pathMatch: 'full', canDeactivate: [ConfirmChangesGuard]}
     ]),
     ImportsModule,
     InfiniteScrollModule,
@@ -196,7 +188,7 @@ export class TestComponent implements OnInit {
     ConfirmChangesGuard,
   ]
 })
-export class TestModule {
+export class UserTestSelectedModule {
 
 }
 
