@@ -5,7 +5,7 @@ let settings = require('../misc/settings');
 
 let testsModel = require('../models/testModel');
 let usersModel = require('../models/userModel');
-let resultsModel = require('../models/resultModel');
+let userTestModel = require('../models/userTestModel');
 let submittedTestModel = require('../models/submittedTestModel');
 
 /**
@@ -124,14 +124,11 @@ exports.deleteUser = function(req, res) {
  * @return JSON {message,data}
  */
 exports.listAllocatedTests = function(req, res) {
-    usersModel.findById(req.params.userId)
-        .exec(function (err, result) {
-            testsModel.find({'_id': { $in: result.tests}})
-                .exec(function (err,testFindQuery) {
-                    if (err) { return res.status(404).json({message: "Failed to query tests", data: err}) }
-                    return res.status(200).json({message: 'Tests found', data: testFindQuery});
-                });
-            if (err) return res.status(500).json({message: "Failed to query tests", data: err});
+    userTestModel.find({userId : req.params.userId})//Get all tests with given user ID
+        .populate({path:'test', model:'tests'})
+        .exec(function (err,userTests) {
+            if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
+            return res.status(200).json({message: 'Allocated tests successfully retrieved', data: userTests});
         });
 };
 /**
@@ -240,7 +237,7 @@ exports.submitTest = function(req, res) {
 exports.listAllTestResults = function(req, res) {
     usersModel.findById(req.params.userId)
         .exec(function (err, user) {
-            resultsModel.find({'_id': { $in: user.results}})
+            userTestModel.find({'_id': { $in: user.results}})
                 .sort({date: -1})
                 .exec(function (err,resultsArray) {
                     if (err) { return res.status(404).json({message: "No tests found", data: err}) }
@@ -274,7 +271,7 @@ exports.listAllTestResults = function(req, res) {
 exports.listTestResults = function(req, res) {
     usersModel.findById(req.params.userId)
         .exec(function (err, user) {
-            resultsModel.findOne({'testId': req.params.testId})
+            userTestModel.findOne({'testId': req.params.testId})
                 .sort({date: -1})
                 .exec(function (err,result) {
                     if (err) { return res.status(404).json({message: "No tests found", data: err}) }

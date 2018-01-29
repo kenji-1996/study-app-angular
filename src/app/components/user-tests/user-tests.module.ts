@@ -4,9 +4,8 @@ import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
 
 import * as global from '../../globals';
-import { Test } from '../../objects/objects';
+import {allocatedTest} from '../../objects/objects';
 import {MatDialog} from "@angular/material";
-import {AddTest} from "../../dialogs/addTest/add-test";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import { ObservableMedia } from '@angular/flex-layout';
 import { Observable } from "rxjs/Observable";
@@ -14,28 +13,19 @@ import "rxjs/add/operator/map";
 import "rxjs/add/operator/takeWhile";
 import "rxjs/add/operator/startWith";
 import {Title} from "@angular/platform-browser";
-import {NgIfMediaQuery} from "../../misc/media-query-directive";
 import {fadeAnimate} from "../../misc/animation";
 
 @Component({
   selector: 'app-test-manager',
-  templateUrl: './test-manager.component.html',
-  styleUrls: ['./test-manager.component.scss'],
+  templateUrl: './user-tests.component.html',
+  styleUrls: ['./user-tests.component.scss'],
   animations: [ fadeAnimate ],
 })
-export class TestManagerComponent implements OnInit {
+export class UserTestsComponent implements OnInit {
 
-  tests: Test[];
+  allocatedTests: allocatedTest[];
   public cols: Observable<number>;
   cameras: any[] = [];
-
-  selectedCamera: any = this.cameras[0];
-  isSingleView = false;
-
-  selectCamera(camera: any) {
-    this.selectedCamera = camera;
-    this.isSingleView = true;
-  }
 
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
@@ -51,7 +41,7 @@ export class TestManagerComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle('Authored tests - DigitalStudy');
+    this.titleService.setTitle('Your tests - DigitalStudy');
     const grid = new Map([
       ["xs", 1],
       ["sm", 2],
@@ -70,41 +60,31 @@ export class TestManagerComponent implements OnInit {
     this.refreshData();
   }
 
-  addTest(): void{
-    let dialogRef = this.dialog.open(AddTest, {data: {name: '',} });
-      dialogRef.afterClosed().subscribe(result => {
-        if(result) {
-          this.router.navigate(['/tests/selected', result]);
-        }
-      });
-  }
-
   removeTest(test:any) {
-    console.log('attempting to remove ' + JSON.stringify(test));
-    this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });
+    alert('should check settings to see if removable/usable');
+    /*console.log('attempting to remove ' + JSON.stringify(test));
+     this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });*/
   }
 
   refreshData() {
     this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests').subscribe(dataResult=> {
-
-      this.tests = dataResult.data;
-      for(let i = 0; i < dataResult.data.length;i++) {
-        this.cameras.push({title: dataResult.data[i].title,source: 'http://ichef.bbci.co.uk/wwfeatures/wm/live/1280_640/images/live/p0/51/v8/p051v8z4.jpg'});
+      if(dataResult.data != null) {
+        this.allocatedTests = dataResult.data;
       }
     });
   }
 }
 
 @NgModule({
-  declarations: [TestManagerComponent],
+  declarations: [UserTestsComponent],
   imports: [
     RouterModule.forChild([
-      { path: '', component: TestManagerComponent, pathMatch: 'full'}
+      { path: '', component: UserTestsComponent, pathMatch: 'full'}
     ]),
     ImportsModule,
   ]
 })
-export class TestManagerModule {
+export class UserTestsModule {
 
 }
 

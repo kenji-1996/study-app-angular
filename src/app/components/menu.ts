@@ -12,26 +12,62 @@ export const MENU_ITEMS: NbMenuItem[] = [
         group: true,
     },*/
     {
-        title: 'Tests',
+        title: 'User',
         icon: 'nb-compose',
         children: [
             {
-                title: 'My tests',
-                link: '/tests/my-tests',
-            },
-            {
-                title: 'Manager',
-                link: '/tests/manager',
-            },
-            {
-                title: 'Results',
-                link: '/tests/results',
+                title: 'Tests',
+                link: '/user/tests',
             },
             {
                 title: 'Test',
-                link: '/tests/selected',
+                link: '/user/test/selected',
                 hidden: true,
             },
+            {
+                title: 'Test',
+                link: '/user/test/live',
+                hidden: true,
+            },
+            {
+                title: 'Test',
+                link: '/user/test/edit',
+                hidden: true,
+            },
+            {
+                title: 'Test',
+                link: '/user/test/result',
+                hidden: true,
+            },
+        ],
+    },
+    {
+        title: 'Author',
+        icon: 'nb-title',
+        children: [
+            {
+                title: 'Tests',
+                link: '/author/tests',
+            },
+            {
+                title: 'Create',
+                link: '/author/create',
+            },
+            {
+                title: 'Review',
+                link: '/author/result',
+                hidden: true,
+            },
+            {
+                title: 'Review',
+                link: '/author/edit',
+                hidden: true,
+            },
+            /*{
+                title: 'Test',
+                link: '/tests/selected',
+                hidden: true,
+            },*/
         ],
     },
     /*{

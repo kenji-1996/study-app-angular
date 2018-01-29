@@ -2,6 +2,19 @@
  * Created by Kenji on 1/4/2018.
  */
 
+export class allocatedTest {
+    _id: String;
+    //testId: String,//Reference test for result settings
+    test: newTest;
+    userId: String;//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
+    allocatedDate: Date;
+    submittedTests: [String];
+    finalMark: String;//String or number?
+    feedback: String;
+    showMarker: Boolean;//Should the user see who marked them
+    markerId: String; //Only shown if above is correct
+}
+
 export class newTest {
     title: String;
     questions: newQuestion[];

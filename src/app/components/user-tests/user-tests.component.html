@@ -1,0 +1,52 @@
+
+<nb-card size="xlarge" style="max-height: 800px;" >
+    <nb-card-header>
+        <div class="cameras-card-header">
+            <span class="cameras-card-title">User tests</span>
+            <span class="cameras-filter">
+      </span>
+        </div>
+    </nb-card-header>
+    <nb-card-body [@fadeInOut]>
+        <div class="row" *ngIf="allocatedTests" >
+            <div *ngFor="let t of allocatedTests; let i = index" class="col-lg-4">
+                <nb-card [routerLink]="['/user/test/selected/', t._id]" style="cursor: pointer;">
+                    <nb-card-header>{{t.test.title}}</nb-card-header>
+                    <nb-card-body >
+                        <span class="text-muted" style="font-size:small">
+                            Allocated on: {{t.allocatedDate | date:'fullDate' }}
+                            Attempts: {{t.submittedTests.length}}
+                        </span>
+                        <hr>
+                        <span class="text-muted" style="font-size:small">
+                            Category: {{t.test.category}}
+                            <br />Questions: {{t.test.questions.length}}
+                            <ng-container *ngIf="t.test.expire">
+                                <br/>Expires: {{t.test.expireDate | date:'fullDate' }}
+                            </ng-container>
+                            <ng-container *ngIf="t.test.attemptsAllowed > 0">
+                                <br />Allowed attempts: {{t.test.attemptsAllowed}}
+                            </ng-container>
+                            <ng-container *ngIf="t.test.attemptsAllowed <= 0">
+                                 <br />Allowed attempts: Unlimited
+                            </ng-container>
+                            <ng-container *ngIf="t.feedback">
+                                 <br />Feedback: {{t.feedback}}
+                            </ng-container>
+                            <ng-container *ngIf="t.finalMark">
+                                 <br />Mark: {{t.finalMark}}
+                            </ng-container>
+                        </span>
+                    </nb-card-body>
+                </nb-card>
+            </div>
+        </div>
+    </nb-card-body>
+    <nb-card-footer>
+        <nb-actions size="medium" fullWidth>
+            <nb-action>
+                <i class="nb-search"></i><span>Search</span>
+            </nb-action>
+        </nb-actions>
+    </nb-card-footer>
+</nb-card>

@@ -13,18 +13,19 @@ var mongoose     = require('mongoose');
 var Schema = mongoose.Schema;
 
 //One user only has 1 result object per 1 test
-var resultSchema  = new Schema({
+var userTestSchema  = new Schema({
     _id: Schema.Types.ObjectId,
-    testId: String,//Reference test for result settings
+    //testId: String,//Reference test for result settings
+    test: {type: Schema.Types.ObjectId, ref: 'tests'},
     userId: String,//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
-    attempts: Number,//Increases every test submitted, will tell user how many attempts they have left, total attempts listed in test.
+    allocatedDate: { type: Date, default: Date.now },
 
     //List of submitted tests from different users
-    submittedTests: [String],
-    finalMark: String,//String or number?
-    feedback: String,
+    submittedTests: [String],//The size of this array is the amount of attempts
+    finalMark: { type: String, default: null },
+    feedback: { type: String, default: null },
     showMarker: { type: Boolean, default:false },//Should the user see who marked them
-    markerId: String, //Only shown if above is correct
+    markerId: { type: String, default: null }, //Only shown if above is correct
     //THIS IS ONLY FOR THE AUTHOR(S), Talks to submittedTests and its children submittedQuestions in order to validate/mark them!
     //Who is allowed to mark this - Moved to test.js - Multiple authorIDs for marking
     //markerUserIds: [String],
@@ -37,4 +38,4 @@ var resultSchema  = new Schema({
      */
 });
 
-module.exports = mongoose.model('results', resultSchema);
+module.exports = mongoose.model('usertest', userTestSchema);

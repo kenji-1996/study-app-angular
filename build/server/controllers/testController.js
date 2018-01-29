@@ -2,11 +2,10 @@
  * Created by Kenji on 1/8/2018.
  */
 let settings = require('../misc/settings');
-
 let mongoose = require('mongoose');
 let testsModel = require('../models/testModel');
 let usersModel = require('../models/userModel');
-let resultsModel = require('../models/resultModel');
+let userTestModel = require('../models/userTestModel');
 let questionsModel = require('../models/questionModel');
 
 /**
@@ -101,17 +100,28 @@ exports.createTest = function(req, res) {
                     if(req.body.test.private) {test.private = req.body.test.private; }
                     if(req.body.test.showMarks) {test.showMarks = req.body.test.showMarks; }
                     if(req.body.test.attemptsAllowed) {test.attemptsAllowed = req.body.test.attemptsAllowed; }
-                    if(req.body.test.currentAttempts) {test.currentAttempts = req.body.test.currentAttempts; }
                     if(req.body.test.userEditable) {test.userEditable = req.body.test.userEditable; }
                     if(req.body.test.shareable) {test.shareable = req.body.test.shareable; }
                     if(req.body.test.hintAllowed) {test.hintAllowed = req.body.test.hintAllowed; }
+                    if(req.body.test.showMarker) {test.showMarker = req.body.test.showMarker; }
 
                     test.save(function (err, result) {
                         if (err) return res.status(500).json({message: "Save test query failed", data: null});
+                        // TODO: Decide if new tests should auto allocate to author
                         user.tests.push(test.id);
                         user.authoredTests.push(test.id);
+                        let userTest = new userTestModel({
+                            _id: new mongoose.Types.ObjectId(),
+                            test: test._id,
+                            userId: user._id,
+                        });
+                        userTest.attempts = test.attemptsAllowed;
+                        userTest.showMarker = test.showMarker;
+                        userTest.save(function (err) {
+                            if (err) return res.status(500).json({message: "Save user test allocation query failed", data: err});
+                        });
                         user.save(function (err) {
-                            if (err) return res.status(500).json({message: "Save user query failed", data: null});
+                            if (err) return res.status(500).json({message: "Save user query failed", data: err});
                         });
                         return res.status(200).json({message: "Test generated successfully", data: result});
                     });
@@ -135,15 +145,12 @@ exports.createTest = function(req, res) {
  * @param res
  */
 exports.listTest = function(req, res) {
-    try {
-        testsModel.findOne({_id: req.params.testId}, function(err, test) {
-            if (err) return res.status(500).json({message: "Find test query failed", data: err});
-
-            return res.status(200).json({message: "Test found", data: test});
+    userTestModel.findOne({_id : req.params.testId})//Get all tests with given user ID
+        .populate({path:'test', model:'tests'})
+        .exec(function (err,userTests) {
+            if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
+            return res.status(200).json({message: 'Allocated tests successfully retrieved', data: userTests});
         });
-    } catch (err) {
-        return res.status(500).json({message: "Something went wrong fetching test", data: err});
-    }
 };
 /**
  * /api/tests/:testId [PUT]
@@ -231,15 +238,15 @@ exports.hardDeleteTest = function(req, res) {
  * @return JSON {message,data}
  */
 exports.listTestQuestions = function(req, res) {
-    testsModel.findById(req.params.testId)
-        .exec(function (err, result) {
-            if(err) return res.status(500).json({message: ('Couldnt find test provided'), data: err});
-            questionsModel.find({'_id': { $in: result.questions}},'_id date resources type')//Only provide resources and type to allow user to preview questions (need each question type presented)
+    userTestModel.findOne({_id : req.params.testId})//Get all tests with given user ID
+        .populate({path:'test', model:'tests'})
+        .exec(function (err,userTests) {
+            if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
+            questionsModel.find({'_id': { $in: userTests.test.questions}},'_id date resources type')//Only provide resources and type to allow user to preview questions (need each question type presented)
                 .exec(function (err,questionFindQuery) {
                     if (err) { return res.status(404).json({message: "Failed to retrieve questions", data: err}) }
                     return res.status(200).json({message: 'Questions found', data: questionFindQuery});
                 });
-            if (err) return res.status(500).json({message: "Failed to find test", data: err});
         });
 };
 

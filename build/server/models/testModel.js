@@ -14,7 +14,7 @@ let testSchema  = new Schema({
     //General test information
     _id: Schema.Types.ObjectId,
     title: {type:String, required: true},
-    questions: [String],
+    questions: [{type: Schema.Types.ObjectId, ref: 'questions'}],
     category: String,
     started: { type: Boolean, default:false },//Stop user bailing from tests
     date: { type: Date, default: Date.now },
@@ -37,7 +37,7 @@ let testSchema  = new Schema({
     expireDate: { type: Date, default: new Date(+new Date() + 7*24*60*60*1000) },//If expire, default at 1 week later
     handMarked: { type: Boolean, default:false },//Results not calculated internally but rather by the markers
     private: { type: Boolean, default:false },//If public, will be available to find on test browser
-    attemptsAllowed: { type: Number, default:10 },//How many attempts allowed
+    attemptsAllowed: { type: Number, default:0 },//If 0, infinite!
     //currentAttempts: { type: Number, default:0 },//Should be moved
     userEditable: { type: Boolean, default:false },
     shareable: { type: Boolean, default:true },
@@ -52,6 +52,7 @@ let testSchema  = new Schema({
     markDate: {type: Date }, //If author wants user to have to wait till all users have done the test for it to be auto marked.
     //marked: { type: Boolean, default:false },//Has the server/author marked this?
     showMarks: { type: Boolean, default:true },//If it is marked, can we show?
+    showMarker: { type: Boolean, default:true },//Can the user see who marked them
 
     /*Future concepts
     allowedUserGroups: [String],
