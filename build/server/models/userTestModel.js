@@ -17,19 +17,17 @@ var userTestSchema  = new Schema({
     _id: Schema.Types.ObjectId,
     //testId: String,//Reference test for result settings
     test: {type: Schema.Types.ObjectId, ref: 'tests'},
-    userId: String,//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
+    user: {type: Schema.Types.ObjectId, ref: 'users'},//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
     allocatedDate: { type: Date, default: Date.now },
     started: { type: Boolean, default: false },
 
     //List of submitted tests from different users
-    submittedTests: [String],//The size of this array is the amount of attempts
+    submittedTests: [{type: Schema.Types.ObjectId, ref: 'submittedtest'}],//The size of this array is the amount of attempts
     finalMark: { type: String, default: null },
     feedback: { type: String, default: null },
-    showMarker: { type: Boolean, default:false },//Should the user see who marked them
-    markerId: { type: String, default: null }, //Only shown if above is correct
-    //THIS IS ONLY FOR THE AUTHOR(S), Talks to submittedTests and its children submittedQuestions in order to validate/mark them!
-    //Who is allowed to mark this - Moved to test.js - Multiple authorIDs for marking
-    //markerUserIds: [String],
+    marker: {type: Schema.Types.ObjectId, ref: 'users' }, //Marker is the author who marked the test or provided feedback
+    //Show marker
+    //showMarker: { type: Boolean, default:false },//Should the user see who marked them
 
     /**
      * future ideas:

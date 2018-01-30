@@ -2,7 +2,7 @@ import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
-import {allocatedTest, newQuestion, Question, Result, TestToQuestion} from "../../objects/objects";
+import {allocatedTest, newQuestion, submittedTest, submittedQuestion} from "../../objects/objects";
 import * as global from '../../globals';
 import {Observable} from "rxjs/Observable";
 import 'rxjs/add/observable/of';
@@ -13,7 +13,7 @@ import {fadeAnimate} from "../../misc/animation";
 import {KeywordQuestionComponent} from "../keyword-question/keyword-question.component";
 import {ChoiceQuestionComponent} from "../choice-question/choice-question.component";
 import {ArrangementComponent} from "../arrangement-question/arrangement-question.component";
-import {ShortanswerQuestionComponent} from "../../component/shortanswer-question/shortanswer-question.component";
+import {ShortanswerQuestionComponent} from "../shortanswer-question/shortanswer-question.component";
 
 @Component({
   selector: 'app-live-test',
@@ -41,8 +41,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
    */
   allocatedTest: allocatedTest;
   selectedQuestion: newQuestion;
-  //Result is now caluclated server side.
-  //result:Result[] = [];
+  submitTest: submittedTest = new submittedTest();
   progress = '0';
 
   selectedId;
@@ -58,7 +57,6 @@ export class LiveTestComponent implements OnInit, OnDestroy {
   timeLimit = false;
   fullPage = false;
   timerLimit = '30';
-  instantResult = false;
   randomOrder = false;//To-do1
   subscriber;
 
@@ -68,11 +66,8 @@ export class LiveTestComponent implements OnInit, OnDestroy {
       let testId = params['testId'];
       this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(allocatedTestResult => {
         this.allocatedTest = allocatedTestResult.data;
-        console.log(this.allocatedTest);
         if(this.allocatedTest.test.fullPage) { this.fullPage = true; }
-        if(this.allocatedTest.test.instantResult) { this.instantResult = true; }
           this.titleService.setTitle(this.allocatedTest.test.title + ' test - DigitalStudy');
-          console.log(this.allocatedTest);
           this.startTest();
       });
     });
@@ -80,7 +75,8 @@ export class LiveTestComponent implements OnInit, OnDestroy {
   }
 
   private startTest() {
-
+    this.submitTest.user = JSON.parse(localStorage.getItem('userObject'))._id;
+    this.submitTest.test = this.allocatedTest.test._id;
     if(!this.selectedId) {
       this.selectedId = 0;
     }
@@ -102,12 +98,31 @@ export class LiveTestComponent implements OnInit, OnDestroy {
   }
 
   public submitQuestion() {
-    if(!this.answer) {//On timer finish, dont give this message but submit empty string/result
+    if(!this.answer && !this.timeLimit) {//On timer finish, dont give this message but submit empty string/result
       this.dataEmitter.pushUpdateArray('Please put an answer of sorts even if you are unsure!');
       return;
     }
     if(this.subscription) { this.subscription.unsubscribe(); }
     if(this.selectedId < this.allocatedTest.test.questions.length) {
+      let submit = new submittedQuestion();
+      submit.type = this.allocatedTest.test.questions[this.selectedId].type;
+      submit._id = this.allocatedTest.test.questions[this.selectedId]._id;
+      switch(submit.type) {
+        case 'keywords':
+          let stringArray = this.answer.split(/(\s+)/);
+          submit.keywordsAnswer = stringArray;
+          break;
+        case 'choices':
+          submit.choicesAnswer = this.answer;
+          break;
+        case 'arrangement':
+          submit.arrangement = this.answer;
+          break;
+        case 'shortAnswer':
+          submit.shortAnswer = this.answer;
+          break;
+      }
+      this.submitTest.submittedQuestions.push(submit);
       this.selectedId++;
       this.progress = '0';
       this.answer = '';
@@ -119,6 +134,48 @@ export class LiveTestComponent implements OnInit, OnDestroy {
         this.testTimer();
       }
     }
+  }
+  testFinished() {
+    let body = { submittedTest: this.submitTest, userTestId: this.allocatedTest._id };
+    this.dataManagement.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/results', body).subscribe(dataResult=> {
+      if(dataResult) {
+        console.log(dataResult);
+        //this.dataEmit.pushUpdateArray(dataResult.message);
+      }
+    });
+    /*var answerTotal = 0;
+     for(var i = 0; i < this.test.questions.length; i++) {
+     answerTotal+= this.test.questions[i].keywords.length;
+     }
+     var markTotal = 0;
+     for( var i = 0; i < this.result.length; i++ ){
+     markTotal += this.result[i].markCount; //don't forget to add the base
+     }
+     var avg = ((markTotal/answerTotal) * 100).toFixed(1);
+     this.totalKeywords = answerTotal;
+     this.givenKeywords = markTotal;
+     this.percentResult = avg;
+
+     //Submit question to database
+     let questionToResult = [];
+     for(let i = 0; i < this.result.length; i++) {
+     questionToResult.push({_id:this.result[i]._id,mark:this.result[i].markCount + '/' + this.test.questions[i].keywords.length})
+     }
+     let postTestData = [];
+     postTestData.push({result: this.result, test:this.test,percentResult: this.percentResult,mark: this.givenKeywords + '/' + this.totalKeywords});
+     localStorage.setItem('result',JSON.stringify(postTestData));
+     this.route.navigate(['tests/result', this.test._id]);
+     var body = {
+     testId: this.test._id,
+     testTitle: this.test.title,
+     questionsToResult: questionToResult,
+     mark: this.givenKeywords + '/' + this.totalKeywords,
+     percent: parseInt(this.percentResult),
+     private: false,
+     };
+     this.dataManagement.postDATA(global.url + '/api/results', body).subscribe(dataResult => {
+     this.dataEmitter.pushUpdateArray(dataResult.message);
+     });*/
   }
 
   checkAnswer() {
@@ -162,43 +219,6 @@ export class LiveTestComponent implements OnInit, OnDestroy {
     if(event.keyCode == 13) {
       this.submitQuestion();
     }
-  }
-
-  testFinished() {
-    /*var answerTotal = 0;
-    for(var i = 0; i < this.test.questions.length; i++) {
-      answerTotal+= this.test.questions[i].keywords.length;
-    }
-    var markTotal = 0;
-    for( var i = 0; i < this.result.length; i++ ){
-      markTotal += this.result[i].markCount; //don't forget to add the base
-    }
-    var avg = ((markTotal/answerTotal) * 100).toFixed(1);
-    this.totalKeywords = answerTotal;
-    this.givenKeywords = markTotal;
-    this.percentResult = avg;
-
-    //Submit question to database
-    let questionToResult = [];
-    for(let i = 0; i < this.result.length; i++) {
-      questionToResult.push({_id:this.result[i]._id,mark:this.result[i].markCount + '/' + this.test.questions[i].keywords.length})
-    }
-    let postTestData = [];
-    postTestData.push({result: this.result, test:this.test,percentResult: this.percentResult,mark: this.givenKeywords + '/' + this.totalKeywords});
-    localStorage.setItem('result',JSON.stringify(postTestData));
-    this.route.navigate(['tests/result', this.test._id]);
-    var body = {
-      testId: this.test._id,
-      testTitle: this.test.title,
-      questionsToResult: questionToResult,
-      mark: this.givenKeywords + '/' + this.totalKeywords,
-      percent: parseInt(this.percentResult),
-      private: false,
-    };
-    this.dataManagement.postDATA(global.url + '/api/results', body).subscribe(dataResult => {
-      this.dataEmitter.pushUpdateArray(dataResult.message);
-    });*/
-    alert('server has not yet implimented backend question marking');
   }
 
   ngOnDestroy() {

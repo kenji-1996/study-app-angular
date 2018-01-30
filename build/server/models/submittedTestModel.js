@@ -11,9 +11,10 @@ let Schema = mongoose.Schema;
 let submittedTestSchema  = new Schema({
     //Unique testSubmitted ID
     _id: Schema.Types.ObjectId,
-    userId: {type:String, required: true},//Who submitted it, also held
+    user: { type: Schema.Types.ObjectId, ref: 'users' },
+    test: { type: Schema.Types.ObjectId, ref: 'tests' },
     //submittedQuestions ID array
-    submittedQuestions: [String],
+    submittedQuestions: [{type: Schema.Types.ObjectId, ref: 'submittedquestion'}],
     //Date submitted
     dateSubmitted: { type: Date, default: Date.now },
     //Result-related, mark saved if not manually marked by human

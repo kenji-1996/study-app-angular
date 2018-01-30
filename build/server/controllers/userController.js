@@ -2,11 +2,13 @@
  * Created by Kenji on 1/8/2018.
  */
 let settings = require('../misc/settings');
+let mongoose = require('mongoose');
 
 let testsModel = require('../models/testModel');
 let usersModel = require('../models/userModel');
 let userTestModel = require('../models/userTestModel');
 let submittedTestModel = require('../models/submittedTestModel');
+let submittedQuestionModel = require('../models/submittedQuestionModel');
 
 /**
  * /api/users [GET]
@@ -43,6 +45,7 @@ exports.authenticateUser = function(req, res) {
                 result.name = user['name'];
                 result.source = user['iss'];
                 result.picture = user['picture'];
+                result.userGroups.push('user');
                 result.save(function (err,newUser) {
                     if (err) return res.status(500).json({message: "Couldnt save user", data: err});
                     return res.status(200).json({message: "User created and retrieved", data: newUser});
@@ -105,7 +108,7 @@ exports.deleteUser = function(req, res) {
         usersModel.findOne({unique_id: user['sub']})
             .exec(function (err, userRes) {
                 if (userRes.permissions >= 3) {
-                    usersModel.findOneAndUpdate({_id: req.params.userId},{$pullAll: {tests: userRes.tests}}, function (err, userQ1) {
+                    usersModel.findOneAndUpdate({_id: req.params.userId},{$pullAll: [{tests: userRes.authoredTests},{results: userRes.authoredTests}]}, function (err, userQ1) {
                         if (err) return res.status(500).json({message: "Update user query failed", data: err});
                         userQ1.remove();
                         return res.status(200).json({message: ('Admin updated user ' + userQ1.id), data: userQ1});
@@ -124,7 +127,7 @@ exports.deleteUser = function(req, res) {
  * @return JSON {message,data}
  */
 exports.listAllocatedTests = function(req, res) {
-    userTestModel.find({userId : req.params.userId})//Get all tests with given user ID
+    userTestModel.find({user : req.params.userId})//Get all tests with given user ID
         .populate({path:'test', model:'tests'})
         .exec(function (err,userTests) {
             if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
@@ -135,92 +138,117 @@ exports.listAllocatedTests = function(req, res) {
  * /api/users/:userId/tests [POST]
  * Allocates user to new ID
  *
- * Only can add to self at the moment, will add usergroup/permissions/organization to allow outside allocation
- * When a test is allocated, create resultSchema?
- *
  * body { testid: '123' }
  *
- * STATUS: Untested
+ * STATUS: Tested
  * @param req
  * @param res
  * @return JSON {message,data}
  */
-exports.addAllocatedTest = function(req, res) {
+exports.selfAllocateTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (authUser) {
         if (!authUser) {return null;}
         usersModel.findOne({unique_id: authUser['sub']})
             .exec(function (err, user) {
                 if (err) return res.status(500).json({message: "Failed to query user", data: err});
-                user.tests.push(req.body.testid);
                 testsModel.findOne({'_id': req.body.testid})
-                    .exec(function (err, testFindQuery) {
+                    .populate({
+                        path: 'userTestList',
+                        model: 'usertest',
+                        match: { user: { $not: req.params.userId} }
+                    })
+                    .exec(function (err,targetTest) {
+                        if(!targetTest) { return res.status(200).json({message: "User is already assigned!", data: null}); }
                         if (err) return res.status(500).json({message: "Failed to find test", data: err});
-                        return res.status(200).json({message: 'Test allocated to user', data: testFindQuery});
+                        let userTest = new userTestModel({
+                            _id: new mongoose.Types.ObjectId(),
+                            test: req.body.testid,
+                            user: user.id,
+                        });
+                        userTest.save(function (err) {
+                            if (err) return res.status(500).json({message: "Failed to save test", data: err});
+                            targetTest.userTestList.push(userTest.id);
+                            user.tests.push(targetTest.id);
+                            targetTest.save(function(err) {
+                                if (err) return res.status(500).json({message: "Failed to save test", data: err});
+                                user.save(function(err) {
+                                    if (err) return res.status(500).json({message: "Failed to save user", data: err});
+                                    return res.status(200).json({message: 'Target user was added to test', data: targetUser});
+                                });
+                            });
+                        });
                     });
-
             });
     });
 };
+
 /**
  * /api/users/:userId/results [POST]
  * A user submits their test answers, an object of submittedTest holding an array of [submittedQuestion]
  *
- * STATUS: Untested
+ * takes argument of userTestModel._id and submittedTestModel object
+ *
+ * STATUS: Tested
  * @param req
  * @param res
  * @return JSON {message,data}
  */
 exports.submitTest = function(req, res) {
-    return res.status(200).json({message: 'Work in progress, please check userController.js and impliment', data: null});
-    settings.ensureAuthorized(req,res).then(function (user) {
-        if(!user) { return null; }
-        usersModel.findOne({unique_id: user['sub']}, function (err, user) {//User can only submit to themselves
-            if (err) return res.status(404).json({message: "User not found/Valid", data: err});
-            if (req.body.test) {
-                //Info inside new model is required!
-                let test = new submittedTestModel({
-                    _id: new mongoose.Types.ObjectId(),
-                    //target test ID (must be valid) - Get test settings from here
-                    testId: {type:String, required: true}, //Points to parent because there can only be one test it references, One(Test) -> Many[submittedTest]
-                    //Who submitted it
-                    userId: {type:String, required: true},
-                    //submittedQuestions ID array
-                    submittedQuestions: [String],
-                    //Date submitted
-                    dateSubmitted: { type: Date, default: Date.now },
-                    //Result-related, mark saved if not manually marked by human
-                    mark: Number,
-                    //Feedback only shown if it contains something, can only be submitted by a marker/author
-                    feedback: String,
-                });
-                //Settings, only set if posted.
-                if(req.body.test.expire) {test.expire = req.body.test.expire; }
-                if(req.body.test.expireDate) {test.expireDate = req.body.test.expireDate; }//Date.now type date
-                if(req.body.test.handMarked) {test.handMarked = req.body.test.handMarked; }
-                if(req.body.test.private) {test.private = req.body.test.private; }
-                if(req.body.test.showMarks) {test.showMarks = req.body.test.showMarks; }
-                if(req.body.test.attemptsAllowed) {test.attemptsAllowed = req.body.test.attemptsAllowed; }
-                if(req.body.test.currentAttempts) {test.currentAttempts = req.body.test.currentAttempts; }
-                if(req.body.test.userEditable) {test.userEditable = req.body.test.userEditable; }
-                if(req.body.test.shareable) {test.shareable = req.body.test.shareable; }
-                if(req.body.test.hintAllowed) {test.hintAllowed = req.body.test.hintAllowed; }
-
-                test.save(function (err, result) {
-                    if (err) return res.status(500).json({message: "Save test query failed", data: null});
-                    user.tests.push(test.id);
-                    user.authoredTests.push(test.id);
-                    user.save(function (err) {
-                        if (err) return res.status(500).json({message: "Save user query failed", data: null});
+    settings.ensureAuthorized(req,res).then(function (authUser) {
+        if (!authUser) {return null;}
+        usersModel.findOne({unique_id: authUser['sub']})
+            .exec(function (err, user) {
+                if (req.body.submittedTest && req.body.userTestId) {
+                    let subTest = new submittedTestModel({
+                        _id: new mongoose.Types.ObjectId(),
+                        user: user.id,
+                        test: req.body.submittedTest.test,
                     });
-                    return res.status(200).json({message: "Test generated successfully", data: result});
-                });
-            }else{
-                return res.status(400).json({message: "Bad request, req.body.test required", data: null});
-            }
-        });
+                    for(let i = 0; i < req.body.submittedTest.submittedQuestions.length; i++) {
+                        let subQuestion = new submittedQuestionModel({
+                            _id: new mongoose.Types.ObjectId(),
+                            question:  req.body.submittedTest.submittedQuestions[i].question,
+                            type:  req.body.submittedTest.submittedQuestions[i].type,
+                        });
+                        if(req.body.submittedTest.submittedQuestions[i].keywordsAnswer) {
+                            subQuestion.keywordsAnswer = req.body.submittedTest.submittedQuestions[i].keywordsAnswer;
+                        }
+                        if(req.body.submittedTest.submittedQuestions[i].choicesAnswer) {
+                            subQuestion.choicesAnswer = req.body.submittedTest.submittedQuestions[i].choicesAnswer;
+                        }
+                        if(req.body.submittedTest.submittedQuestions[i].arrangement) {
+                            subQuestion.arrangement = req.body.submittedTest.submittedQuestions[i].arrangement;
+                        }
+                        if(req.body.submittedTest.submittedQuestions[i].shortAnswer) {
+                            subQuestion.shortAnswer = req.body.submittedTest.submittedQuestions[i].shortAnswer;
+                        }
+                        subQuestion.save(function (err) {
+                            if (err) return res.status(500).json({message: "Submitted question saving failed", data: err});
+                            subTest.submittedQuestions.push(subQuestion.id);
+                        });
+                    }
+                    subTest.save(function (err) {
+                        if (err) return res.status(500).json({message: "Submitted test saving failed", data: err});
+                        userTestModel.findOne({_id: req.body.userTestId})
+                            .exec(function (err,userTest) {
+                                userTest.submittedTests.push(subTest.id);
+                                userTest.save(function (err, result) {
+                                    if (err) return res.status(500).json({message: "User test failed", data: err});
+                                    user.results.push(userTest.id);
+                                    user.save(function (err) {
+                                        if (err) return res.status(500).json({message: "User save failed", data: err});
+                                        return res.status(200).json({message: "Submitted test added successfully", data: result});
+                                    });
+
+                            });
+                        });
+                    });
+                } else {
+                    return res.status(400).json({message: "Providing submittedTest and user test id is required", data: null});
+                }
+            });
     });
 };
-
 
 /**
  * /api/users/:userId/results [GET]
@@ -235,97 +263,110 @@ exports.submitTest = function(req, res) {
  * @return JSON {message,data}
  */
 exports.listAllTestResults = function(req, res) {
-    usersModel.findById(req.params.userId)
-        .exec(function (err, user) {
-            userTestModel.find({'_id': { $in: user.results}})
-                .sort({date: -1})
-                .exec(function (err,resultsArray) {
-                    if (err) { return res.status(404).json({message: "No tests found", data: err}) }
-                    let newResult = resultsArray;
-                    //Get and modify result depending on settings
-                    for(let i = 0; i < newResult.length;i++) {
-                        //Get parent test for each item to check for settings
-                        testsModel.findOne({'_id': newResult[i].testId})
-                            .exec(function (err,parentTest) {
-                                if (err) { return res.status(500).json({message: "Failed to get parent test", data: err}) }
-                                if(!parentTest.showMarks) { newResult[i].finalMark = 'hidden'; }
-                                if (!newResult[i].showMarker) { newResult[i].markerId = null; }
-                            });
-                    }
-                    return res.status(200).json({message: 'Results found', data: newResult});
-                });
-            if (err) return res.status(500).json({message: "Find results query failed", data: err});
+    userTestModel.find({'user': req.params.userId})
+        .populate({path:'test', model: 'tests'})
+        .sort({date: -1})
+        .exec(function (err,resultsArray) {
+            if (err) { return res.status(404).json({message: "No tests found", data: err}) }
+            return res.status(200).json({message: 'Results found', data: resultsArray});
         });
 };
-
 /**
  * /api/users/:userId/results/:testId [GET]
- * List the results for the selected home
- * We get all items in users result, then filter them by testId provided
+ * List the results for the selected user and selected test
  *
- * STATUS: Untested
+ * STATUS: Tested
  * @param req
  * @param res
  * @return JSON {message,data}
  */
 exports.listTestResults = function(req, res) {
-    usersModel.findById(req.params.userId)
-        .exec(function (err, user) {
-            userTestModel.findOne({'testId': req.params.testId})
-                .sort({date: -1})
-                .exec(function (err,result) {
-                    if (err) { return res.status(404).json({message: "No tests found", data: err}) }
-                    if(result) {
-                        let newResult = result;
-                        testsModel.findOne({'_id': newResult.testId})
-                            .exec(function (err, parentTest) {
-                                if (err) { return res.status(500).json({message: "Failed to get parent test", data: err}) }
-                                if (!parentTest.showMarks) { newResult.finalMark = 'hidden'; }
-                                if (!newResult.showMarker) { newResult.markerId = null; }
-                            });
-                        return res.status(200).json({message: 'Results found', data: newResult});
-                    }else{
-                        return res.status(500).json({message: "Result was null", data: err});
-                    }
-                });
-            if (err) return res.status(500).json({message: "Find results query failed", data: err});
+    userTestModel.findOne({user: req.params.userId, test: req.params.testId})
+        .populate({path:'submittedTests', model:'submittedtest', populate: {path: 'submittedQuestions', model: 'submittedquestion'}})
+        .sort({date: -1})
+        .exec(function (err,resultsArray) {
+            if (err) { return res.status(404).json({message: "No tests found", data: err}) }
+            return res.status(200).json({message: 'Results found', data: resultsArray});
         });
 };
 
+//---------------------------------------------------------Authored restful API here --------------------------------------
 /**
- * /api/users/:userId/tests/submitted [GET]
- * List all submitted tests by standard user
- * Only the user and the test author can see this.
+ * /api/users/:userId/authored [GET]
+ * List all authored tests assigned/created by user
  *
- * Group by target test? Show these on result query?
- *
- * STATUS: Untested
+ * STATUS: Tested
  * @param req
  * @param res
  * @return JSON {message,data}
  */
-exports.listAllSubmittedTests = function(req, res) {
-    /*settings.ensureAuthorized(req,res).then(function (authUser) {
-     if (!authUser) { return null; }
-     usersModel.findOne({unique_id: authUser['sub']})
-     .exec(function (err, user) {
-     submittedTestModel.find({'_id': {$in: user.submittedTests}})//In searches through the array
-     .sort({date: -1})
-     .exec(function (err, submittedTestArray) {
-     if (err) { return res.status(404).json({message: "No tests found", data: err}) }
-     for(let i = 0; i < submittedTestArray.length; i++) {
-     testsModel.findOne({'_id': submittedTestArray[i].testId})//Settings here for creating a test
-     .exec(function (err, originalTest) {
-     let marked = originalTest.marked;
-     let showResult = originalTest.showMarks;
+exports.listAllAuthoredTests = function(req, res) {
+    testsModel.find({'authors': req.params.userId})
+        .populate({
+            path:'userTestList', model: 'usertest',
+                populate: [{ path: 'test', model: 'submittedtest', }, { path: 'user', model: 'users', select: 'name' }]
+            })
+        .sort({date: -1})
+        .exec(function (err,resultsArray) {
+            if (err) { return res.status(404).json({message: "No tests found", data: err}) }
+            return res.status(200).json({message: 'Results found', data: resultsArray});
+        });
+};
 
-     });
-     }
-     //Show questions? doesnt currently
-     return res.status(200).json({message: 'Results found', data: submittedTestArray});
-     });
-     if (err) return res.status(500).json({message: "Find results query failed", data: err});
-     });
-     });*/
-    return res.status(404).json({message: "Work in progress", data: null});
+/**
+ * /api/users/:userId/authored [POST]
+ * Allocates user to new ID, can only be done by someone with certain usergroups or overall > 3 permissions.
+ *
+ * body { testid: '123' }
+ *
+ * STATUS: Tested
+ * @param req
+ * @param res
+ * @return JSON {message,data}
+ */
+exports.authorAssigned = function(req, res) {
+    settings.ensureAuthorized(req,res).then(function (authUser) {
+        if (!authUser) {return null;}
+        usersModel.findOne({unique_id: authUser['sub']})
+            .exec(function (err, user) {
+                if (err) return res.status(500).json({message: "Failed to query user", data: err});
+                testsModel.findOne({'_id': req.body.testid,'authors': user._id})
+                    .populate({
+                        path: 'userTestList',
+                        model: 'usertest',
+                        match: { user: { $not: req.params.userId} }
+                    })
+                    .exec(function (err,targetTest) {
+                        if (!targetTest) { return res.status(200).json({message: "User is already assigned!", data: null}); }
+                        if (err) return res.status(400).json({message: "Not a valid author or test", data: err});
+                        usersModel.findOne({_id: req.params.userId})
+                            .exec(function(err,targetUser) {
+                                if (err) return res.status(400).json({message: "Not a valid user", data: err});
+                                //TODO: Work out usergroups and their roles/permissions
+                                if((user.organization === targetUser.organization && (user.userGroup === 'staff')) || user.permissions > 3) {
+                                    let userTest = new userTestModel({
+                                        _id: new mongoose.Types.ObjectId(),
+                                        test: req.body.testid,
+                                        user: targetUser.id,
+                                    });
+                                    userTest.save(function (err) {
+                                        if (err) return res.status(500).json({message: "Failed to save test", data: err});
+                                        targetTest.userTestList.push(userTest.id);
+                                        targetUser.tests.push(targetTest.id);
+                                        targetTest.save(function(err) {
+                                            if (err) return res.status(500).json({message: "Failed to save test", data: err});
+                                            targetUser.save(function(err) {
+                                                if (err) return res.status(500).json({message: "Failed to save user", data: err});
+                                                return res.status(200).json({message: 'Target user was added to test', data: targetUser});
+                                            });
+                                        });
+                                    });
+
+                                }else{
+                                    return res.status(401).json({message: "Not allowed to assign this test to this user", data: null});
+                                }
+                            });
+                    });
+            });
+    });
 };

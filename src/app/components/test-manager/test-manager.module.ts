@@ -4,9 +4,8 @@ import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
 
 import * as global from '../../globals';
-import { Test } from '../../objects/objects';
+import {newTest, Test} from '../../objects/objects';
 import {MatDialog} from "@angular/material";
-import {AddTest} from "../../dialogs/addTest/add-test";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import { ObservableMedia } from '@angular/flex-layout';
 import { Observable } from "rxjs/Observable";
@@ -16,6 +15,7 @@ import "rxjs/add/operator/startWith";
 import {Title} from "@angular/platform-browser";
 import {NgIfMediaQuery} from "../../misc/media-query-directive";
 import {fadeAnimate} from "../../misc/animation";
+import {DialogData} from "../../dialogs/dialogData/dialog-data";
 
 @Component({
   selector: 'app-test-manager',
@@ -25,17 +25,8 @@ import {fadeAnimate} from "../../misc/animation";
 })
 export class TestManagerComponent implements OnInit {
 
-  tests: Test[];
+  tests: newTest[];
   public cols: Observable<number>;
-  cameras: any[] = [];
-
-  selectedCamera: any = this.cameras[0];
-  isSingleView = false;
-
-  selectCamera(camera: any) {
-    this.selectedCamera = camera;
-    this.isSingleView = true;
-  }
 
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
@@ -45,36 +36,24 @@ export class TestManagerComponent implements OnInit {
                private titleService: Title,
 
   ) {
-    dataEmit.$updateArray.subscribe(() => {
-      this.refreshData();
-    });
   }
 
   ngOnInit() {
     this.titleService.setTitle('Authored tests - DigitalStudy');
-    const grid = new Map([
-      ["xs", 1],
-      ["sm", 2],
-      ["md", 3],
-      ["lg", 4],
-      ["xl", 5]
-    ]);
-    let start: number;
-    grid.forEach((cols, mqAlias) => {
-      if (this.observableMedia.isActive(mqAlias)) {
-        start = cols;
-      }
-    });
-    this.cols = this.observableMedia.asObservable()
-        .map(change => {return grid.get(change.mqAlias);}).startWith(start);
     this.refreshData();
   }
 
-  addTest(): void{
-    let dialogRef = this.dialog.open(AddTest, {data: {name: '',} });
-      dialogRef.afterClosed().subscribe(result => {
-        if(result) {
-          this.router.navigate(['/tests/selected', result]);
+  assignUserID(test:newTest,data:any): void{
+    let dialogRef = this.dialog.open(DialogData, {data: data });
+      dialogRef.afterClosed().subscribe((result:any) => {
+        if(result.UserID) {
+          let userID = result.UserID;
+          let body = { testid: test._id };
+          this.data.postDATA(global.url + '/api/users/' + userID + '/authored',body).subscribe(dataResult=> {
+            if(dataResult) {
+              console.log(dataResult);
+            }
+          });
         }
       });
   }
@@ -85,11 +64,10 @@ export class TestManagerComponent implements OnInit {
   }
 
   refreshData() {
-    this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests').subscribe(dataResult=> {
-
-      this.tests = dataResult.data;
-      for(let i = 0; i < dataResult.data.length;i++) {
-        this.cameras.push({title: dataResult.data[i].title,source: 'http://ichef.bbci.co.uk/wwfeatures/wm/live/1280_640/images/live/p0/51/v8/p051v8z4.jpg'});
+    this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/authored').subscribe(dataResult=> {
+      if(dataResult) {
+        console.log(dataResult.data);
+        this.tests = dataResult.data;
       }
     });
   }

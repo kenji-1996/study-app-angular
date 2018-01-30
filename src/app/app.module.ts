@@ -10,7 +10,6 @@ import {DataManagementService} from "./services/data-management.service";
 import {ImportsModule} from "./modules/imports.module";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ReactiveFormsModule} from "@angular/forms";
-import {AddTest} from "./dialogs/addTest/add-test";
 import {DataEmitterService} from "./services/data-emitter.service";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
@@ -28,13 +27,15 @@ import {NbMenuInternalService} from "@nebular/theme/components/menu/menu.service
 import {DialogsModule} from "./dialogs/confirmDialog/dialogs.module";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import { CreateTestComponent } from './components/create-test/create-test.component';
+import { LogOutComponent } from './components/log-out/log-out.component';
+import {DialogData} from "./dialogs/dialogData/dialog-data";
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    AddTest,
+    DialogData,
     EditTestDialog,
     EditTestNameDialog,
     EditQuestionDialog,
@@ -42,6 +43,7 @@ import { CreateTestComponent } from './components/create-test/create-test.compon
     StringtodatePipe,
     NgIfMediaQuery,
     CreateTestComponent,
+    LogOutComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,7 +56,7 @@ import { CreateTestComponent } from './components/create-test/create-test.compon
     DialogsModule,
   ],
   entryComponents: [
-    AddTest,
+    DialogData,
     EditTestNameDialog,
     EditQuestionDialog,
   ],

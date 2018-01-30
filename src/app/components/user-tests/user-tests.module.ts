@@ -24,7 +24,6 @@ import {fadeAnimate} from "../../misc/animation";
 export class UserTestsComponent implements OnInit {
 
   allocatedTests: allocatedTest[];
-  public cols: Observable<number>;
 
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
@@ -34,28 +33,10 @@ export class UserTestsComponent implements OnInit {
                private titleService: Title,
 
   ) {
-    dataEmit.$updateArray.subscribe(() => {
-      this.refreshData();
-    });
   }
 
   ngOnInit() {
     this.titleService.setTitle('Your tests - DigitalStudy');
-    const grid = new Map([
-      ["xs", 1],
-      ["sm", 2],
-      ["md", 3],
-      ["lg", 4],
-      ["xl", 5]
-    ]);
-    let start: number;
-    grid.forEach((cols, mqAlias) => {
-      if (this.observableMedia.isActive(mqAlias)) {
-        start = cols;
-      }
-    });
-    this.cols = this.observableMedia.asObservable()
-        .map(change => {return grid.get(change.mqAlias);}).startWith(start);
     this.refreshData();
   }
 
@@ -68,7 +49,7 @@ export class UserTestsComponent implements OnInit {
 
   refreshData() {
     this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests').subscribe(dataResult=> {
-      if(dataResult.data != null) {
+      if(dataResult) {
         this.allocatedTests = dataResult.data;
       }
     });

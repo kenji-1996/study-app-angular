@@ -2,46 +2,26 @@
  * Created by Kenji on 12/29/2017. - User API
  */
 const router = require('express').Router();
-let testController = require('../controllers/userController');
+let userController = require('../controllers/userController');
 
 router.route('/users')
     .get(function(req,res) {
-        try {
-            testController.listUsers(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong getting users", data: err});
-        }
+        userController.listUsers(req,res);
     })
     .post(function(req,res) {
-        try {
-            testController.authenticateUser(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong posting to users", data: err});
-        }
+        userController.authenticateUser(req,res);
     });
 
 
 router.route('/users/:userId')
     .get(function(req,res) {
-        try {
-            testController.listUser(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong getting user", data: err});
-        }
+        userController.listUser(req,res);
     })
     .put(function(req,res) {
-        try {
-            testController.updateUser(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong updating user", data: err});
-        }
+        userController.updateUser(req,res);
     })
     .delete(function(req,res) {
-        try {
-            testController.deleteUser(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong deleting user", data: err});
-        }
+        userController.deleteUser(req,res);
     });
 
 /**
@@ -50,38 +30,31 @@ router.route('/users/:userId')
  */
 router.route('/users/:userId/tests')//Get all allocated tests, not authored!
     .get(function(req,res) {
-        try {
-            testController.listAllocatedTests(req, res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong getting user tests", data: err});
-        }
+        userController.listAllocatedTests(req, res);
     })
     .post(function(req,res) {
-        try {
-            testController.addAllocatedTest(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Find results query failed", data: err});
-        }
-
+        userController.selfAllocateTest(req,res);
     });
-    //allocated test removal add
+
 router.route('/users/:userId/results')
     .get(function(req,res) {
-        try {
-            testController.listAllTestResults(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Find results query failed", data: err});
-        }
+        userController.listAllTestResults(req,res);
+    })
+    .post(function (req,res) {
+        userController.submitTest(req, res);
     });
 
 router.route('/users/:userId/results/:testId')
-    .get(function(req,res) {
-        try {
-            testController.listTestResults(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Find results query failed", data: err});
-        }
+    .get(function(req,res){
+        userController.listTestResults(req,res);
     });
 
+router.route('/users/:userId/authored')
+    .get(function(req,res) {
+        userController.listAllAuthoredTests(req,res);
+    })
+    .post(function(req,res) {
+        userController.authorAssigned(req,res);
+    });
 
 module.exports = router;

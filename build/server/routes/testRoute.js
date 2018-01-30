@@ -7,7 +7,7 @@ let testController = require('../controllers/testController');
 
 router.route('/tests')
     .get(function(req,res) {
-            testController.listTests(req,res);
+        testController.listTests(req,res);
     })
     .post(function(req,res) {
         testController.createTest(req,res);
@@ -15,42 +15,22 @@ router.route('/tests')
 
 router.route('/tests/:testId')
     .get(function(req,res) {
-        try {
-            testController.listTest(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong fetching test", data: err});
-        }
+        testController.listTest(req,res);
     })
     .put(function(req,res) {
-        try {
-            testController.updateTest(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong updating test", data: err});
-        }
+        testController.updateTest(req,res);
 
     })
     .delete(function(req,res) {
-        try {
-            testController.hardDeleteTest(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong deleting test", data: err});
-        }
+        testController.hardDeleteTest(req,res);
     });
 
 router.route('/tests/:testId/questions')
     .get(function(req,res) {
-        try {
-            testController.listTestQuestions(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong getting test questions", data: err});
-        }
+        testController.listTestQuestions(req,res);
     })
     .post(function(req,res) {
-        try {
-            testController.updateQuestions(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong posting test questions", data: err});
-        }
+        testController.updateQuestions(req,res);
     });
 
 module.exports = router;

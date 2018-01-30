@@ -6,6 +6,8 @@ import {DragulaService} from "ng2-dragula";
 import {newQuestion, newTest} from "../../objects/objects";
 import {DataManagementService} from "../../services/data-management.service";
 import * as global from '../../globals';
+import {DataEmitterService} from "../../services/data-emitter.service";
+import {Router} from "@angular/router";
 @Component({
     selector: 'app-create-test',
     templateUrl: './create-test.component.html',
@@ -48,7 +50,9 @@ export class CreateTestComponent implements OnInit {
     constructor(
         private formBuilder: FormBuilder,
         private dragulaService: DragulaService,
-        private dataManagement: DataManagementService
+        private dataManagement: DataManagementService,
+        private dataEmit: DataEmitterService,
+        private router: Router,
     ) {
 
         this.arrangementOptions = { removeOnSpill: true };
@@ -225,6 +229,8 @@ export class CreateTestComponent implements OnInit {
         }
     }
 
+
+
     confirmTest() {
         this.test.title = this.settingsFormGroup.controls['title'].value;
         this.test.category = this.settingsFormGroup.controls['category'].value;
@@ -244,7 +250,8 @@ export class CreateTestComponent implements OnInit {
         this.dataManagement.postDATA(global.url + '/api/tests', body).subscribe(dataResult=> {
             if(dataResult) {
                 console.log(dataResult.message);
-                //this.dataEmit.pushUpdateArray(dataResult.message);
+                this.dataEmit.pushUpdateArray(dataResult.message);
+                this.router.navigate(['author/tests']);
             }
         });
 
@@ -279,6 +286,7 @@ export class CreateTestComponent implements OnInit {
         let newDiv = document.createElement("DIV");
         newDiv.id = this.addQuestionsFormGroup.value.newArrange;
         newDiv.innerText = this.addQuestionsFormGroup.value.newArrange;
+        newDiv.className = "alert alert-info";
         allArrangeNode.appendChild(newDiv);
         this.addQuestionsFormGroup.controls['newArrange'].setValue('');
     }

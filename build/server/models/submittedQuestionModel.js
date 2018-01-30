@@ -16,14 +16,14 @@ let Schema = mongoose.Schema;
 let submittedQuestionsSchema  = new Schema({
     //Submitted questions unique ID
     _id: Schema.Types.ObjectId,
-    submittedTestId: { type: String, required: true },
-    //questionId related to this ID
-    questionId: {type:String, required: true },
+    //submittedTestId: { type: String, required: true },
+    question: { type: Schema.Types.ObjectId, ref: 'questions' },
+    type: String,
 
     //Answer variables (if type is 'keywords', only these variables will be checked and validated) (subject to change)
     keywordsAnswer: [String],//User submitted answer
     choicesAnswer: [String],
-    arrangementAnswer: [String],
+    arrangement: [String],
     shortAnswer: String,
 
     //Temp

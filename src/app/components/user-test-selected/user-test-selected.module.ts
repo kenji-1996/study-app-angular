@@ -2,7 +2,7 @@ import {Component, NgModule, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {Observable} from "rxjs/Observable";
-import {allocatedTest, newQuestion, Question, TestToQuestion} from "../../objects/objects";
+import {allocatedTest, newQuestion, Question, submittedTest, TestToQuestion} from "../../objects/objects";
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
 import * as global from '../../globals';
@@ -30,6 +30,7 @@ export class UserTestSelectedComponent implements OnInit {
 
   //Test variables
   allocatedTest: allocatedTest;
+  submittedTests: submittedTest[];
   started = false;
   progress = '0';
   timerMax = '30';
@@ -48,8 +49,7 @@ export class UserTestSelectedComponent implements OnInit {
 
   //Format
   isCollapsed = true;
-  databaseResult;
-  //dirty: boolean = false; TODO: Fot stopping the user leaving, needs to be moved
+  today: Date = new Date(Date.now());
 
   //Recent results
   private subscription: Subscription;
@@ -64,7 +64,6 @@ export class UserTestSelectedComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
     this.activeRoute.params.subscribe((params: Params) => {
       let testId = params['testId'];
       this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(allocatedTestResult => {
@@ -73,8 +72,11 @@ export class UserTestSelectedComponent implements OnInit {
         if(this.allocatedTest.test.expire && Date.now() > new Date(this.allocatedTest.test.expireDate).getTime()) { alert('test expired'); }// TODO: do something with expired test
         if(this.allocatedTest.test.attemptsAllowed != 0 && this.allocatedTest.test.attemptsAllowed >= this.allocatedTest.submittedTests.length) { alert('no attempts left'); }
         this.titleService.setTitle(this.allocatedTest.test.title + ' test - DigitalStudy');
+        this.populateSubmitted();
       });
     });
+    ///api/users/:userId/results/:testId
+
   }
 
 
@@ -90,13 +92,28 @@ export class UserTestSelectedComponent implements OnInit {
     this.route.navigate( ['user/test/live', this.allocatedTest._id]);//, {queryParams: { giveHint:this.giveHint,timeLimit: this.timeLimit? this.timerMax : 0,instantResult: this.instantResult,questionId:this.selectedId }});
   }
 
-  /*populateResults() {
-    this.dataManagement.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/results/' + this.test._id).subscribe(dataResult=> {
+  populateSubmitted() {
+    this.dataManagement.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/results/' + this.allocatedTest.test._id).subscribe(dataResult=> {
       if(!this.isEmptyObject(dataResult.data)) {
-        this.databaseResult = dataResult.data;
+        this.submittedTests = dataResult.data.submittedTests;
       }
     });
-  }*/
+  }
+
+  daysBetween( date1, date2 ) {
+    //Get 1 day in milliseconds
+    var one_day=1000*60*60;//*24; remove last part to get hours
+
+    // Convert both dates to milliseconds
+    var date1_ms = date1.getTime();
+    var date2_ms = new Date(date2).getTime();
+
+    // Calculate the difference in milliseconds
+    var difference_ms = date2_ms - date1_ms;
+
+    // Convert back to days and return
+    return Math.round(difference_ms/one_day);
+  }
 
   isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length === 0));

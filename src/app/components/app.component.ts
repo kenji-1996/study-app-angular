@@ -1,4 +1,4 @@
-import {Component, EventEmitter, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {AuthenticateService} from "../services/authenticate.service";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {DataEmitterService} from "../services/data-emitter.service";
@@ -25,7 +25,7 @@ import {MENU_ITEMS} from "./menu";
   styleUrls: ['./app.component.scss'],
   animations: [ fadeAnimate ],
 })
-export class AppComponent implements OnInit, OnDestroy{
+export class AppComponent implements OnInit, OnDestroy, AfterViewChecked{
 
   menu = MENU_ITEMS;
   layout: any = {};
@@ -40,7 +40,7 @@ export class AppComponent implements OnInit, OnDestroy{
   photo;
   name;
   title = 'DIGITALSTUDY';
-  userMenu = [{ title: 'Profile' }, { title: 'Log out' }];
+  userMenu = [{ title: 'Profile' }, { title: 'Log out', link: '/user/sign-out' }];
   logged = false;
   width;
   height;
@@ -58,7 +58,7 @@ export class AppComponent implements OnInit, OnDestroy{
               public dataEmit: DataEmitterService,
               public snackBar: MatSnackBar,
               public route: Router,
-              public ngZone:NgZone,
+              private cdRef:ChangeDetectorRef,
               protected stateService: StateService,
               protected menuService: NbMenuService,
               protected themeService: NbThemeService,
@@ -91,18 +91,16 @@ export class AppComponent implements OnInit, OnDestroy{
     this.$name.subscribe(value => { this.name = value; });
   }
 
-
-
-  public handleLogOut() {
-    this.auth.revoke();
-    this.route.navigate(['/']);
-  }
-
-  ngOnInit() {
+  ngAfterViewChecked() {
     if(this.logged) {
       this.$photo.emit(JSON.parse(localStorage.getItem('userObject')).picture);
       this.$name.emit(JSON.parse(localStorage.getItem('userObject')).name);
     }
+    this.cdRef.detectChanges();
+  }
+
+  ngOnInit() {
+
   }
 
   ngOnDestroy() {
@@ -111,75 +109,5 @@ export class AppComponent implements OnInit, OnDestroy{
     this.menuClick$.unsubscribe();
   }
 }
-
-/*
- this.navList = [
- { categoryName: 'User', icon: 'face', dropDown:false, subCategory:
- [
- { subCategoryName: 'Home', subCategoryLink:'/home', visable: true, },
- { subCategoryName: 'Profile', subCategoryLink:'/profile', visable: true, },
- ]
- },
- { categoryName: 'Tests', icon: 'question_answer', dropDown:true, subCategory:
- [
- { subCategoryName: 'Your list', subCategoryLink:'/tests/manager', visable: true, },
- { subCategoryName: 'Results', subCategoryLink:'/tests/results', visable: true, },
- { subCategoryName: 'Selected', subCategoryLink:'/tests/selected', visable: false, },
- { subCategoryName: 'Editing', subCategoryLink:'tests/edit', visable: false, },
- ]
- },
- ];
-
- this.route.events.subscribe(event => {
- if (event instanceof NavigationEnd ) {
- for(var i = 0; i < this.navList.length; i++) {
- this.navList[i].dropDown = false;
- }
- this.navList[1].subCategory[2].visable = false;
- this.navList[1].subCategory[3].visable = false;
- let path = event.url;
- switch (true)
- {
- case path.startsWith('/tests/manager'):
- this.navList[1].dropDown = true;
- break;
- case path.startsWith('/tests/selected'):
- this.navList[1].subCategory[2].visable = true;
- this.navList[1].dropDown = true;
- break;
- case path.startsWith('/tests/edit'):
- this.navList[1].subCategory[3].visable = true;
- this.navList[1].dropDown = true;
- break;
- case path.startsWith('/home'):
- this.navList[0].dropDown = true;
- break;
- default:
- }
- }
- });
-
-
- changeMode() {
- this.width = window.innerWidth;
- this.height = window.innerHeight;
- if(this.width <= 800) {
- this.mode = 'over';
- this.open = 'false';
- }
- if(this.width > 800) {
- this.mode = 'side';
- this.open = 'true';
- }
- }
-
- this.changeMode();
- window.onresize = (e) => {
- ngZone.run(() => {
- this.changeMode();
- });
- };
-
- */
 
 

@@ -8,18 +8,15 @@
         </div>
     </nb-card-header>
     <nb-card-body [@fadeInOut]>
-        <div class="row" *ngIf="allocatedTests" >
+        <div class="row" *ngIf="allocatedTests" [@fadeInOut]>
             <div *ngFor="let t of allocatedTests; let i = index" class="col-lg-4">
-                <nb-card [routerLink]="['/user/test/selected/', t._id]" style="cursor: pointer;">
-                    <nb-card-header>{{t.test.title}}</nb-card-header>
+                <nb-card [routerLink]="['/user/test/selected/', t._id]" style="cursor: pointer;max-height: 230px;">
+                    <nb-card-header>{{t.test.title | uppercase}}</nb-card-header>
                     <nb-card-body >
                         <span class="text-muted" style="font-size:small">
                             Allocated on: {{t.allocatedDate | date:'fullDate' }}
-                            Attempts: {{t.submittedTests.length}}
-                        </span>
-                        <hr>
-                        <span class="text-muted" style="font-size:small">
-                            Category: {{t.test.category}}
+                            <br/>Attempts: {{t.submittedTests.length}}
+                            <br/>Category: {{t.test.category}}
                             <br />Questions: {{t.test.questions.length}}
                             <ng-container *ngIf="t.test.expire">
                                 <br/>Expires: {{t.test.expireDate | date:'fullDate' }}
@@ -45,7 +42,10 @@
     <nb-card-footer>
         <nb-actions size="medium" fullWidth>
             <nb-action>
-                <i class="nb-search"></i><span>Search</span>
+                <span  style="cursor: pointer"><i class="nb-search"></i>Search</span>
+            </nb-action>
+            <nb-action>
+                <span  style="cursor: pointer"><i class="nb-paper-plane"></i>Add</span>
             </nb-action>
         </nb-actions>
     </nb-card-footer>

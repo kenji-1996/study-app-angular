@@ -17,33 +17,31 @@ let testSchema  = new Schema({
     questions: [{type: Schema.Types.ObjectId, ref: 'questions'}],
     category: String,
     date: { type: Date, default: Date.now },
-    resultsList: [String],//Array of resultsSchema._id that can hold x amount of submittedTests (depending on attemptsAllowed)
-    authors: [String],
+    //Query all user tests from user?
+    userTestList: [{type: Schema.Types.ObjectId, ref: 'usertest'}],//Array of resultsSchema._id that can hold x amount of submittedTests (depending on attemptsAllowed)
+    authors: [{type: Schema.Types.ObjectId, ref: 'users'}],
 
     //Settings
     expire: { type: Boolean, default:false },//Should the test expire
     fullPage: { type: Boolean, default:false },//If the layout should be 1 question at a time or
     expireDate: { type: Date, default: new Date(+new Date() + 7*24*60*60*1000) },//If expire, default at 1 week later
     handMarked: { type: Boolean, default:false },//Results not calculated internally but rather by the markers
-    private: { type: Boolean, default:false },//If public, will be available to find on test browser
     attemptsAllowed: { type: Number, default:0 },//If 0, infinite!
-    instantResult: { type: Boolean, default:false },
     userEditable: { type: Boolean, default:false },
     canSelfRemove: { type: Boolean, default:false },
-    shareable: { type: Boolean, default:true },
-    //Only for overall, need to add individual timer settings
     timerEnabled: { type: Boolean, default:false },
     timer: { type: Number, default:60 },//Number of minutes a test can be live after started, question specific timer in question schema
-
-
     hintAllowed: { type: Boolean, default:true },//allow hint
     sponsoredFeedback: { type: Boolean, default:false },//In future, markers can get rewarded for providing info/feedback
-
     markDate: {type: Date }, //If author wants user to have to wait till all users have done the test for it to be auto marked.
-    //marked: { type: Boolean, default:false },//Has the server/author marked this?
     showMarks: { type: Boolean, default:true },//If it is marked, can we show?
     showMarker: { type: Boolean, default:true },//Can the user see who marked them
 
+    /**If shareable it can be self assigned by any user with the ID
+     * If private, wont show in the test browser but sharing settings depend on above
+     */
+    shareable: { type: Boolean, default:true },
+    private: { type: Boolean, default:false },
     /*Future concepts
     allowedUserGroups: [String],
     allowedOrganizations: [String],

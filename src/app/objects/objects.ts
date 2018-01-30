@@ -2,21 +2,45 @@
  * Created by Kenji on 1/4/2018.
  */
 
+export class submittedTest {
+    _id: String;
+    user: String;
+    test: String;
+    submittedQuestions: submittedQuestion[];
+    dateSubmitted: Date;
+    mark: String;
+    constructor() {
+        this.submittedQuestions = [];
+    }
+}
+
+export class submittedQuestion {
+    _id: String;
+    question: String;
+    type: String;
+    keywordsAnswer: [String];
+    choicesAnswer: [String];
+    arrangement: [String];
+    shortAnswer: String;
+    feedback: String;
+}
+
 export class allocatedTest {
     _id: String;
     //testId: String,//Reference test for result settings
     test: newTest;
-    userId: String;//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
+    user: String;//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
     allocatedDate: Date;
     submittedTests: [String];
     finalMark: String;//String or number?
     feedback: String;
     showMarker: Boolean;//Should the user see who marked them
-    markerId: String; //Only shown if above is correct
+    marker: String; //Only shown if above is correct
     started: boolean;
 }
 
 export class newTest {
+    _id: String;
     title: String;
     questions: newQuestion[];
     category: String;
@@ -27,13 +51,13 @@ export class newTest {
     handMarked: boolean;//Results not calculated internally but rather by the markers
     private: boolean;//If public, will be available to find on test browser
     attemptsAllowed: Number;//How many attempts allowed
-    instantResult: boolean;
     userEditable: boolean;
     shareable: boolean;
     timerEnabled: boolean;
     timer: number;//Number of minutes a test can be live after started, question specific timer in question schema
     hintAllowed: boolean;
     showMarks: boolean;//If it is marked, can we show?
+    markDate: Date;
     constructor(_title,_category,_questions,_authors) {
         this.title = _title;
         this.category = _category;
@@ -48,6 +72,7 @@ export class newTest {
 
 //New reformatted question and answer models
 export class newQuestion {
+    _id: String;
     hint: String;
     resources: [String];//References for attempting this question - Unused
     images: [String];//Images relating to this question - Unused

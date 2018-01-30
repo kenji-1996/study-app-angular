@@ -5,12 +5,16 @@ import {LoginGuard} from "../guards/login.guard";
 import {FourOhFourPage} from "../components/404-page/404-page.component";
 import {AuthGuard} from "../guards/auth.guard";
 import {CreateTestComponent} from "../components/create-test/create-test.component";
+import {LogOutComponent} from "../components/log-out/log-out.component";
 
 const routes: Routes = [
+    //General
     { path: '', component: LoginComponent, canActivate:[LoginGuard] },
     { path: 'home', loadChildren: '../components/home/home.module#HomeModule', canActivate:[AuthGuard] },
 
+
     //User
+    { path: 'user/sign-out', component: LogOutComponent,  canActivate:[AuthGuard] },
     { path: 'user/tests', loadChildren: '../components/user-tests/user-tests.module#UserTestsModule', canActivate:[AuthGuard] },//List of tests
     { path: 'user/test/selected/:testId', loadChildren: '../components/user-test-selected/user-test-selected.module#UserTestSelectedModule', canActivate:[AuthGuard] },//The edit/result menu of a users view (shows attempts on this test, its settings, etc
     { path: 'user/test/live/:testId', loadChildren: '../components/live-test/live-test.module#LiveTestModule', canActivate:[AuthGuard] },//Live attempt page of test

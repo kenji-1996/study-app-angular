@@ -1,35 +1,56 @@
-
-<nb-card size="xlarge" style="max-height: 800px;">
+<nb-card size="xlarge" [@fadeInOut]>
     <nb-card-header>
-        <div class="cameras-card-header">
-            <span class="cameras-card-title">Test Manager</span>
-            <span class="cameras-filter">
-      </span>
-        </div>
+        Authored Tests
     </nb-card-header>
     <nb-card-body [@fadeInOut]>
         <div class="row" *ngIf="tests" >
-            <div *ngFor="let t of tests; let i = index" class="col-lg-4">
-                <nb-card><!--[routerLink]="['/tests/selected', t._id]" style="cursor: pointer;"-->
-                    <nb-card-header>{{t.title}}</nb-card-header>
-                    <nb-card-body>Questions: {{t.questions.length}}</nb-card-body>
-                    <nb-card-footer>
-                        <div class="btn-group btn-group-full-width" role="group">
-                            <button type="button" class="btn btn-hero-info" [routerLink]="['/tests/selected', t._id]">Run test</button>
-                            <button type="button" class="btn btn-hero-danger btn-group-icon btn-group-divider btn-fixed" (click)="removeTest(t)">
-                                <i class="nb-trash"></i>
-                            </button>
+            <div *ngFor="let t of tests" class="col-lg-12" [@fadeInOut]>
+                <nb-card style="max-height: 800px;">
+                    <nb-card-header>{{t.title | uppercase}} TEST</nb-card-header>
+                    <nb-card-body *ngIf="t.userTestList.length > 0">
+                        <div *ngFor="let sub of t.userTestList" style="cursor: pointer;">
+                            <h5>{{sub.user.name}} <span class="text-muted" style="font-size:small">{{sub.user._id}}</span></h5>
+                            <span class="text-muted" style="font-size: small">
+                                <div class="row text-center">
+                                    <div class="col-sm-4">
+                                        <strong>ID:</strong> {{sub._id}}
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <strong>Allocated:</strong> {{sub.allocatedDate | date:'shortDate'}}
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <strong>Attempts:</strong> {{sub.submittedTests.length}}
+                                    </div>
+
+                                </div>
+                                <div class="row text-center">
+                                    <div class="col-sm-4">
+                                        <strong>Final mark:</strong>
+                                        <ng-container *ngIf="sub.finalMark">{{sub.finalMark}}</ng-container>
+                                        <ng-container *ngIf="!sub.finalMark">Provide mark</ng-container>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <strong>Feedback:</strong>
+                                        <ng-container *ngIf="sub.feedback">{{sub.feedback}}</ng-container>
+                                        <ng-container *ngIf="!sub.feedback">Provide feedback</ng-container>
+                                    </div>
+                                </div>
+                            </span>
+                            <div class="dotted-hr"></div>
                         </div>
-                        <!--<div class="dropdown btn-group" ngbDropdown>
-                            <button type="button" class="btn btn-primary btn-tn" [routerLink]="['/tests/selected', t._id]">Run test</button>
-                            <button type="button" class="btn btn-primary" ngbDropdownToggle></button>
-                            <ul class="dropdown-menu" ngbDropdownMenu>
-                                <li class="dropdown-item" [routerLink]="['/tests/edit', t._id]">Edit</li>
-                                <li class="dropdown-item" (click)="removeTest(t)">Remove</li>
-                            </ul>
-                        </div>-->
-                        <!--<button class="btn btn-hero-info btn-tn" [routerLink]="['/tests/edit', t._id]">Edit</button>
-                        <button class="btn btn-hero-danger btn-tn" (>Remove</button>-->
+                    </nb-card-body>
+                    <nb-card-footer>
+                        <nb-actions size="medium" fullWidth>
+                            <nb-action>
+                                <span (click)="assignUserID(t,{'UserID': ''})" style="cursor: pointer"><i class="nb-paper-plane"></i>Assign</span>
+                            </nb-action>
+                            <nb-action>
+                                <span style="cursor: pointer"><i class="nb-locked"></i>Lock</span>
+                            </nb-action>
+                            <nb-action>
+                                <span style="cursor: pointer"><i class="nb-edit"></i>Edit</span>
+                            </nb-action>
+                        </nb-actions>
                     </nb-card-footer>
                 </nb-card>
             </div>
@@ -37,11 +58,11 @@
     </nb-card-body>
     <nb-card-footer>
         <nb-actions size="medium" fullWidth>
-            <nb-action (click)="addTest()">
-                <i class="nb-plus"></i><span>Add</span>
-            </nb-action>
             <nb-action>
                 <i class="nb-search"></i><span>Search</span>
+            </nb-action>
+            <nb-action>
+                <span ><i class="nb-plus"></i>Add</span>
             </nb-action>
         </nb-actions>
     </nb-card-footer>

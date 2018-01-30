@@ -61,11 +61,14 @@ export class AuthenticateService {
   }
 
   public revoke()  {
-    localStorage.removeItem('userObject');
-    localStorage.removeItem('idtoken');
-    localStorage.removeItem('logged');
-    this.dataEmit.pushLoggedIn(false);
-    gapi.auth2.getAuthInstance().signOut().then(() => { console.log("Signed out"); });
+    return new Promise((resolve) => {
+      localStorage.removeItem('userObject');
+      localStorage.removeItem('idtoken');
+      localStorage.removeItem('logged');
+      this.dataEmit.pushLoggedIn(false);
+      gapi.auth2.getAuthInstance().signOut().then(() => { resolve(true); });
+    });
+
   }
 
 }

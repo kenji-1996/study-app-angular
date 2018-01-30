@@ -1,51 +1,67 @@
 <div *ngIf="allocatedTest" [@fadeInOut]>
-  <h3 class="display-5 text-center">{{allocatedTest.test.title | uppercase}}</h3>
-  <nb-card>
-    <nb-tabset fullWidth>
+  <nb-card style="max-height: 800px;">
+    <nb-card-header>
+      {{allocatedTest.test.title | uppercase}}
+    </nb-card-header>
 
-      <nb-tab tabTitle="Start" style="margin:20px; min-height: 80px;">
-        <nb-actions size="medium" fullWidth>
-          <nb-action>
-            <nb-checkbox [disabled]="true" [(ngModel)]="giveHint">Give Hint</nb-checkbox>
-          </nb-action>
-          <nb-action>
-            <nb-checkbox [disabled]="true" [(ngModel)]="instantResult">Instant Result</nb-checkbox>
-          </nb-action>
-        </nb-actions>
-        <!--<nb-actions size="medium" fullWidth>
-          <nb-action>
-            <nb-checkbox [(ngModel)]="timeLimit">Timer</nb-checkbox>
-          </nb-action>
-          <nb-action *ngIf="timeLimit">
-            <div class="input-group">
-              <input type="text" [(ngModel)]="timerMax"  class="form-control" placeholder="Timer">
-            </div>
-          </nb-action>
-        </nb-actions>-->
-        <hr>
-        <div class="text-center">
-          <button  class="btn btn-hero-success main-btn" (click)="testStarted()">
-            <i class="fa fa-pencil"></i> <span>Start {{allocatedTest.test.title}}</span>
-          </button>
+    <nb-card-body *ngIf="submittedTests" [@fadeInOut]>
+      <h6 class="display-6">Information</h6>
+      <div class="row" style="font-size: small">
+        <div class="col-sm-4">
+          Category: {{allocatedTest.test.category}}
         </div>
-      </nb-tab>
+        <div class="col-sm-4">
+          Allocated: {{allocatedTest.allocatedDate | date:'fullDate'}}
+        </div>
+        <div class="col-sm-4">
+          Attempts: {{allocatedTest.submittedTests.length}}
+        </div>
+      </div>
+      <div class="row" style="font-size: small">
+        <div class="col-sm-4">
+          Expires:
+          <ng-container *ngIf="allocatedTest.test.expire">{{allocatedTest.test.expireDate | date:'shortDate' }} <span class="text-muted" style="font-size: small">({{daysBetween(today,allocatedTest.test.expireDate)}} hours)</span> </ng-container>
+          <ng-container *ngIf="!allocatedTest.test.expire">Test doesnt expire</ng-container>
+        </div>
+        <div class="col-sm-4">
+          Feedback:
+          <ng-container *ngIf="allocatedTest.feedback">{{allocatedTest.feedback}}</ng-container>
+          <ng-container *ngIf="!allocatedTest.feedback">N/A</ng-container>
+        </div>
+        <div class="col-sm-4">
+          Mark:
+          <ng-container *ngIf="allocatedTest.finalMark">{{allocatedTest.finalMark}}</ng-container>
+          <ng-container *ngIf="!allocatedTest.finalMark">N/A</ng-container>
+        </div>
+      </div>
+      <hr>
+      <h6 class="display-6">Submitted attempts</h6>
+      <div *ngFor="let sub of submittedTests" style="font-size: small">
+        <div class="row text-center">
+          <div class="col-sm-4">
+            ID: {{sub._id}}
+          </div>
+          <div class="col-sm-4">
+            Date submitted: {{sub.dateSubmitted | date:'fullDate'}}
+          </div>
+          <div class="col-sm-4">
+            Mark:
+            <ng-container *ngIf="sub.mark">{{sub.mark}}</ng-container>
+            <ng-container *ngIf="!sub.mark">N/A</ng-container>
+          </div>
+        </div>
 
-      <nb-tab tabTitle="Submitted" style="margin:20px;min-height: 200px;">
-        placeholder for submitted tests of this test
-        <!--<app-edit-test [search]="query" [@fadeInOut]></app-edit-test>-->
-      </nb-tab>
-
-    </nb-tabset>
+        <div class="dotted-hr"></div>
+      </div>
+    </nb-card-body>
 
     <nb-card-footer>
       <nb-actions size="medium" fullWidth>
-        <!--<nb-action (click)="testStarted()" class="cursor-click">
-          <i class="nb-play-outline"></i><span>Start</span>
-        </nb-action>-->
         <nb-action>
-          <div class="input-group">
-            <input [(ngModel)]="query" type="text" class="form-control" placeholder="{{allocatedTest.test.title | uppercase}} test">
-            <span class="input-group-btn"><button class="btn btn-hero-info">Search</button></span>
+          <div class="text-center">
+            <button  class="btn btn-hero-success main-btn" (click)="testStarted()">
+              <i class="fa fa-pencil"></i> <span>Start {{allocatedTest.test.title}}</span>
+            </button>
           </div>
         </nb-action>
       </nb-actions>

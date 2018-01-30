@@ -56,6 +56,19 @@ exports.createTest = function(req, res) {
                         authors: req.body.test.authors,
                         //In future accept array of userIds, displayed as friends on UI
                     });
+                    if(req.body.test.hintAllowed) { test.hintAllowed = true; }
+                    if(req.body.test.expire) {test.expire = req.body.test.expire; }
+                    if(req.body.test.expireDate) {test.expireDate = req.body.test.expireDate; }//Date.now type date
+                    if(req.body.test.handMarked) {test.handMarked = req.body.test.handMarked; }
+                    if(req.body.test.showMarks) {test.showMarks = req.body.test.showMarks; }
+                    if(req.body.test.attemptsAllowed) {test.attemptsAllowed = req.body.test.attemptsAllowed; }
+                    if(req.body.test.userEditable) {test.userEditable = req.body.test.userEditable; }
+                    if(req.body.test.shareable) {test.shareable = req.body.test.shareable; }
+                    if(req.body.test.private) {test.private = req.body.test.private; }
+                    if(req.body.test.hintAllowed) {test.hintAllowed = req.body.test.hintAllowed; }
+                    if(req.body.test.showMarker) {test.showMarker = req.body.test.showMarker; }
+                    if(req.body.test.canSelfRemove) {test.canSelfRemove = req.body.test.canSelfRemove; }
+                    if(req.body.test.markDate) { test.markDate = req.body.test.markDate; }
                     if(req.body.test.questions) {
                         test.questions = [];
                         let providedQuestions = req.body.test.questions;
@@ -66,6 +79,7 @@ exports.createTest = function(req, res) {
                                 type: providedQuestions[i].type,
                                 question: providedQuestions[i].question,
                             });
+                            if(providedQuestions[i].enableTimer &&  providedQuestions[i].timer) { question.enableTimer = true; question.timer =  providedQuestions[i].timer }
                             if(test.hintAllowed && providedQuestions[i].hint) { question.hint = providedQuestions[i].hint; }
                             if(providedQuestions[i].resources) { question.resources = providedQuestions[i].resources; }
                             if(providedQuestions[i].images) { question.images = providedQuestions[i].images; }
@@ -93,39 +107,26 @@ exports.createTest = function(req, res) {
                             });
                         }
                     }
-                    //Settings, only set if posted.
-                    if(req.body.test.expire) {test.expire = req.body.test.expire; }
-                    if(req.body.test.expireDate) {test.expireDate = req.body.test.expireDate; }//Date.now type date
-                    if(req.body.test.handMarked) {test.handMarked = req.body.test.handMarked; }
-                    if(req.body.test.private) {test.private = req.body.test.private; }
-                    if(req.body.test.showMarks) {test.showMarks = req.body.test.showMarks; }
-                    if(req.body.test.attemptsAllowed) {test.attemptsAllowed = req.body.test.attemptsAllowed; }
-                    if(req.body.test.userEditable) {test.userEditable = req.body.test.userEditable; }
-                    if(req.body.test.shareable) {test.shareable = req.body.test.shareable; }
-                    if(req.body.test.hintAllowed) {test.hintAllowed = req.body.test.hintAllowed; }
-                    if(req.body.test.showMarker) {test.showMarker = req.body.test.showMarker; }
-                    if(req.body.test.canSelfRemove) {test.canSelfRemove = req.body.test.canSelfRemove; }
-                    if(req.body.test.instantResult) {test.instantResult = req.body.test.instantResult; }
-
-                    test.save(function (err, result) {
-                        if (err) return res.status(500).json({message: "Save test query failed", data: null});
-                        // TODO: Decide if new tests should auto allocate to author
+                    let userTest = new userTestModel({
+                        _id: new mongoose.Types.ObjectId(),
+                        test: test._id,
+                        user: user._id,
+                    });
+                    //TODO: Decide if an authored auto gets assigned their test
+                    userTest.attempts = test.attemptsAllowed;
+                    userTest.showMarker = test.showMarker;
+                    userTest.save(function (err) {
+                        if (err) return res.status(500).json({message: "Save user test allocation query failed", data: err});
                         user.tests.push(test.id);
                         user.authoredTests.push(test.id);
-                        let userTest = new userTestModel({
-                            _id: new mongoose.Types.ObjectId(),
-                            test: test._id,
-                            userId: user._id,
+                        test.userTestList.push(userTest.id);
+                        test.save(function (err, result) {
+                            if (err) return res.status(500).json({message: "Save test query failed", data: null});
+                            user.save(function (err) {
+                                if (err) return res.status(500).json({message: "Save user query failed", data: err});
+                                return res.status(200).json({message: "Test generated successfully", data: result});
+                            });
                         });
-                        userTest.attempts = test.attemptsAllowed;
-                        userTest.showMarker = test.showMarker;
-                        userTest.save(function (err) {
-                            if (err) return res.status(500).json({message: "Save user test allocation query failed", data: err});
-                        });
-                        user.save(function (err) {
-                            if (err) return res.status(500).json({message: "Save user query failed", data: err});
-                        });
-                        return res.status(200).json({message: "Test generated successfully", data: result});
                     });
                 }else{
                     return res.status(400).json({message: "Bad request, req.body.test required", data: null});

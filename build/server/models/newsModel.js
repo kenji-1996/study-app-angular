@@ -11,8 +11,7 @@ var newsSchema  = new Schema({
     _id: Schema.Types.ObjectId,
     headline: {type:String, required: true},
     content: String,
-    authorId: String,
-    authorName: String,
+    authorId: {type: Schema.Types.ObjectId, ref: 'users'},
     tags: [String],
     date: { type: Date, default: Date.now },
 });
