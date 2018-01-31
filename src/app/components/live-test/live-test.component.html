@@ -28,13 +28,14 @@
           <app-shortanswer-question></app-shortanswer-question>
         </ng-container>
 
-        <ng-container *ngIf="giveHint">
-          <div class="alert alert-hint" role="alert">
+        <ng-container *ngIf="selectedQuestion.hint">
+          <div class="alert alert-hint" role="alert" style="margin-top: 5px;">
             <strong>Hint</strong> <span style="font-style: italic">{{selectedQuestion.hint}}</span>
           </div>
         </ng-container>
 
-        <ng-container *ngIf="timeLimit">
+
+        <ng-container *ngIf="selectedQuestion.enableTimer">
           <mat-progress-bar  mode="determinate" [value]="progress" color="accent"></mat-progress-bar>
         </ng-container>
       </nb-card-body>

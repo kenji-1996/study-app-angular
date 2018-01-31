@@ -31,8 +31,6 @@ export class TestManagerComponent implements OnInit {
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
                private dialog: MatDialog,
-               private observableMedia: ObservableMedia,
-               private router: Router,
                private titleService: Title,
 
   ) {
@@ -51,7 +49,7 @@ export class TestManagerComponent implements OnInit {
           let body = { testid: test._id };
           this.data.postDATA(global.url + '/api/users/' + userID + '/authored',body).subscribe(dataResult=> {
             if(dataResult) {
-              console.log(dataResult);
+              this.dataEmit.pushUpdateArray(userID + ' was assigned to ' + test._id,'New user assigned','success')
             }
           });
         }
@@ -66,7 +64,6 @@ export class TestManagerComponent implements OnInit {
   refreshData() {
     this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/authored').subscribe(dataResult=> {
       if(dataResult) {
-        console.log(dataResult.data);
         this.tests = dataResult.data;
       }
     });

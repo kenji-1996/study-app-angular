@@ -12,7 +12,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ReactiveFormsModule} from "@angular/forms";
 import {DataEmitterService} from "./services/data-emitter.service";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {AddHeaderInterceptor} from "./modules/AddHeaderInterceptor";
+import {AddHeaderInterceptor, HttpErrorInterceptor} from "./modules/AddHeaderInterceptor";
 import {EditTestNameDialog} from "./dialogs/editTestName/edit-test-name";
 import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
 import {LoginGuard} from "./guards/login.guard";
@@ -29,6 +29,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import { CreateTestComponent } from './components/create-test/create-test.component';
 import { LogOutComponent } from './components/log-out/log-out.component';
 import {DialogData} from "./dialogs/dialogData/dialog-data";
+import {ToasterModule} from "angular2-toaster";
 
 
 @NgModule({
@@ -48,6 +49,7 @@ import {DialogData} from "./dialogs/dialogData/dialog-data";
   imports: [
     BrowserModule,
     AppRouterModule,
+    ToasterModule,
     ImportsModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
@@ -70,11 +72,8 @@ import {DialogData} from "./dialogs/dialogData/dialog-data";
     NbMenuInternalService,
     StateService,
     DataEmitterService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AddHeaderInterceptor,
-      multi: true,
-    },
+    {provide: HTTP_INTERCEPTORS, useClass: AddHeaderInterceptor, multi: true,},
+    {provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true,},
   ],
   bootstrap: [AppComponent]
 })

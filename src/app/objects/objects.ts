@@ -50,11 +50,11 @@ export class newTest {
     expireDate: Date;//If expire, default at 1 week later
     handMarked: boolean;//Results not calculated internally but rather by the markers
     private: boolean;//If public, will be available to find on test browser
-    attemptsAllowed: Number;//How many attempts allowed
+    attemptsAllowed: number;//How many attempts allowed
     userEditable: boolean;
     shareable: boolean;
     timerEnabled: boolean;
-    timer: number;//Number of minutes a test can be live after started, question specific timer in question schema
+    timer: number;//number of minutes a test can be live after started, question specific timer in question schema
     hintAllowed: boolean;
     showMarks: boolean;//If it is marked, can we show?
     markDate: Date;
@@ -67,7 +67,7 @@ export class newTest {
     //sponsoredFeedback: boolean;//In future, markers can get rewarded for providing info/feedback
     //markDate: Date; //If author wants user to have to wait till all users have done the test for it to be auto marked.
     //marked: boolean;//Has the server/author marked this?
-    //currentAttempts: { type: Number, default:0 },//Should be moved
+    //currentAttempts: { type: number, default:0 },//Should be moved
 }
 
 //New reformatted question and answer models
@@ -93,7 +93,7 @@ export class newQuestion {
     shortAnswer: String;//Short answer question, THIS SHOULD ONLY BE DONE IN CASE OF 'handMarked' TESTS!
 
     enableTimer: boolean;
-    timer: Number;
+    timer: number;
     //shortAnswerQuestion: String;//Short answer question
     //Allow author HTML (ensure XSS security though!!!) - Not yet implimented
     constructor() {

@@ -149,6 +149,7 @@ module.exports.ensureAuthorized = function ensureAuthorized(req, res) {
     });
 };
 
+
 /**
  * Input the amount of days to add to current date, get new date returned.
  * @param days

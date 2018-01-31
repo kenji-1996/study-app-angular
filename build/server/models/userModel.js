@@ -22,9 +22,10 @@ var UserSchema  = new Schema({
     //Test related
     userGroups: [String],
     organizations: [String],
-    tests: [{type: Schema.Types.ObjectId, ref: 'tests'}],//Tests that are allocated, no editing freedom but can soft delete them from ones self
+    //We currently reference tests straight from userTestList in a test vairable
+    //tests: [{type: Schema.Types.ObjectId, ref: 'tests'}],//Tests that are allocated, no editing freedom but can soft delete them from ones self
     authoredTests: [{type: Schema.Types.ObjectId, ref: 'tests'}],//Tests created by this user, can edit and hard delete this
-    results: [{type: Schema.Types.ObjectId, ref: 'usertest'}], //Array of submitted tests that will hold marks/feedback/etc
+    results: [{type: Schema.Types.ObjectId, ref: 'usertests'}], //Array of submitted tests that will hold marks/feedback/etc
 
 
 });

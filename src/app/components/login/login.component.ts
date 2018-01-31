@@ -48,7 +48,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 var idtoken = loggedInUser.getAuthResponse().id_token;
                 localStorage.setItem('idtoken',idtoken);
                 this.auth.validate().subscribe(result => {
-                    console.log(result);
                     localStorage.setItem('userObject',JSON.stringify(result.data));
                     this.dataEmit.pushLoggedIn(true);
                     localStorage.setItem('logged', 'true');

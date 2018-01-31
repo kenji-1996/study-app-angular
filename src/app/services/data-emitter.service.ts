@@ -30,8 +30,13 @@ export class DataEmitterService {
     this.$dirty.emit(item);
   }
 
-  public pushUpdateArray(item:any) {
-    this.$updateArray.emit(item);
+  public pushUpdateArray(content?:any,title?:any,type?:any,timeout?:number) {
+    let notificationArray = [];
+    if(content) {notificationArray.push(content);}
+    if(title) {notificationArray.push(title);}
+    if(type) {notificationArray.push(type);}
+    if(timeout) {notificationArray.push(timeout);}
+    this.$updateArray.emit(notificationArray);
   }
 
   public pushLoggedIn(item:boolean) {

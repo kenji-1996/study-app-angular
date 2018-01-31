@@ -85,7 +85,7 @@ export class EditTestComponent implements OnInit  {
     this.dataManagement.postDATA(global.url + '/api/tests/' + this.test._id + '/questions', body).subscribe(dataResult=> {
       if(dataResult) {
         this.dataEmit.pushDirty(false);
-        this.dataEmit.pushUpdateArray(dataResult.message);
+       // this.dataEmit.pushUpdateArray(dataResult.message);
       }
     });
   }

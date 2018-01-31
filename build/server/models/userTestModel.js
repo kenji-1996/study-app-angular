@@ -17,7 +17,7 @@ var userTestSchema  = new Schema({
     _id: Schema.Types.ObjectId,
     //testId: String,//Reference test for result settings
     test: {type: Schema.Types.ObjectId, ref: 'tests'},
-    user: {type: Schema.Types.ObjectId, ref: 'users'},//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
+    user: {type: Schema.Types.ObjectId, ref: 'users'},
     allocatedDate: { type: Date, default: Date.now },
     started: { type: Boolean, default: false },
 
@@ -37,4 +37,4 @@ var userTestSchema  = new Schema({
      */
 });
 
-module.exports = mongoose.model('usertest', userTestSchema);
+module.exports = mongoose.model('usertests', userTestSchema);

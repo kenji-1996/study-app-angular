@@ -30,15 +30,6 @@ export class LiveTestComponent implements OnInit, OnDestroy {
       private titleService: Title,
       private dataEmitter: DataEmitterService,
   ) { }
-
-  /**
-   * 'test' - Holds the test information and questions loaded from database\
-   * 'result' - Array that holds the result, gets added to as the rest is taken
-   * 'progress' - The progress the visual timer has as its incremented, used as global so it can be accessed when the question is over and to reset.
-   * 'selectedQuestion' - The current question the home is attempting. (Identified by 'selectedId')
-   * 'answer' - Binded to the 'answer' textarea input field, gets submitted if there is anything in it.
-   * 'timeLeft' - The amount of time a question has left when the home is submitting an answer on a timed basis.
-   */
   allocatedTest: allocatedTest;
   selectedQuestion: newQuestion;
   submitTest: submittedTest = new submittedTest();
@@ -62,7 +53,6 @@ export class LiveTestComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.activeRoute.params.subscribe((params: Params) => {
-      //Subscribe to the route and get params passed in
       let testId = params['testId'];
       this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(allocatedTestResult => {
         this.allocatedTest = allocatedTestResult.data;
@@ -71,7 +61,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
           this.startTest();
       });
     });
-    this.subscriber = this.dataEmitter.$testAnswer.subscribe(answer => {this.answer = answer; this.submitQuestion(); console.log(answer);});
+    this.subscriber = this.dataEmitter.$testAnswer.subscribe(answer => {this.answer = answer; this.submitQuestion();});
   }
 
   private startTest() {
@@ -81,25 +71,25 @@ export class LiveTestComponent implements OnInit, OnDestroy {
       this.selectedId = 0;
     }
     this.selectedQuestion = this.allocatedTest.test.questions[this.selectedId];
-    if(this.timeLimit) {
-      this.testTimer();
-    }
+    this.testTimer();
   }
 
   private testTimer() {
-    let timer = Observable.timer(0,100);
-    let timeOver = parseInt(this.timerLimit);
-    this.subscription = timer.subscribe(t=> {
-      this.progress = ((t/timeOver * 10)).toFixed(2);
-      if(t > (timeOver* 10)) {
-        this.submitQuestion();
-      }
-    });
+    if(this.selectedQuestion && this.selectedQuestion.enableTimer && this.selectedQuestion.timer) {
+      let timer = Observable.timer(0,100);
+      let timeOver = this.selectedQuestion.timer; //parseInt(this.timerLimit);
+      this.subscription = timer.subscribe(t=> {
+        this.progress = ((t/timeOver * 10)).toFixed(2);
+        if(t > (timeOver* 10)) {
+          this.submitQuestion();
+        }
+      });
+    }
   }
 
   public submitQuestion() {
-    if(!this.answer && !this.timeLimit) {//On timer finish, dont give this message but submit empty string/result
-      this.dataEmitter.pushUpdateArray('Please put an answer of sorts even if you are unsure!');
+    if(!this.answer && !this.selectedQuestion.enableTimer) {//On timer finish, dont give this message but submit empty string/result
+      this.dataEmitter.pushUpdateArray('Please put an answer of sorts even if you are unsure!','Empty question','warning');
       return;
     }
     if(this.subscription) { this.subscription.unsubscribe(); }
@@ -107,42 +97,43 @@ export class LiveTestComponent implements OnInit, OnDestroy {
       let submit = new submittedQuestion();
       submit.type = this.allocatedTest.test.questions[this.selectedId].type;
       submit._id = this.allocatedTest.test.questions[this.selectedId]._id;
-      switch(submit.type) {
-        case 'keywords':
-          let stringArray = this.answer.split(/(\s+)/);
-          submit.keywordsAnswer = stringArray;
-          break;
-        case 'choices':
-          submit.choicesAnswer = this.answer;
-          break;
-        case 'arrangement':
-          submit.arrangement = this.answer;
-          break;
-        case 'shortAnswer':
-          submit.shortAnswer = this.answer;
-          break;
+      if(this.answer) {
+        switch (submit.type) {
+          case 'keywords':
+            let stringArray = this.answer.split(/(\s+)/);
+            submit.keywordsAnswer = stringArray;
+            break;
+          case 'choices':
+            submit.choicesAnswer = this.answer;
+            break;
+          case 'arrangement':
+            submit.arrangement = this.answer;
+            break;
+          case 'shortAnswer':
+            submit.shortAnswer = this.answer;
+            break;
+        }
       }
       this.submitTest.submittedQuestions.push(submit);
       this.selectedId++;
       this.progress = '0';
       this.answer = '';
       this.selectedQuestion = this.allocatedTest.test.questions[this.selectedId];
+      this.testTimer();
       if(!this.selectedQuestion) {
         this.testFinished();
       }
-      if (this.timeLimit) {
-        this.testTimer();
-      }
+
     }
   }
+
   testFinished() {
     let body = { submittedTest: this.submitTest, userTestId: this.allocatedTest._id };
     this.dataManagement.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/results', body).subscribe(dataResult=> {
-      if(dataResult) {
-        console.log(dataResult);
-        //this.dataEmit.pushUpdateArray(dataResult.message);
-      }
-    });
+      if(dataResult.message) { this.dataEmitter.pushUpdateArray(dataResult.message,'Test submitted','success'); }
+    }, () => {  },
+        () => {this.route.navigate(['/user/tests']);}
+    );
     /*var answerTotal = 0;
      for(var i = 0; i < this.test.questions.length; i++) {
      answerTotal+= this.test.questions[i].keywords.length;

@@ -19,7 +19,7 @@ export class LogOutComponent implements OnInit {
   ngOnInit() {
     this.auth.revoke().then(loggedOut => {
       if(loggedOut) {
-        this.dataEmit.pushUpdateArray('User signed out');
+        this.dataEmit.pushUpdateArray('User signed out','User session','info');
         this.router.navigate(['/']);
       }
     });

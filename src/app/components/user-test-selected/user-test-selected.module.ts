@@ -75,8 +75,6 @@ export class UserTestSelectedComponent implements OnInit {
         this.populateSubmitted();
       });
     });
-    ///api/users/:userId/results/:testId
-
   }
 
 

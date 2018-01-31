@@ -22,7 +22,6 @@ import {
     NbActionsModule, NbCardModule, NbCheckboxModule, NbLayoutModule, NbMenuModule, NbRouteTabsetModule, NbSearchModule,
     NbSidebarModule, NbTabsetModule, NbThemeModule, NbUserModule
 } from "@nebular/theme";
-import {NbSharedModule} from "@nebular/theme/components/shared/shared.module";
 import {NgbCollapseModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {DragulaModule} from "ng2-dragula";
 
@@ -119,7 +118,6 @@ import {DragulaModule} from "ng2-dragula";
         NgbCollapseModule,
 
         DragulaModule,
-
     ],
     declarations: []
 })

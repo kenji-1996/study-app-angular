@@ -117,15 +117,11 @@ exports.createTest = function(req, res) {
                     userTest.showMarker = test.showMarker;
                     userTest.save(function (err) {
                         if (err) return res.status(500).json({message: "Save user test allocation query failed", data: err});
-                        user.tests.push(test.id);
                         user.authoredTests.push(test.id);
                         test.userTestList.push(userTest.id);
                         test.save(function (err, result) {
                             if (err) return res.status(500).json({message: "Save test query failed", data: null});
-                            user.save(function (err) {
-                                if (err) return res.status(500).json({message: "Save user query failed", data: err});
-                                return res.status(200).json({message: "Test generated successfully", data: result});
-                            });
+                            return res.status(200).json({message: "Test generated successfully", data: result});
                         });
                     });
                 }else{
@@ -151,7 +147,7 @@ exports.listTest = function(req, res) {
     userTestModel.findOne({_id : req.params.testId})//Get all tests with given user ID
         .populate({
             path:'test', model:'tests',
-            populate: { path: 'questions', model: 'questions', select: '_id date resources question type choicesAll arrangement' },//Allows us to populate again within the previous populate!
+            populate: { path: 'questions', model: 'questions', select: '_id date resources question type choicesAll arrangement hint enableTimer' },//Allows us to populate again within the previous populate!
         })
         .exec(function (err,userTests) {
             if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
@@ -160,6 +156,9 @@ exports.listTest = function(req, res) {
                 for (let i = 0; i < modifiedResult.test.questions.length; i++) {//Check and shuffle arrangment before returing result
                     if (modifiedResult.test.questions[i].type === 'arrangement') {
                         modifiedResult.test.questions[i].arrangement = settings.shuffleArray(modifiedResult.test.questions[i].arrangement);
+                    }
+                    if(!modifiedResult.test.hintAllowed) {
+                        modifiedResult.test.questions[i].hint = null;
                     }
                 }
                 return res.status(200).json({message: 'Allocated tests successfully retrieved', data: modifiedResult});

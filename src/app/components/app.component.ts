@@ -9,9 +9,10 @@ import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common'
 import {fadeAnimate} from "../misc/animation";
 import {Subscription} from "rxjs/Subscription";
 import {
-  NbMediaBreakpoint, NbMediaBreakpointsService, NbMenuItem, NbMenuService, NbSidebarService,
+  NbMediaBreakpoint, NbMediaBreakpointsService, NbMenuService, NbSidebarService,
   NbThemeService
 } from "@nebular/theme";
+import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import 'rxjs/add/operator/withLatestFrom';
 import 'rxjs/add/operator/delay';
 import {StateService} from "../services/state.service";
@@ -39,14 +40,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked{
   public $name: EventEmitter<any> = new EventEmitter();
   photo;
   name;
+  config: ToasterConfig;
   title = 'DIGITALSTUDY';
   userMenu = [{ title: 'Profile' }, { title: 'Log out', link: '/user/sign-out' }];
   logged = false;
   width;
   height;
-  mode:string = 'side';
   open = 'true';
-  navList: NavList[];
 
 
   toggleSidebar(): boolean {
@@ -63,7 +63,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked{
               protected menuService: NbMenuService,
               protected themeService: NbThemeService,
               protected bpService: NbMediaBreakpointsService,
-              protected sidebarService: NbSidebarService
+              protected sidebarService: NbSidebarService,
+              private toasterService: ToasterService
   ) {
     this.layoutState$ = this.stateService.onLayoutState()
         .subscribe((layout: string) => this.layout = layout);
@@ -86,7 +87,19 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked{
     this.auth.initAuth();
     this.logged = this.auth.localLoggedIn();
     this.dataEmit.$loggedIn.subscribe(data => { this.logged = data;});
-    dataEmit.$updateArray.subscribe(data => { this.snackBar.open(data, 'close', { duration: 2000 }); });
+    dataEmit.$updateArray.subscribe(data =>
+    {
+      let [content, title, type, timeout] = data;
+      const toast: Toast = {
+        type: type? type : 'info',
+        title: title? title : 'Notification',
+        body: content,
+        timeout: timeout? timeout : 5000,
+        showCloseButton: true,
+        bodyOutputType: BodyOutputType.TrustedHtml,
+      };
+      this.toasterService.pop(toast);
+    });
     this.$photo.subscribe(value => { this.photo = value; });
     this.$name.subscribe(value => { this.name = value; });
   }
@@ -100,7 +113,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked{
   }
 
   ngOnInit() {
-
+    this.config = new ToasterConfig({
+      positionClass: 'toast-top-left',
+      timeout: 5000,
+      newestOnTop: true,
+      tapToDismiss: true,
+      preventDuplicates: false,
+      animation: 'fade',
+      limit: 5,
+    });
   }
 
   ngOnDestroy() {

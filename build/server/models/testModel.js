@@ -18,13 +18,14 @@ let testSchema  = new Schema({
     category: String,
     date: { type: Date, default: Date.now },
     //Query all user tests from user?
-    userTestList: [{type: Schema.Types.ObjectId, ref: 'usertest'}],//Array of resultsSchema._id that can hold x amount of submittedTests (depending on attemptsAllowed)
+    //[{ type : ObjectId, ref: 'User' }],
+    userTestList: [{type: Schema.Types.ObjectId, ref: 'usertests'}],//Array of resultsSchema._id that can hold x amount of submittedTests (depending on attemptsAllowed)
     authors: [{type: Schema.Types.ObjectId, ref: 'users'}],
 
     //Settings
     expire: { type: Boolean, default:false },//Should the test expire
-    fullPage: { type: Boolean, default:false },//If the layout should be 1 question at a time or
     expireDate: { type: Date, default: new Date(+new Date() + 7*24*60*60*1000) },//If expire, default at 1 week later
+    fullPage: { type: Boolean, default:false },//If the layout should be 1 question at a time or
     handMarked: { type: Boolean, default:false },//Results not calculated internally but rather by the markers
     attemptsAllowed: { type: Number, default:0 },//If 0, infinite!
     userEditable: { type: Boolean, default:false },

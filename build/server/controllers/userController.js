@@ -154,7 +154,7 @@ exports.selfAllocateTest = function(req, res) {
                 testsModel.findOne({'_id': req.body.testid})
                     .populate({
                         path: 'userTestList',
-                        model: 'usertest',
+                        model: 'usertests',
                         match: { user: { $not: req.params.userId} }
                     })
                     .exec(function (err,targetTest) {
@@ -196,55 +196,62 @@ exports.selfAllocateTest = function(req, res) {
 exports.submitTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (authUser) {
         if (!authUser) {return null;}
-        usersModel.findOne({unique_id: authUser['sub']})
-            .exec(function (err, user) {
-                if (req.body.submittedTest && req.body.userTestId) {
-                    let subTest = new submittedTestModel({
-                        _id: new mongoose.Types.ObjectId(),
-                        user: user.id,
-                        test: req.body.submittedTest.test,
-                    });
-                    for(let i = 0; i < req.body.submittedTest.submittedQuestions.length; i++) {
-                        let subQuestion = new submittedQuestionModel({
-                            _id: new mongoose.Types.ObjectId(),
-                            question:  req.body.submittedTest.submittedQuestions[i].question,
-                            type:  req.body.submittedTest.submittedQuestions[i].type,
-                        });
-                        if(req.body.submittedTest.submittedQuestions[i].keywordsAnswer) {
-                            subQuestion.keywordsAnswer = req.body.submittedTest.submittedQuestions[i].keywordsAnswer;
-                        }
-                        if(req.body.submittedTest.submittedQuestions[i].choicesAnswer) {
-                            subQuestion.choicesAnswer = req.body.submittedTest.submittedQuestions[i].choicesAnswer;
-                        }
-                        if(req.body.submittedTest.submittedQuestions[i].arrangement) {
-                            subQuestion.arrangement = req.body.submittedTest.submittedQuestions[i].arrangement;
-                        }
-                        if(req.body.submittedTest.submittedQuestions[i].shortAnswer) {
-                            subQuestion.shortAnswer = req.body.submittedTest.submittedQuestions[i].shortAnswer;
-                        }
-                        subQuestion.save(function (err) {
-                            if (err) return res.status(500).json({message: "Submitted question saving failed", data: err});
-                            subTest.submittedQuestions.push(subQuestion.id);
-                        });
-                    }
-                    subTest.save(function (err) {
-                        if (err) return res.status(500).json({message: "Submitted test saving failed", data: err});
-                        userTestModel.findOne({_id: req.body.userTestId})
-                            .exec(function (err,userTest) {
-                                userTest.submittedTests.push(subTest.id);
-                                userTest.save(function (err, result) {
-                                    if (err) return res.status(500).json({message: "User test failed", data: err});
-                                    user.results.push(userTest.id);
-                                    user.save(function (err) {
-                                        if (err) return res.status(500).json({message: "User save failed", data: err});
-                                        return res.status(200).json({message: "Submitted test added successfully", data: result});
+        testsModel.findOne({_id:req.body.submittedTest.test })
+            .exec(function (err,tempTest) {
+                if(tempTest.expire && Date.now() > new Date(tempTest.expireDate).getTime()) {
+                    return res.status(400).json({message: "Test has expired", data: null});
+                }else{
+                    usersModel.findOne({unique_id: authUser['sub']})
+                        .exec(function (err, user) {
+                            if (req.body.submittedTest && req.body.userTestId) {
+                                let subTest = new submittedTestModel({
+                                    _id: new mongoose.Types.ObjectId(),
+                                    user: user.id,
+                                    test: req.body.submittedTest.test,
+                                });
+                                for(let i = 0; i < req.body.submittedTest.submittedQuestions.length; i++) {
+                                    let subQuestion = new submittedQuestionModel({
+                                        _id: new mongoose.Types.ObjectId(),
+                                        question:  req.body.submittedTest.submittedQuestions[i].question,
+                                        type:  req.body.submittedTest.submittedQuestions[i].type,
                                     });
+                                    if(req.body.submittedTest.submittedQuestions[i].keywordsAnswer) {
+                                        subQuestion.keywordsAnswer = req.body.submittedTest.submittedQuestions[i].keywordsAnswer;
+                                    }
+                                    if(req.body.submittedTest.submittedQuestions[i].choicesAnswer) {
+                                        subQuestion.choicesAnswer = req.body.submittedTest.submittedQuestions[i].choicesAnswer;
+                                    }
+                                    if(req.body.submittedTest.submittedQuestions[i].arrangement) {
+                                        subQuestion.arrangement = req.body.submittedTest.submittedQuestions[i].arrangement;
+                                    }
+                                    if(req.body.submittedTest.submittedQuestions[i].shortAnswer) {
+                                        subQuestion.shortAnswer = req.body.submittedTest.submittedQuestions[i].shortAnswer;
+                                    }
+                                    subQuestion.save(function (err) {
+                                        if (err) return res.status(500).json({message: "Submitted question saving failed", data: err});
+                                    });
+                                    subTest.submittedQuestions.push(subQuestion._id);
+                                }
+                                subTest.save(function (err) {
+                                    if (err) return res.status(500).json({message: "Submitted test saving failed", data: err});
+                                    userTestModel.findOne({_id: req.body.userTestId})
+                                        .exec(function (err,userTest) {
+                                            userTest.submittedTests.push(subTest.id);
+                                            userTest.save(function (err, result) {
+                                                if (err) return res.status(500).json({message: "User test failed", data: err});
+                                                user.results.push(userTest.id);
+                                                user.save(function (err) {
+                                                    if (err) return res.status(500).json({message: "User save failed", data: err});
+                                                    return res.status(200).json({message: "Submitted test added successfully", data: result});
+                                                });
 
-                            });
+                                            });
+                                        });
+                                });
+                            } else {
+                                return res.status(400).json({message: "Providing submittedTest and user test id is required", data: null});
+                            }
                         });
-                    });
-                } else {
-                    return res.status(400).json({message: "Providing submittedTest and user test id is required", data: null});
                 }
             });
     });
@@ -301,10 +308,10 @@ exports.listTestResults = function(req, res) {
  * @return JSON {message,data}
  */
 exports.listAllAuthoredTests = function(req, res) {
-    testsModel.find({'authors': req.params.userId})
+    testsModel.find({authors: req.params.userId})
         .populate({
-            path:'userTestList', model: 'usertest',
-                populate: [{ path: 'test', model: 'submittedtest', }, { path: 'user', model: 'users', select: 'name' }]
+            path:'userTestList', model: 'usertests',
+                populate: { path: 'user', model: 'users', select: 'name' }//[{ path: 'test', model: 'submittedtest', },
             })
         .sort({date: -1})
         .exec(function (err,resultsArray) {
@@ -329,41 +336,40 @@ exports.authorAssigned = function(req, res) {
         if (!authUser) {return null;}
         usersModel.findOne({unique_id: authUser['sub']})
             .exec(function (err, user) {
-                if (err) return res.status(500).json({message: "Failed to query user", data: err});
-                testsModel.findOne({'_id': req.body.testid,'authors': user._id})
-                    .populate({
-                        path: 'userTestList',
-                        model: 'usertest',
-                        match: { user: { $not: req.params.userId} }
-                    })
-                    .exec(function (err,targetTest) {
-                        if (!targetTest) { return res.status(200).json({message: "User is already assigned!", data: null}); }
-                        if (err) return res.status(400).json({message: "Not a valid author or test", data: err});
-                        usersModel.findOne({_id: req.params.userId})
-                            .exec(function(err,targetUser) {
-                                if (err) return res.status(400).json({message: "Not a valid user", data: err});
-                                //TODO: Work out usergroups and their roles/permissions
-                                if((user.organization === targetUser.organization && (user.userGroup === 'staff')) || user.permissions > 3) {
-                                    let userTest = new userTestModel({
-                                        _id: new mongoose.Types.ObjectId(),
-                                        test: req.body.testid,
-                                        user: targetUser.id,
-                                    });
-                                    userTest.save(function (err) {
-                                        if (err) return res.status(500).json({message: "Failed to save test", data: err});
-                                        targetTest.userTestList.push(userTest.id);
-                                        targetUser.tests.push(targetTest.id);
-                                        targetTest.save(function(err) {
-                                            if (err) return res.status(500).json({message: "Failed to save test", data: err});
-                                            targetUser.save(function(err) {
-                                                if (err) return res.status(500).json({message: "Failed to save user", data: err});
-                                                return res.status(200).json({message: 'Target user was added to test', data: targetUser});
+                if (err) return res.status(401).json({message: "Not a registered user", data: err});
+                usersModel.findOne({_id: req.params.userId})
+                    .exec(function (err,targetUser) {
+                        if (err) return res.status(401).json({message: "Not a valid user", data: err});
+                        testsModel.findOne({_id: req.body.testid, authors: user._id})
+                            .populate({
+                                path:'userTestList',
+                                model: 'usertests',
+                                match: { user: targetUser._id },
+                            })
+                            .exec(function (err,testCheck) {
+                                if (err) return res.status(400).json({message: "Failed to check test for user", data: err});
+                                let staff = user.permissions > 3;
+                                let orgStaff = (user.organization === targetUser.organization && user.userGroup === 'staff');
+                                if((orgStaff || staff) && testCheck.userTestList.length === 0) {
+                                    testsModel.findOne({_id: req.body.testid, authors: user._id})
+                                        .exec(function (err,testRes) {
+                                            let userTest = new userTestModel({
+                                                _id: new mongoose.Types.ObjectId(),
+                                                test: testRes._id,
+                                                user: targetUser._id,
                                             });
-                                        });
-                                    });
+                                            userTestModel.create(userTest, function (err, userTestRes) {
+                                                if (err) return res.status(400).json({message: "Failed to create new user test", data: err});
+                                                testRes.userTestList.push(userTestRes.id);
+                                                testRes.save(function (err,testSave) {
+                                                    if (err) return res.status(500).json({message: "Failed to update user test list of provided test", data: err});
+                                                    return res.status(200).json({message: 'New user was allocated this test', data: user});
+                                                });
+                                            });
 
+                                        });
                                 }else{
-                                    return res.status(401).json({message: "Not allowed to assign this test to this user", data: null});
+                                    return res.status(400).json({message: "You dont have permission to assign this user or they are already assigned", data: null});
                                 }
                             });
                     });
