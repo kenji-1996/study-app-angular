@@ -147,7 +147,7 @@ exports.listTest = function(req, res) {
     userTestModel.findOne({_id : req.params.testId})//Get all tests with given user ID
         .populate({
             path:'test', model:'tests',
-            populate: { path: 'questions', model: 'questions', select: '_id date resources question type choicesAll arrangement hint enableTimer' },//Allows us to populate again within the previous populate!
+            populate: { path: 'questions', model: 'questions'},//, select: '_id date resources question type choicesAll arrangement hint enableTimer' },//Allows us to populate again within the previous populate!
         })
         .exec(function (err,userTests) {
             if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
@@ -156,6 +156,15 @@ exports.listTest = function(req, res) {
                 for (let i = 0; i < modifiedResult.test.questions.length; i++) {//Check and shuffle arrangment before returing result
                     if (modifiedResult.test.questions[i].type === 'arrangement') {
                         modifiedResult.test.questions[i].arrangement = settings.shuffleArray(modifiedResult.test.questions[i].arrangement);
+                        modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].arrangement.length;
+                    }
+                    if(modifiedResult.test.questions[i].type === 'keywords') {
+                        modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].keywordsAnswer.length;
+                        modifiedResult.test.questions[i].keywordsAnswer = null;
+                    }
+                    if(modifiedResult.test.questions[i].type === 'choices') {
+                        modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].choicesAnswer.length;
+                        modifiedResult.test.questions[i].choicesAnswer = null;
                     }
                     if(!modifiedResult.test.hintAllowed) {
                         modifiedResult.test.questions[i].hint = null;

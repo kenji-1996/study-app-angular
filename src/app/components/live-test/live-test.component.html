@@ -1,12 +1,11 @@
 <div [@fadeInOut] *ngIf="selectedQuestion && allocatedTest">
-  <div>
     <nb-card>
       <nb-card-header>
         <div fxLayout="row">
           <div>{{selectedQuestion.question}}</div>
           <span class="fill-remaining-space"></span>
           <div fxLayout="row" fxFlexAlign="end">
-            <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="selectedQuestion">{{selectedId + 1}} of {{allocatedTest.test.questions.length}}</h4>
+            <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="selectedQuestion">{{selectedId + 1}}/{{allocatedTest.test.questions.length}}</h4>
           </div>
         </div>
       </nb-card-header>
@@ -35,13 +34,19 @@
         </ng-container>
 
 
+
         <ng-container *ngIf="selectedQuestion.enableTimer">
           <mat-progress-bar  mode="determinate" [value]="progress" color="accent"></mat-progress-bar>
         </ng-container>
       </nb-card-body>
+      <nb-card-footer>
+        <div fxLayout="row">
+          <h4  class="text-center text-muted lead" style="font-size: small;" *ngIf="selectedQuestion">Available marks: {{selectedQuestion.possibleMarks}}</h4>
+          <span class="fill-remaining-space"></span>
+          <div fxLayout="row" fxFlexAlign="end">
+            <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="selectedQuestion">{{selectedId + 1}}/{{allocatedTest.test.questions.length}}</h4>
+          </div>
+        </div>
+      </nb-card-footer>
     </nb-card>
-    <div>
-
-    </div>
-  </div>
 </div>

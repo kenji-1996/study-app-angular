@@ -30,6 +30,7 @@ export class ArrangementComponent implements OnInit {
       this.answer.push(arrangementNode.children[i].id)
     }
     this.dataEmit.pushAnswer(this.answer);
+    this.answer = [];
   }
 
   private onDrop(value) {

@@ -44,16 +44,35 @@ export class TestManagerComponent implements OnInit {
   assignUserID(test:newTest,data:any): void{
     let dialogRef = this.dialog.open(DialogData, {data: data });
       dialogRef.afterClosed().subscribe((result:any) => {
-        if(result.UserID) {
+        if(result && result.UserID) {
           let userID = result.UserID;
           let body = { testid: test._id };
           this.data.postDATA(global.url + '/api/users/' + userID + '/authored',body).subscribe(dataResult=> {
             if(dataResult) {
-              this.dataEmit.pushUpdateArray(userID + ' was assigned to ' + test._id,'New user assigned','success')
+              console.log(dataResult);
+              this.dataEmit.pushUpdateArray(dataResult.data.name + ' was assigned to ' + test.title,'New user assigned','success')
             }
           });
         }
       });
+  }
+
+  removeAllocatedTest(test:any,usertest:any) {
+    let body = { testid: test._id, usertestid: usertest._id };
+    this.data.deleteDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/authored/' + test._id + '/' + usertest._id, body).subscribe(dataResult=> {
+      if(dataResult) {
+        console.log(dataResult);
+        this.dataEmit.pushUpdateArray(dataResult.message,'Allocated user removed','info')
+      }
+    });
+  }
+
+  markAllocatedTest(test:any) {
+
+  }
+
+  settingsAllocatedTest(test:any) {
+
   }
 
   removeTest(test:any) {

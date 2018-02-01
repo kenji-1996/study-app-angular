@@ -30,6 +30,7 @@ export class ChoiceQuestionComponent implements OnInit {
       this.answer.push(correctChoicesNode.children[i].id)
     }
     this.dataEmit.pushAnswer(this.answer);
+    this.answer = [];
   }
 
   private onDrop(value) {

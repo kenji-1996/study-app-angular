@@ -15,8 +15,9 @@ export class KeywordQuestionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
   }
 
-  onSubmit() { this.dataEmit.pushAnswer(this.answer); }
+  onSubmit() { this.dataEmit.pushAnswer(this.answer);this.answer = ''; }
 
 }

@@ -1,15 +1,25 @@
-<nb-card size="xlarge" [@fadeInOut]>
+<!--<nb-card style="max-height: 1400px;" [@fadeInOut]>
     <nb-card-header>
         Authored Tests
     </nb-card-header>
-    <nb-card-body [@fadeInOut]>
+    <nb-card-body [@fadeInOut]>-->
         <div class="row" *ngIf="tests" >
             <div *ngFor="let t of tests" class="col-lg-12" [@fadeInOut]>
                 <nb-card style="max-height: 800px;">
                     <nb-card-header>{{t.title | uppercase}} TEST</nb-card-header>
                     <nb-card-body *ngIf="t.userTestList.length > 0">
-                        <div *ngFor="let sub of t.userTestList" style="cursor: pointer;">
-                            <h5>{{sub.user.name}} <span class="text-muted" style="font-size:small">{{sub.user._id}}</span></h5>
+                        <div *ngFor="let sub of t.userTestList"  class="allocatedTest"> <!--(click)="sub.selected = !sub.selected">-->
+                            <div fxLayout="row">
+                                <h5>{{sub.user.name}} <span class="text-muted" style="font-size:small">{{sub.user._id}}</span></h5>
+                                <span class="fill-remaining-space"></span>
+                                <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
+                                    <span>
+                                        <i (click)="removeAllocatedTest(t,sub)" class="fa fa-trash cursor-click"></i>
+                                        <i (click)="markAllocatedTest(t)" class="fa fa-pencil cursor-click"></i>
+                                        <i (click)="settingsAllocatedTest(t)" class="fa fa-cog cursor-click"></i>
+                                    </span>
+                                </div>
+                            </div>
                             <span class="text-muted" style="font-size: small">
                                 <div class="row text-center">
                                     <div class="col-sm-4">
@@ -25,9 +35,8 @@
                                 </div>
                                 <div class="row text-center">
                                     <div class="col-sm-4">
-                                        <strong>Final mark:</strong>
-                                        <ng-container *ngIf="sub.finalMark">{{sub.finalMark}}</ng-container>
-                                        <ng-container *ngIf="!sub.finalMark">Provide mark</ng-container>
+                                        <ng-container *ngIf="sub.finalMark"><strong>Highest mark:</strong> {{sub.finalMark}}/{{sub.marksAvailable}}</ng-container>
+                                        <ng-container *ngIf="!sub.finalMark"><strong>Mark:</strong> Provide mark</ng-container>
                                     </div>
                                     <div class="col-sm-4">
                                         <strong>Feedback:</strong>
@@ -55,15 +64,15 @@
                 </nb-card>
             </div>
         </div>
-    </nb-card-body>
+    <!--</nb-card-body>
     <nb-card-footer>
         <nb-actions size="medium" fullWidth>
             <nb-action>
-                <i class="nb-search"></i><span>Search</span>
+                <span style="cursor: pointer"><i class="nb-search"></i>Search</span>
             </nb-action>
             <nb-action>
-                <span ><i class="nb-plus"></i>Add</span>
+                <span style="cursor: pointer" routerLink="/author/create"><i class="nb-plus"></i>Add</span>
             </nb-action>
         </nb-actions>
     </nb-card-footer>
-</nb-card>
+</nb-card>-->

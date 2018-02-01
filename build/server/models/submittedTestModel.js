@@ -18,7 +18,8 @@ let submittedTestSchema  = new Schema({
     //Date submitted
     dateSubmitted: { type: Date, default: Date.now },
     //Result-related, mark saved if not manually marked by human
-    mark: String,
+    obtainedMark: Number,
+    marksAvailable: Number,
     /**
      * Commented out for now, usage found in parent 'resultSchema'
      */
@@ -27,7 +28,6 @@ let submittedTestSchema  = new Schema({
     //target test ID (must be valid) - Get test settings from here
     //testId: {type:String, required: true}, //Points to parent because there can only be one test it references, One(Test) -> Many[submittedTest]
     //Who submitted it
-
 });
 
 /*submittedTestSchema.virtual('parentTest').get(function () {

@@ -149,18 +149,11 @@ module.exports.ensureAuthorized = function ensureAuthorized(req, res) {
     });
 };
 
-
 /**
- * Input the amount of days to add to current date, get new date returned.
- * @param days
- * @return {Date}
+ * Shuffle an array according to its size
+ * @param sourceArray
+ * @return {*}
  */
-module.exports.addDays = function(days) {
-    let dat = new Date(this.valueOf());
-    dat.setDate(dat.getDate() + days);
-    return dat;
-};
-
 module.exports.shuffleArray = function(sourceArray) {
     for (let i = 0; i < sourceArray.length - 1; i++) {
         let j = i + Math.floor(Math.random() * (sourceArray.length - i));
@@ -170,4 +163,60 @@ module.exports.shuffleArray = function(sourceArray) {
         sourceArray[i] = temp;
     }
     return sourceArray;
-}
+};
+
+/**
+ * Gets the unsorted original answer, the unsorted original input and compares them for keywords, returns number of found keyword answers
+ * @param answerUnsorted
+ * @param inputUnsorted
+ * @return {Number}
+ */
+module.exports.keywordContains = function(answerUnsorted, inputUnsorted) {
+    var answerSorted = [];
+    if(answerUnsorted) {
+        for (var i = 0; i < answerUnsorted.length; i++) {
+            answerSorted.push(answerUnsorted[i].toLowerCase());
+        }
+        answerSorted.sort();
+    }
+    var inputSorted = [];
+    if(inputUnsorted) {
+        for (var i = 0; i < inputUnsorted.length; i++) {
+            inputSorted.push(inputUnsorted[i].toLowerCase());
+        }
+        inputSorted.sort();
+    }
+    let ai=0, bi=0;
+    let result = [];
+    while( ai < answerSorted.length && bi < inputSorted.length )
+    {
+        if      (answerSorted[ai] < inputSorted[bi] ){ ai++; }
+        else if (answerSorted[ai] > inputSorted[bi] ){ bi++; }
+        else /* they're equal */
+        {
+            result.push(answerSorted[ai]);
+            ai++;
+            bi++;
+        }
+    }
+    return result.length;
+};
+
+/**
+ * Gets the answer, the input and total possible marks and amount of possible answers
+ * If a user has thrown in all possible choices they will be penalized by the system.
+ *
+ * @param answer
+ * @param input
+ * @param possibleAnswers
+ * @return {number}
+ */
+module.exports.correctChoices = function(answer, input, possibleAnswers) {
+    let result = this.keywordContains(answer,input);
+    let penalty = 0;
+    if(input.length > possibleAnswers) {
+        penalty = (input.length - possibleAnswers);
+    }
+    return (result - penalty);
+};
+

@@ -8,7 +8,8 @@ export class submittedTest {
     test: String;
     submittedQuestions: submittedQuestion[];
     dateSubmitted: Date;
-    mark: String;
+    obtainedMark: Number;
+    marksAvailable: Number;
     constructor() {
         this.submittedQuestions = [];
     }
@@ -32,11 +33,15 @@ export class allocatedTest {
     user: String;//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
     allocatedDate: Date;
     submittedTests: [String];
-    finalMark: String;//String or number?
+    finalMark: Number;//String or number?
+    marksAvailable: Number;
     feedback: String;
     showMarker: Boolean;//Should the user see who marked them
     marker: String; //Only shown if above is correct
     started: boolean;
+
+    //client only options
+    selected: boolean;
 }
 
 export class newTest {
@@ -78,6 +83,7 @@ export class newQuestion {
     images: [String];//Images relating to this question - Unused
     //keywords,choices,arrangement,shortAnswer
     type: String;
+    possibleMarks: Number;
     //Answer/Question variables, only one will be filled out depending on 'type' - Not user submitted (When they complete tests, creates 'submittedQuestion' + submittedTest)
     question: String;
     keywordsAnswer: [String];//Actual keywords in answer

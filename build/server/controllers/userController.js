@@ -140,7 +140,7 @@ exports.listAllocatedTests = function(req, res) {
  *
  * body { testid: '123' }
  *
- * STATUS: Tested
+ * STATUS: Untested
  * @param req
  * @param res
  * @return JSON {message,data}
@@ -197,8 +197,9 @@ exports.submitTest = function(req, res) {
     settings.ensureAuthorized(req,res).then(function (authUser) {
         if (!authUser) {return null;}
         testsModel.findOne({_id:req.body.submittedTest.test })
+            .populate('questions')
             .exec(function (err,tempTest) {
-                if(tempTest.expire && Date.now() > new Date(tempTest.expireDate).getTime()) {
+                if((tempTest.expire && Date.now() > new Date(tempTest.expireDate).getTime())) {//TODO:remove '!', just for testing
                     return res.status(400).json({message: "Test has expired", data: null});
                 }else{
                     usersModel.findOne({unique_id: authUser['sub']})
@@ -209,12 +210,33 @@ exports.submitTest = function(req, res) {
                                     user: user.id,
                                     test: req.body.submittedTest.test,
                                 });
+                                obtainedMark = 0;
+                                marksAvailable = 0;
                                 for(let i = 0; i < req.body.submittedTest.submittedQuestions.length; i++) {
                                     let subQuestion = new submittedQuestionModel({
                                         _id: new mongoose.Types.ObjectId(),
                                         question:  req.body.submittedTest.submittedQuestions[i].question,
                                         type:  req.body.submittedTest.submittedQuestions[i].type,
                                     });
+                                    if(!tempTest.handMarked) {
+                                        switch (req.body.submittedTest.submittedQuestions[i].type) {
+                                            case "keywords":
+                                                obtainedMark += settings.keywordContains(tempTest.questions[i].keywordsAnswer, req.body.submittedTest.submittedQuestions[i].keywordsAnswer);
+                                                marksAvailable += tempTest.questions[i].keywordsAnswer.length;
+                                                break;
+                                            case "choices":
+                                                obtainedMark += settings.correctChoices(tempTest.questions[i].choicesAnswer, req.body.submittedTest.submittedQuestions[i].choicesAnswer, tempTest.questions[i].choicesAnswer.length);
+                                                marksAvailable += tempTest.questions[i].choicesAnswer.length;
+                                                break;
+                                            case "arrangement":
+                                                break;
+                                            case "shortAnswer":
+                                                break;
+                                            default://If no type is set, break
+                                                console.log('incorrect answer format' + subTest.submittedQuestions[i].type);
+                                            //return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});
+                                        }
+                                    }
                                     if(req.body.submittedTest.submittedQuestions[i].keywordsAnswer) {
                                         subQuestion.keywordsAnswer = req.body.submittedTest.submittedQuestions[i].keywordsAnswer;
                                     }
@@ -232,10 +254,22 @@ exports.submitTest = function(req, res) {
                                     });
                                     subTest.submittedQuestions.push(subQuestion._id);
                                 }
+                                if(!tempTest.handMarked) {
+                                    subTest.obtainedMark = obtainedMark;
+                                    subTest.marksAvailable = marksAvailable;
+                                }
                                 subTest.save(function (err) {
                                     if (err) return res.status(500).json({message: "Submitted test saving failed", data: err});
                                     userTestModel.findOne({_id: req.body.userTestId})
-                                        .exec(function (err,userTest) {
+                                        .exec(function (err, userTest) {
+                                            userTest.marksAvailable = subTest.marksAvailable;
+                                            if(!tempTest.handMarked) {
+                                                if(userTest.finalMark) {
+                                                    if(subTest.obtainedMark > userTest.finalMark) { userTest.finalMark = subTest.obtainedMark;}
+                                                }else{
+                                                    userTest.finalMark = subTest.obtainedMark;
+                                                }
+                                            }
                                             userTest.submittedTests.push(subTest.id);
                                             userTest.save(function (err, result) {
                                                 if (err) return res.status(500).json({message: "User test failed", data: err});
@@ -373,6 +407,38 @@ exports.authorAssigned = function(req, res) {
                                 }
                             });
                     });
+            });
+    });
+};
+
+/**
+ * /api/users/:userId/authored/:testId/:targetUserId [DELETE]
+ * Deletes an allocated user, author can remove whoever whenever
+ *
+ *
+ * STATUS: Tested
+ * @param req
+ * @param res
+ * @return JSON {message,data}
+ */
+exports.removeAssignedTest = function(req,res) {
+    settings.ensureAuthorized(req,res).then(function (authUser) {
+        if (!authUser) {return null;}
+        usersModel.findOne({unique_id: authUser['sub']})
+            .exec(function (err, user) {
+                if (err) return res.status(401).json({message: "Not a registered user", data: err});
+                //TODO: remove usertestid -> submittedTests -> submittedQuestions ->remove self ->pull from test list
+                testsModel.findOneAndUpdate(
+                    {_id: req.params.testId, authors: user._id},
+                    {$pull: { userTestList: req.params.targetUserId}},
+                    {new: true},)
+                    .exec(function (err, affectedRes) {
+                        if (err) return res.status(500).json({message: "Failed to remove user test from test", data: err});
+                        affectedRes.save(function (err,testSaved) {
+                            if (err) return res.status(500).json({message: "Failed to save newly modified test", data: err});
+                            return res.status(200).json({message: 'user test successfully removed', data: testSaved});
+                        });
+                    })
             });
     });
 };

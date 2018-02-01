@@ -23,11 +23,16 @@ var userTestSchema  = new Schema({
 
     //List of submitted tests from different users
     submittedTests: [{type: Schema.Types.ObjectId, ref: 'submittedtest'}],//The size of this array is the amount of attempts
-    finalMark: { type: String, default: null },
+    finalMark: { type: Number, default: null },
+    marksAvailable: { type: Number, default: null },
     feedback: { type: String, default: null },
     marker: {type: Schema.Types.ObjectId, ref: 'users' }, //Marker is the author who marked the test or provided feedback
     //Show marker
     //showMarker: { type: Boolean, default:false },//Should the user see who marked them
+
+    //If an author overrides values for a specific user
+    //Aka if they are late etc
+    testSettingsOverride: [{ setting: String, value: String, }]
 
     /**
      * future ideas:

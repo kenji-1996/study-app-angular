@@ -23,6 +23,7 @@ let questionSchema  = new Schema({
 
     //keywords,choices,arrangement,shortAnswer
     type: { type:String, required: true, default: 'keywords'},
+    possibleMarks: { type: Number, default: 0 },
 
     question: { type:String, required:true },
     //Answer/Question variables, only one will be filled out depending on 'type' - Not user submitted (When they complete tests, creates 'submittedQuestion' + submittedTest)

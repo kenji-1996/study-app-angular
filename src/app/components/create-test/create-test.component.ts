@@ -176,7 +176,6 @@ export class CreateTestComponent implements OnInit {
                     return;
                 }
                 for(let i = 0; i < arrangeOptionsNode.children.length; i++){
-                    console.log(arrangeOptionsNode.children[i].id);
                     finalQuestion.arrangement.push(arrangeOptionsNode.children[i].id)
                 }
                 this.test.questions.push(finalQuestion);
@@ -199,7 +198,6 @@ export class CreateTestComponent implements OnInit {
     }
 
     resetForms() {
-        console.log(this.test);
         this.addQuestionsFormGroup.controls['hint'].setValue('');
         this.addQuestionsFormGroup.controls['type'].setValue('');
         this.addQuestionsFormGroup.controls['question'].setValue('');
@@ -245,11 +243,9 @@ export class CreateTestComponent implements OnInit {
             this.test.timer = this.settingsFormGroup.controls['timerLength'].value;
         }
         this.test.showMarks = this.settingsFormGroup.controls['showMarks'].value;
-        console.log(this.test);
         let body = { test: this.test};
         this.dataManagement.postDATA(global.url + '/api/tests', body).subscribe(dataResult=> {
             if(dataResult) {
-                console.log(dataResult.message);
                 this.dataEmit.pushUpdateArray(dataResult.message);
                 this.router.navigate(['author/tests']);
             }

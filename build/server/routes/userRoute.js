@@ -55,6 +55,12 @@ router.route('/users/:userId/authored')
     })
     .post(function(req,res) {
         userController.authorAssigned(req,res);
+    })
+
+//Remove allocated test from test
+router.route('/users/:userId/authored/:testId/:targetUserId')
+    .delete(function (req,res) {
+        userController.removeAssignedTest(req,res);
     });
 
 module.exports = router;

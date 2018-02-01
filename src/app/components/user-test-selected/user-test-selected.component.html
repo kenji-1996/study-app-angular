@@ -36,23 +36,27 @@
       </div>
       <hr>
       <h6 class="display-6">Submitted attempts</h6>
-      <div *ngFor="let sub of submittedTests" style="font-size: small">
-        <div class="row text-center">
-          <div class="col-sm-4">
-            ID: {{sub._id}}
+      <ng-container *ngIf="submittedTests">
+        <div *ngFor="let sub of submittedTests" style="font-size: small">
+          <div class="row text-center">
+            <div class="col-sm-4">
+              ID: {{sub._id}}
+            </div>
+            <div class="col-sm-4">
+              Date submitted: {{sub.dateSubmitted | date:'fullDate'}}
+            </div>
+            <div class="col-sm-4">
+              Mark:
+              {{sub.obtainedMark}} / {{sub.marksAvailable}}
+            </div>
           </div>
-          <div class="col-sm-4">
-            Date submitted: {{sub.dateSubmitted | date:'fullDate'}}
-          </div>
-          <div class="col-sm-4">
-            Mark:
-            <ng-container *ngIf="sub.mark">{{sub.mark}}</ng-container>
-            <ng-container *ngIf="!sub.mark">N/A</ng-container>
-          </div>
-        </div>
 
-        <div class="dotted-hr"></div>
-      </div>
+          <div class="dotted-hr"></div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="submittedTests.length === 0">
+        <p style="font-size: small">No attempts made</p>
+      </ng-container>
     </nb-card-body>
 
     <nb-card-footer>
