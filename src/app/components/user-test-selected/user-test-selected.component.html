@@ -63,7 +63,7 @@
       <nb-actions size="medium" fullWidth>
         <nb-action>
           <div class="text-center">
-            <button  class="btn btn-hero-success main-btn" (click)="testStarted()">
+            <button  class="btn btn-hero-success main-btn" (click)="testStarted()" [disabled]="allocatedTest.test.locked">
               <i class="fa fa-pencil"></i> <span>Start {{allocatedTest.test.title}}</span>
             </button>
           </div>

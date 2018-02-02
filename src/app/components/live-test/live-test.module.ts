@@ -57,6 +57,10 @@ export class LiveTestComponent implements OnInit, OnDestroy {
       this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(allocatedTestResult => {
         this.allocatedTest = allocatedTestResult.data;
         if(this.allocatedTest.test.fullPage) { this.fullPage = true; }
+        if(this.allocatedTest.test.locked) {
+          this.dataEmitter.pushUpdateArray('Cannot retrieve questions on locked test','Test locked','warning');
+          this.route.navigate(['/user/tests']);
+        }
           this.titleService.setTitle(this.allocatedTest.test.title + ' test - DigitalStudy');
           this.startTest();
       });

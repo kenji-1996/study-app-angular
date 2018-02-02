@@ -35,8 +35,14 @@
                                 </div>
                                 <div class="row text-center">
                                     <div class="col-sm-4">
-                                        <ng-container *ngIf="sub.finalMark"><strong>Highest mark:</strong> {{sub.finalMark}}/{{sub.marksAvailable}}</ng-container>
-                                        <ng-container *ngIf="!sub.finalMark"><strong>Mark:</strong> Provide mark</ng-container>
+                                        <ng-container *ngIf="sub.submittedTests.length < 1">
+                                            <strong>No attempt</strong>
+                                        </ng-container>
+                                        <ng-container *ngIf="sub.submittedTests.length >= 1">
+                                            <ng-container *ngIf="sub.finalMark || sub.finalMark === 0"><strong>Highest mark:</strong> {{sub.finalMark}}/{{sub.marksAvailable}}</ng-container>
+                                            <ng-container *ngIf="sub.finalMark === null"><strong>Mark:</strong> Provide mark</ng-container>
+                                        </ng-container>
+
                                     </div>
                                     <div class="col-sm-4">
                                         <strong>Feedback:</strong>
@@ -52,21 +58,21 @@
                         <div class="row text-center">
                             <div class="col-6">
                                 <div class="row">
-                                    <div class="col-md-6" style="padding: 5px;">
-                                        <span (click)="assignUserID(t,{'UserID': ''})" style="cursor: pointer"><i class="nb-paper-plane"></i>Assign</span>
+                                    <div class="col-md-6 cursor-click" (click)="assignUserID(t,{'UserID': ''})" style="padding: 5px;">
+                                        <i class="nb-paper-plane"></i><span>Assign</span>
                                     </div>
-                                    <div class="col-md-6" style="padding: 5px;">
-                                        <span style="cursor: pointer"><i class="nb-locked"></i>Lock</span>
+                                    <div class="col-md-6 cursor-click" (click)="lockTest(t)" style="padding: 5px;">
+                                        <i class="nb-locked"></i><span  [innerHTML]="t.locked? 'Unlock' : 'Lock'"></span>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="row">
-                                    <div class="col-md-6" style="padding: 5px;">
-                                        <span style="cursor: pointer"><i class="nb-edit"></i>Edit</span>
+                                    <div class="col-md-6 cursor-click" style="padding: 5px;">
+                                        <i class="nb-edit"></i><span>Edit</span>
                                     </div>
-                                    <div class="col-md-6" style="padding: 5px;">
-                                        <span (click)="removeTest(t)" style="cursor: pointer"><i class="nb-trash"></i>Delete</span>
+                                    <div class="col-md-6 cursor-click" (click)="removeTest(t)" style="padding: 5px;">
+                                        <i class="nb-trash"></i><span>Delete</span>
                                     </div>
                                 </div>
                             </div>

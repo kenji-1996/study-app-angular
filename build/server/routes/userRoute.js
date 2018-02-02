@@ -38,7 +38,7 @@ router.route('/users/:userId/tests')//Get all allocated tests, not authored!
 
 router.route('/users/:userId/results')
     .get(function(req,res) {
-        userController.listAllTestResults(req,res);
+        userController.listAllUserTests(req,res);
     })
     .post(function (req,res) {
         userController.submitTest(req, res);

@@ -17,7 +17,6 @@ var UserSchema  = new Schema({
     permissions: { type: Number, default: 0 },
     lastLogin: { type: Date, default: Date.now },
     dateCreated: { type: Date, default: Date.now },
-
     //Test related
     userGroups: [String],
     organizations: [String],

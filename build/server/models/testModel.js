@@ -26,6 +26,7 @@ let testSchema  = new Schema({
     authors: [{type: Schema.Types.ObjectId, ref: 'users'}],
 
     //Settings
+    locked:{ type: Boolean, default:false },
     expire: { type: Boolean, default:false },//Should the test expire
     expireDate: { type: Date, default: new Date(+new Date() + 7*24*60*60*1000) },//If expire, default at 1 week later
     fullPage: { type: Boolean, default:false },//If the layout should be 1 question at a time or

@@ -130,6 +130,11 @@ exports.listAllocatedTests = function(req, res) {
     userTestModel.find({user : req.params.userId})//Get all tests with given user ID
         .populate({path:'test', model:'tests'})
         .exec(function (err,userTests) {
+            for(let i = 0; i < userTests.length; i++) {
+                if(!userTests[i].test.showMarks) {
+                    userTests[i].finalMark = null;
+                }
+            }
             if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
             return res.status(200).json({message: 'Allocated tests successfully retrieved', data: userTests});
         });
@@ -199,7 +204,9 @@ exports.submitTest = function(req, res) {
         testsModel.findOne({_id:req.body.submittedTest.test })
             .populate('questions')
             .exec(function (err,tempTest) {
-                if((tempTest.expire && Date.now() > new Date(tempTest.expireDate).getTime())) {//TODO:remove '!', just for testing
+                if(tempTest.locked) {
+                    return res.status(400).json({message: "Test is locked, user cannot submit a new attempt", data: null});
+                }else if((tempTest.expire && Date.now() > new Date(tempTest.expireDate).getTime())) {
                     return res.status(400).json({message: "Test has expired", data: null});
                 }else{
                     usersModel.findOne({unique_id: authUser['sub']})
@@ -296,14 +303,12 @@ exports.submitTest = function(req, res) {
  * List all results for selected user
  * Show submitted tests? (Currently dont)
  *
- * Authentication?
- *
  * STATUS: Untested
  * @param req
  * @param res
  * @return JSON {message,data}
  */
-exports.listAllTestResults = function(req, res) {
+exports.listAllUserTests = function(req, res) {
     userTestModel.find({'user': req.params.userId})
         .populate({path:'test', model: 'tests'})
         .sort({date: -1})

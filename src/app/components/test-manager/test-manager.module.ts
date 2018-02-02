@@ -75,6 +75,11 @@ export class TestManagerComponent implements OnInit {
     alert('todo');
   }
 
+  lockTest(test:any) {
+    let body = { test: { locked: !test.locked}};
+    this.data.putDATA(global.url + '/api/tests/' + test._id, body).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });
+  }
+
   removeTest(test:any) {
     alert('this will currently remove all question children, may change in future');
     this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });

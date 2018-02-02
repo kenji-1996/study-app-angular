@@ -39,7 +39,6 @@ export class allocatedTest {
     showMarker: Boolean;//Should the user see who marked them
     marker: String; //Only shown if above is correct
     started: boolean;
-
     //client only options
     selected: boolean;
 }
@@ -63,6 +62,7 @@ export class newTest {
     hintAllowed: boolean;
     showMarks: boolean;//If it is marked, can we show?
     markDate: Date;
+    locked: boolean;
     constructor(_title,_category,_questions,_authors) {
         this.title = _title;
         this.category = _category;

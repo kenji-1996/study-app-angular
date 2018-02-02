@@ -149,28 +149,34 @@ exports.listTest = function(req, res) {
             path:'test', model:'tests',
             populate: { path: 'questions', model: 'questions'},//, select: '_id date resources question type choicesAll arrangement hint enableTimer' },//Allows us to populate again within the previous populate!
         })
-        .exec(function (err,userTests) {
+        .exec(function (err,userTest) {
+
             if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
-            if(userTests) {
-                let modifiedResult = userTests;
-                for (let i = 0; i < modifiedResult.test.questions.length; i++) {//Check and shuffle arrangment before returing result
-                    if (modifiedResult.test.questions[i].type === 'arrangement') {
-                        modifiedResult.test.questions[i].arrangement = settings.shuffleArray(modifiedResult.test.questions[i].arrangement);
-                        modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].arrangement.length;
+            if(userTest) {
+                let modifiedResult = userTest;
+                if(userTest.test.locked) {
+                    modifiedResult.test.questions = [];
+                    return res.status(200).json({message: 'No questions provided as test is locked', data: modifiedResult});
+                }else{
+                    for (let i = 0; i < modifiedResult.test.questions.length; i++) {//Check and shuffle arrangment before returing result
+                        if (modifiedResult.test.questions[i].type === 'arrangement') {
+                            modifiedResult.test.questions[i].arrangement = settings.shuffleArray(modifiedResult.test.questions[i].arrangement);
+                            modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].arrangement.length;
+                        }
+                        if(modifiedResult.test.questions[i].type === 'keywords') {
+                            modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].keywordsAnswer.length;
+                            modifiedResult.test.questions[i].keywordsAnswer = null;
+                        }
+                        if(modifiedResult.test.questions[i].type === 'choices') {
+                            modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].choicesAnswer.length;
+                            modifiedResult.test.questions[i].choicesAnswer = null;
+                        }
+                        if(!modifiedResult.test.hintAllowed) {
+                            modifiedResult.test.questions[i].hint = null;
+                        }
                     }
-                    if(modifiedResult.test.questions[i].type === 'keywords') {
-                        modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].keywordsAnswer.length;
-                        modifiedResult.test.questions[i].keywordsAnswer = null;
-                    }
-                    if(modifiedResult.test.questions[i].type === 'choices') {
-                        modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].choicesAnswer.length;
-                        modifiedResult.test.questions[i].choicesAnswer = null;
-                    }
-                    if(!modifiedResult.test.hintAllowed) {
-                        modifiedResult.test.questions[i].hint = null;
-                    }
+                    return res.status(200).json({message: 'Allocated tests successfully retrieved', data: modifiedResult});
                 }
-                return res.status(200).json({message: 'Allocated tests successfully retrieved', data: modifiedResult});
             }else{
                 return res.status(404).json({message: "No data found", data: null})
             }
