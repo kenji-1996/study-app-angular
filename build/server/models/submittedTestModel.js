@@ -7,6 +7,7 @@
  */
 let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
+let submittedQuestionModel = require('../models/submittedQuestionModel');
 
 let submittedTestSchema  = new Schema({
     //Unique testSubmitted ID
@@ -30,12 +31,10 @@ let submittedTestSchema  = new Schema({
     //Who submitted it
 });
 
-/*submittedTestSchema.virtual('parentTest').get(function () {
-    return this.name.first + ' ' + this.name.last;
+submittedTestSchema.pre('remove', function(next) {
+    console.log('attempting to remove submitted questions')
+    submittedQuestionModel.remove({_id: { $in: this.submittedQuestions}}).exec();  //if reference exists in multiple documents
+    next();
 });
-
-submittedTestSchema.methods.findSimilarTypes = function(cb) {
-    return this.constructor.find({ type: this.type }, cb);
-};*/
 
 module.exports = mongoose.model('submittedtest', submittedTestSchema);

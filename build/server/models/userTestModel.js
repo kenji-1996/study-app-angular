@@ -9,11 +9,14 @@
  *
  * When a user first submits a test attempt, a resultsSchema is created with their id and the test id.
  */
-var mongoose     = require('mongoose');
-var Schema = mongoose.Schema;
+let mongoose     = require('mongoose');
+let Schema = mongoose.Schema;
+let submittedTestModel = require('../models/submittedTestModel');
+let testsModel = require('../models/testModel');
+let usersModel = require('../models/userModel');
 
 //One user only has 1 result object per 1 test
-var userTestSchema  = new Schema({
+let userTestSchema  = new Schema({
     _id: Schema.Types.ObjectId,
     //testId: String,//Reference test for result settings
     test: {type: Schema.Types.ObjectId, ref: 'tests'},
@@ -40,6 +43,14 @@ var userTestSchema  = new Schema({
      * - Amount of test takers
      * -
      */
+});
+
+userTestSchema.pre('remove', function(next) {
+    console.log('attempting to remove shit lmao');
+    usersModel.update({ $pull: { results: this._id } }, { multi: true }).exec();
+    testsModel.update({ $pull: { userTestList: this._id } }, { multi: true }).exec();
+    submittedTestModel.findOneAndRemove({test: this.test}).exec(function (err,subTest) { subTest.remove(); });
+    next();
 });
 
 module.exports = mongoose.model('usertests', userTestSchema);

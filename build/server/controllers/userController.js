@@ -427,17 +427,15 @@ exports.removeAssignedTest = function(req,res) {
         usersModel.findOne({unique_id: authUser['sub']})
             .exec(function (err, user) {
                 if (err) return res.status(401).json({message: "Not a registered user", data: err});
-                //TODO: remove usertestid -> submittedTests -> submittedQuestions ->remove self ->pull from test list
-                testsModel.findOneAndUpdate(
-                    {_id: req.params.testId, authors: user._id},
-                    {$pull: { userTestList: req.params.targetUserId}},
-                    {new: true},)
-                    .exec(function (err, affectedRes) {
+                testsModel.findOne({_id: req.params.testId,authors: user._id})
+                    .exec(function (err, testFound) {
                         if (err) return res.status(500).json({message: "Failed to remove user test from test", data: err});
-                        affectedRes.save(function (err,testSaved) {
-                            if (err) return res.status(500).json({message: "Failed to save newly modified test", data: err});
-                            return res.status(200).json({message: 'user test successfully removed', data: testSaved});
-                        });
+                        userTestModel.findOneAndRemove({test: testFound._id, _id: req.params.targetUserId})
+                            .exec(function (err,userTest) {
+                                userTest.remove();
+                                if (err) return res.status(500).json({message: "Failed to remove user test from test", data: err});
+                                return res.status(200).json({message: 'usertest was removed', data: userTest});
+                            });
                     })
             });
     });
