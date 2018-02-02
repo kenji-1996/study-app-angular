@@ -37,6 +37,7 @@ export class CreateTestComponent implements OnInit {
     public correctChoices: Array<string> = [];
     arrangementOptions;
     choicesOptions;
+    submitted = false;
 
     //Keywords
     separatorKeysCodes = [ENTER, COMMA];
@@ -230,6 +231,7 @@ export class CreateTestComponent implements OnInit {
 
 
     confirmTest() {
+        this.submitted = true;
         this.test.title = this.settingsFormGroup.controls['title'].value;
         this.test.category = this.settingsFormGroup.controls['category'].value;
         this.test.expire = this.settingsFormGroup.controls['expire'].value;

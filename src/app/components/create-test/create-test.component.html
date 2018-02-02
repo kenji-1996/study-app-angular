@@ -300,7 +300,7 @@
                         <hr>
                         <div>
                             <button  class="btn btn-hero-info main-btn btn-tn" matStepperPrevious>Back</button>
-                            <button  class="btn btn-hero-success main-btn btn-tn" [disabled]="test.questions.length < 1" (click)="confirmTest()">Confirm and create test</button>
+                            <button  class="btn btn-hero-success main-btn btn-tn" [disabled]="test.questions.length < 1 || submitted" (click)="confirmTest()">Confirm and create test</button>
                         </div>
                     </div>
                 </div>

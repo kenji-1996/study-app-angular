@@ -1,42 +1,60 @@
 
-<nb-card size="xlarge" style="max-height: 800px;" [@fadeInOut]>
+<nb-card style="max-height: 800px;" [@fadeInOut]>
     <nb-card-header>
         <div class="cameras-card-header">
-            <span class="cameras-card-title">User tests</span>
+            <span class="cameras-card-title">{{name}} tests</span>
             <span class="cameras-filter">
       </span>
         </div>
     </nb-card-header>
-    <nb-card-body [@fadeInOut]>
-        <div class="row" *ngIf="allocatedTests" [@fadeInOut]>
-            <div *ngFor="let t of allocatedTests; let i = index" class="col-lg-4">
-                <nb-card [routerLink]="['/user/test/selected/', t._id]" style="cursor: pointer;max-height: 230px;">
-                    <nb-card-header>{{t.test.title | uppercase}}</nb-card-header>
-                    <nb-card-body >
-                        <span class="text-muted" style="font-size:small">
-                            Allocated on: {{t.allocatedDate | date:'fullDate' }}
-                            <br/>Attempts: {{t.submittedTests.length}}
-                            <br/>Category: {{t.test.category}}
-                            <br />Questions: {{t.test.questions.length}}
-                            <ng-container *ngIf="t.test.expire">
-                                <br/>Expires: {{t.test.expireDate | date:'fullDate' }}
+    <nb-card-body [@fadeInOut] *ngIf="allocatedTests">
+        <div class="text-center" *ngIf="allocatedTests.length < 1">
+            <span class="text-muted">No allocated tests</span>
+        </div>
+        <div *ngFor="let sub of allocatedTests"  class="allocatedTest cursor-click" [routerLink]="['/user/test/selected/', sub._id]" [@fadeInOut]>
+            <h5>{{sub.test.title}} <span class="text-muted" style="font-size:small">{{sub.test._id}}</span></h5>
+            <div class="text-muted" style="font-size: small">
+                <div class="row text-center">
+                    <div class="col-sm-4">
+                        <strong>ID:</strong> {{sub._id}}
+                    </div>
+                    <div class="col-sm-4">
+                        <strong>Allocated:</strong> {{sub.allocatedDate | date:'shortDate'}}
+                    </div>
+                    <div class="col-sm-4">
+                        <strong>Attempts:</strong> {{sub.submittedTests.length}}/<span [innerText]="sub.test.attemptsAllowed < 1? '&#8734;' : '' + sub.test.attemptsAllowed"></span>
+                    </div>
+                </div>
+                <div class="row text-center">
+                    <div class="col-sm-4">
+                        <ng-container *ngIf="!sub.test.showMarks">
+                            <strong>Currently cannot view marks</strong>
+                        </ng-container>
+                        <ng-container>
+                            <ng-container *ngIf="sub.submittedTests.length < 1">
+                                <strong>No attempt</strong>
                             </ng-container>
-                            <ng-container *ngIf="t.test.attemptsAllowed > 0">
-                                <br />Allowed attempts: {{t.test.attemptsAllowed}}
+                            <ng-container *ngIf="sub.submittedTests.length >= 1">
+                                <ng-container *ngIf="sub.finalMark || sub.finalMark === 0"><strong>Highest mark:</strong> {{sub.finalMark}}/{{sub.marksAvailable}}</ng-container>
                             </ng-container>
-                            <ng-container *ngIf="t.test.attemptsAllowed <= 0">
-                                 <br />Allowed attempts: Unlimited
-                            </ng-container>
-                            <ng-container *ngIf="t.feedback">
-                                 <br />Feedback: {{t.feedback}}
-                            </ng-container>
-                            <ng-container *ngIf="t.finalMark">
-                                 <br />Mark: {{t.finalMark}}
-                            </ng-container>
-                        </span>
-                    </nb-card-body>
-                </nb-card>
+                        </ng-container>
+                    </div>
+                    <div class="col-sm-4">
+                        <strong>Feedback:</strong>
+                        <ng-container *ngIf="sub.feedback">{{sub.feedback}}</ng-container>
+                        <ng-container *ngIf="!sub.feedback">N/A</ng-container>
+                    </div>
+                    <div class="col-sm-4">
+                        <ng-container *ngIf="sub.test.expire">
+                            <strong>Expires:</strong> {{sub.test.expireDate | date:'fullDate' }}
+                        </ng-container>
+                        <ng-container *ngIf="!sub.test.expire">
+                            <strong>Expires:</strong> never
+                        </ng-container>
+                    </div>
+                </div>
             </div>
+            <div class="dotted-hr"></div>
         </div>
     </nb-card-body>
     <nb-card-footer>

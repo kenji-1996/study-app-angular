@@ -24,6 +24,7 @@ import {fadeAnimate} from "../../misc/animation";
 export class UserTestsComponent implements OnInit {
 
   allocatedTests: allocatedTest[];
+  name;
 
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
@@ -37,6 +38,7 @@ export class UserTestsComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle('Your tests - DigitalStudy');
+    this.name = JSON.parse(localStorage.getItem('userObject')).name;
     this.refreshData();
   }
 
@@ -51,6 +53,7 @@ export class UserTestsComponent implements OnInit {
     this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests').subscribe(dataResult=> {
       if(dataResult) {
         this.allocatedTests = dataResult.data;
+        console.log(this.allocatedTests);
       }
     });
   }

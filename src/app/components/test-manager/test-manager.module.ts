@@ -61,7 +61,6 @@ export class TestManagerComponent implements OnInit {
     let body = { testid: test._id, usertestid: usertest._id };
     this.data.deleteDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/authored/' + test._id + '/' + usertest._id, body).subscribe(dataResult=> {
       if(dataResult) {
-        console.log(dataResult);
         this.dataEmit.pushUpdateArray(dataResult.message,'Allocated user removed','info')
       }
     });

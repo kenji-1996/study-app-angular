@@ -1,106 +1,94 @@
-<!--<nb-card style="max-height: 1400px;" [@fadeInOut]>
-    <nb-card-header>
-        Authored Tests
-    </nb-card-header>
-    <nb-card-body [@fadeInOut]>-->
-        <div class="row" *ngIf="tests" >
-            <div *ngFor="let t of tests" class="col-lg-12" [@fadeInOut]>
-                <nb-card style="max-height: 800px;">
-                    <nb-card-header>{{t.title | uppercase}} TEST</nb-card-header>
-                    <nb-card-body *ngIf="t.userTestList.length > 0">
-                        <div *ngFor="let sub of t.userTestList"  class="allocatedTest"> <!--(click)="sub.selected = !sub.selected">-->
-                            <div fxLayout="row">
-                                <h5>{{sub.user.name}} <span class="text-muted" style="font-size:small">{{sub.user._id}}</span></h5>
-                                <span class="fill-remaining-space"></span>
-                                <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
-                                    <span>
-                                        <i (click)="removeAllocatedTest(t,sub)" class="fa fa-trash cursor-click"></i>
-                                        <i (click)="markAllocatedTest(t)" class="fa fa-pencil cursor-click"></i>
-                                        <i (click)="settingsAllocatedTest(t)" class="fa fa-cog cursor-click"></i>
-                                    </span>
-                                </div>
+<div class="row" *ngIf="tests" >
+    <div *ngFor="let t of tests" class="col-lg-12" [@fadeInOut]>
+        <nb-card style="max-height: 800px;">
+            <nb-card-header>{{t.title | uppercase}} TEST</nb-card-header>
+            <nb-card-body *ngIf="t.userTestList.length > 0">
+                <div *ngFor="let sub of t.userTestList"  class="allocatedTest"> <!--(click)="sub.selected = !sub.selected">-->
+                    <div fxLayout="row">
+                        <h5>{{sub.user.name}} <span class="text-muted" style="font-size:small">{{sub.user._id}}</span></h5>
+                        <span class="fill-remaining-space"></span>
+                        <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
+                            <div>
+                                <i matTooltip="Removes test from user and deletes their results" matTooltipPosition="above" (click)="removeAllocatedTest(t,sub)" class="fa fa-trash cursor-click"></i>
+                                <i matTooltip="Mark this user and/or provide feedback" matTooltipPosition="above" (click)="markAllocatedTest(t)" class="fa fa-pencil cursor-click"></i>
+                                <i matTooltip="Change settings for this users allocated test" matTooltipPosition="above"(click)="settingsAllocatedTest(t)" class="fa fa-cog cursor-click"></i>
                             </div>
-                            <span class="text-muted" style="font-size: small">
-                                <div class="row text-center">
-                                    <div class="col-sm-4">
-                                        <strong>ID:</strong> {{sub._id}}
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <strong>Allocated:</strong> {{sub.allocatedDate | date:'shortDate'}}
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <strong>Attempts:</strong> {{sub.submittedTests.length}}
-                                    </div>
-
-                                </div>
-                                <div class="row text-center">
-                                    <div class="col-sm-4">
-                                        <ng-container *ngIf="sub.submittedTests.length < 1">
-                                            <strong>No attempt</strong>
-                                        </ng-container>
-                                        <ng-container *ngIf="sub.submittedTests.length >= 1">
-                                            <ng-container *ngIf="sub.finalMark || sub.finalMark === 0"><strong>Highest mark:</strong> {{sub.finalMark}}/{{sub.marksAvailable}}</ng-container>
-                                            <ng-container *ngIf="sub.finalMark === null"><strong>Mark:</strong> Provide mark</ng-container>
-                                        </ng-container>
-
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <strong>Feedback:</strong>
-                                        <ng-container *ngIf="sub.feedback">{{sub.feedback}}</ng-container>
-                                        <ng-container *ngIf="!sub.feedback">Provide feedback</ng-container>
-                                    </div>
-                                </div>
-                            </span>
-                            <div class="dotted-hr"></div>
                         </div>
-                    </nb-card-body>
-                    <nb-card-footer>
+                    </div>
+                    <div class="text-muted" style="font-size: small">
                         <div class="row text-center">
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-md-6 cursor-click" (click)="assignUserID(t,{'UserID': ''})" style="padding: 5px;">
-                                        <i class="nb-paper-plane"></i><span>Assign</span>
-                                    </div>
-                                    <div class="col-md-6 cursor-click" (click)="lockTest(t)" style="padding: 5px;">
-                                        <i class="nb-locked"></i><span  [innerHTML]="t.locked? 'Unlock' : 'Lock'"></span>
-                                    </div>
-                                </div>
+                            <div class="col-sm-4">
+                                <strong>ID:</strong> {{sub._id}}
                             </div>
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-md-6 cursor-click" style="padding: 5px;">
-                                        <i class="nb-edit"></i><span>Edit</span>
-                                    </div>
-                                    <div class="col-md-6 cursor-click" (click)="removeTest(t)" style="padding: 5px;">
-                                        <i class="nb-trash"></i><span>Delete</span>
-                                    </div>
-                                </div>
+                            <div class="col-sm-4">
+                                <strong>Allocated:</strong> {{sub.allocatedDate | date:'shortDate'}}
+                            </div>
+                            <div class="col-sm-4">
+                                <strong>Attempts:</strong> {{sub.submittedTests.length}}
+                            </div>
+
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-sm-4">
+                                <ng-container *ngIf="sub.submittedTests.length < 1">
+                                    <strong>No attempt</strong>
+                                </ng-container>
+                                <ng-container *ngIf="sub.submittedTests.length >= 1">
+                                    <ng-container *ngIf="sub.finalMark || sub.finalMark === 0"><strong>Highest mark:</strong> {{sub.finalMark}}/{{sub.marksAvailable}}</ng-container>
+                                    <ng-container *ngIf="sub.finalMark === null"><strong>Mark:</strong> Provide mark</ng-container>
+                                </ng-container>
+
+                            </div>
+                            <div class="col-sm-4">
+                                <strong>Feedback:</strong>
+                                <ng-container *ngIf="sub.feedback">{{sub.feedback}}</ng-container>
+                                <ng-container *ngIf="!sub.feedback">Provide feedback</ng-container>
                             </div>
                         </div>
-                        <!--<nb-actions size="medium" fullWidth>
-                            <nb-action>
+                    </div>
+                    <div class="dotted-hr"></div>
+                </div>
+            </nb-card-body>
+            <nb-card-footer>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-md-6 cursor-click" (click)="assignUserID(t,{'UserID': ''})" style="padding: 5px;" matTooltip="Allocate new user to this test" matTooltipPosition="below">
+                                <i class="nb-paper-plane"></i><span>Assign</span>
+                            </div>
+                            <div class="col-md-6 cursor-click" (click)="lockTest(t)" style="padding: 5px;" matTooltip="Locks test, users cannot view questions or submit an attempt" matTooltipPosition="below">
+                                <i class="nb-locked"></i><span  [innerHTML]="t.locked? 'Unlock' : 'Lock'"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-md-6 cursor-click" style="padding: 5px;" matTooltip="Edit test settings" matTooltipPosition="below">
+                                <i class="nb-edit"></i><span>Edit</span>
+                            </div>
+                            <div class="col-md-6 cursor-click" (click)="removeTest(t)" style="padding: 5px;" matTooltip="Removes test including submitted attempts" matTooltipPosition="below">
+                                <i class="nb-trash"></i><span>Delete</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nb-card-footer>
+        </nb-card>
+    </div>
+</div>
+<div class="text-center" *ngIf="tests && tests.length < 1">
+    <h4 class="text-muted">No authored tests found</h4>
+</div>
 
-                            </nb-action>
-                            <nb-action>
-
-                            </nb-action>
-                            <nb-action>
-
-                            </nb-action>
-                        </nb-actions>-->
-                    </nb-card-footer>
-                </nb-card>
-            </div>
-        </div>
-    <!--</nb-card-body>
-    <nb-card-footer>
-        <nb-actions size="medium" fullWidth>
-            <nb-action>
-                <span style="cursor: pointer"><i class="nb-search"></i>Search</span>
-            </nb-action>
-            <nb-action>
-                <span style="cursor: pointer" routerLink="/author/create"><i class="nb-plus"></i>Add</span>
-            </nb-action>
-        </nb-actions>
-    </nb-card-footer>
+<!--</nb-card-body>
+<nb-card-footer>
+    <nb-actions size="medium" fullWidth>
+        <nb-action>
+            <span style="cursor: pointer"><i class="nb-search"></i>Search</span>
+        </nb-action>
+        <nb-action>
+            <span style="cursor: pointer" routerLink="/author/create"><i class="nb-plus"></i>Add</span>
+        </nb-action>
+    </nb-actions>
+</nb-card-footer>
 </nb-card>-->
