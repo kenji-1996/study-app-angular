@@ -68,15 +68,15 @@ export class TestManagerComponent implements OnInit {
   }
 
   markAllocatedTest(test:any) {
-
+    alert('todo');
   }
 
   settingsAllocatedTest(test:any) {
-
+    alert('todo');
   }
 
   removeTest(test:any) {
-    console.log('attempting to remove ' + JSON.stringify(test));
+    alert('this will currently remove all question children, may change in future');
     this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });
   }
 

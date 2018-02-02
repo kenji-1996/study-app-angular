@@ -60,10 +60,9 @@ let testSchema  = new Schema({
  *
  */
 testSchema.pre('remove', function(next) {
-    console.log('attempting to remove test');
-    usersModel.update({ $pull: { authoredTests: this._id } }, { multi: true }).exec();
-    userTestModel.find({test: this.test}).exec(function (err,userTest)  { for(let i = 0; i < userTest.length; i++) {userTest[i].remove();} });
-    questionsModel.find({_id: { $in: this.questions}}).exec(function (err,testQuestion)  { for(let i = 0; i < testQuestion.length; i++) {testQuestion[i].remove();} });
+    questionsModel.remove({_id: { $in: this.questions}}).exec();
+    userTestModel.find({test: this._id}).exec(function (err,userTest) { for(let i = 0; i < userTest.length; i++) {userTest[i].remove();} });
+    usersModel.findOneAndUpdate({_id: this.authors }, { $pull: { authoredTests: this._id} }).exec(function (err,user) {  });
     next();
 });
 

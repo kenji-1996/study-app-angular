@@ -432,7 +432,7 @@ exports.removeAssignedTest = function(req,res) {
                         if (err) return res.status(500).json({message: "Failed to remove user test from test", data: err});
                         userTestModel.findOneAndRemove({test: testFound._id, _id: req.params.targetUserId})
                             .exec(function (err,userTest) {
-                                userTest.remove();
+                                if(userTest) { userTest.remove(); }
                                 if (err) return res.status(500).json({message: "Failed to remove user test from test", data: err});
                                 return res.status(200).json({message: 'usertest was removed', data: userTest});
                             });

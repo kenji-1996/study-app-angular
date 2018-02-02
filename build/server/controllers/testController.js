@@ -211,12 +211,8 @@ exports.updateTest = function(req, res) {
  * Required to be author to do this!
  * Potential problem: Questions should be shared, but here we remove all related questions!
  *
- * THIS REMOVES THE TEST ENTIRELY, IF A TEST WANTS TO BE REMOVED FROM A USER DO IT IN userController!!
- *
- * item.remove().then
- *
  * Should this remove related results?
- * STATUS: Untested
+ * STATUS: Tested
  * @param req
  * @param res
  */
@@ -227,22 +223,10 @@ exports.hardDeleteTest = function(req, res) {
             .exec(function (err,user) {
                 if(err) return res.status(500).json({message: ('Couldnt find user provided'), data: err});
                 //Checking if its the same ID, and the authorID is the person attempting to edit.
-                testsModel.findOne({_id: req.params.testId, authors: user.id})
+                testsModel.findOneAndRemove({_id: req.params.testId, authors: user.id})
                     .exec( function(err, test) {
                         if (err) return res.status(500).json({message:"Failed to find test with matched ID and author", data: err});
-                        if(test.questions) {
-                            questionsModel.remove({_id: {$in: test.questions}}, function (err) {
-                                if (err) return res.status(500).json({message: "Failed to remove questions from test provided", data: err});
-                            });
-                        }
-                        test.remove();
-                        try {
-                            userQ1.update({ $pull: { "tests": req.params.testId,"authoredTests": req.params.testId }, }, { safe: true, upsert: true }, function(err) {
-                                if (err) { return res.status(500).json({message: "Removing of test ID's failed", data: err}); }
-                            });
-                        } catch (err) {
-                            return res.status(500).json({message: "Failed in attempting to remove tests,", data: err});
-                        }
+                        if(test) { test.remove(); }
                         return res.status(200).json({message: ('Test deleted'), data: test});
                     });
             });

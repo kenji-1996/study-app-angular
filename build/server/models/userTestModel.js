@@ -12,7 +12,6 @@
 let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
 let submittedTestModel = require('../models/submittedTestModel');
-let testsModel = require('../models/testModel');
 let usersModel = require('../models/userModel');
 
 //One user only has 1 result object per 1 test
@@ -46,11 +45,11 @@ let userTestSchema  = new Schema({
 });
 
 userTestSchema.pre('remove', function(next) {
-    console.log('attempting to remove user test');
-    usersModel.update({ $pull: { results: this._id } }, { multi: true }).exec();
-    testsModel.update({ $pull: { userTestList: this._id } }, { multi: true }).exec();
-    submittedTestModel.findOneAndRemove({test: this.test}).exec(function (err,subTest) { subTest.remove(); });
+    submittedTestModel.findOneAndRemove({test: this.test}).exec(function (err,subTest) { if(subTest) { subTest.remove(); } });
+    usersModel.findOneAndUpdate({_id: this.user }, { $pull: { results: this._id} }).exec(function (err,user) {  });
     next();
 });
+
+
 
 module.exports = mongoose.model('usertests', userTestSchema);

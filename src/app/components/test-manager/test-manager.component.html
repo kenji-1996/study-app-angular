@@ -49,17 +49,39 @@
                         </div>
                     </nb-card-body>
                     <nb-card-footer>
-                        <nb-actions size="medium" fullWidth>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-md-6" style="padding: 5px;">
+                                        <span (click)="assignUserID(t,{'UserID': ''})" style="cursor: pointer"><i class="nb-paper-plane"></i>Assign</span>
+                                    </div>
+                                    <div class="col-md-6" style="padding: 5px;">
+                                        <span style="cursor: pointer"><i class="nb-locked"></i>Lock</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-md-6" style="padding: 5px;">
+                                        <span style="cursor: pointer"><i class="nb-edit"></i>Edit</span>
+                                    </div>
+                                    <div class="col-md-6" style="padding: 5px;">
+                                        <span (click)="removeTest(t)" style="cursor: pointer"><i class="nb-trash"></i>Delete</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--<nb-actions size="medium" fullWidth>
                             <nb-action>
-                                <span (click)="assignUserID(t,{'UserID': ''})" style="cursor: pointer"><i class="nb-paper-plane"></i>Assign</span>
+
                             </nb-action>
                             <nb-action>
-                                <span style="cursor: pointer"><i class="nb-locked"></i>Lock</span>
+
                             </nb-action>
                             <nb-action>
-                                <span style="cursor: pointer"><i class="nb-edit"></i>Edit</span>
+
                             </nb-action>
-                        </nb-actions>
+                        </nb-actions>-->
                     </nb-card-footer>
                 </nb-card>
             </div>

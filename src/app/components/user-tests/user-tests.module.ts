@@ -51,6 +51,7 @@ export class UserTestsComponent implements OnInit {
     this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests').subscribe(dataResult=> {
       if(dataResult) {
         this.allocatedTests = dataResult.data;
+        console.log(this.allocatedTests);
       }
     });
   }

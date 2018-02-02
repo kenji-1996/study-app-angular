@@ -5,8 +5,6 @@
  */
 var mongoose     = require('mongoose');
 var Schema = mongoose.Schema;
-let testsModel = require('../models/testModel');
-
 
 var UserSchema  = new Schema({
     //General information (collected from socials/submitted on registration)
@@ -29,13 +27,13 @@ var UserSchema  = new Schema({
     results: [{type: Schema.Types.ObjectId, ref: 'usertests'}], //Array of submitted tests that will hold marks/feedback/etc
 });
 
-UserSchema.pre('remove', function(next) {
+/*UserSchema.pre('remove', function(next) {
     console.log('attempting to remove test');
     testsModel.find({test: this.test}).exec(function (err,test)
     {
         for(let i = 0; i < test.length; i++) {test[i].remove();}
     });
     next();
-});
+});*/
 
 module.exports = mongoose.model('users', UserSchema);
