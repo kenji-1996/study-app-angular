@@ -9,6 +9,9 @@
  */
 let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
+let questionsModel = require('../models/questionModel');
+let usersModel = require('../models/userModel');
+let userTestModel = require('../models/userTestModel');
 
 let testSchema  = new Schema({
     //General test information
@@ -49,6 +52,19 @@ let testSchema  = new Schema({
     assignedGroup: [String]/String, (Will require the author to be a leader of said group)
     sponsoredFeedback: { type: Boolean, default:false },
     */
+});
+
+/**
+ * When removing a test, we call middleware function to remove all related documents
+ * loop through user tests and remove them
+ *
+ */
+testSchema.pre('remove', function(next) {
+    console.log('attempting to remove test');
+    usersModel.update({ $pull: { authoredTests: this._id } }, { multi: true }).exec();
+    userTestModel.find({test: this.test}).exec(function (err,userTest)  { for(let i = 0; i < userTest.length; i++) {userTest[i].remove();} });
+    questionsModel.find({_id: { $in: this.questions}}).exec(function (err,testQuestion)  { for(let i = 0; i < testQuestion.length; i++) {testQuestion[i].remove();} });
+    next();
 });
 
 module.exports = mongoose.model('tests', testSchema);

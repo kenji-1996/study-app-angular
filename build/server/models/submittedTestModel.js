@@ -32,7 +32,6 @@ let submittedTestSchema  = new Schema({
 });
 
 submittedTestSchema.pre('remove', function(next) {
-    console.log('attempting to remove submitted questions')
     submittedQuestionModel.remove({_id: { $in: this.submittedQuestions}}).exec();  //if reference exists in multiple documents
     next();
 });

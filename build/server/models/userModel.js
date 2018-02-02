@@ -5,6 +5,7 @@
  */
 var mongoose     = require('mongoose');
 var Schema = mongoose.Schema;
+let testsModel = require('../models/testModel');
 
 
 var UserSchema  = new Schema({
@@ -26,8 +27,15 @@ var UserSchema  = new Schema({
     //tests: [{type: Schema.Types.ObjectId, ref: 'tests'}],//Tests that are allocated, no editing freedom but can soft delete them from ones self
     authoredTests: [{type: Schema.Types.ObjectId, ref: 'tests'}],//Tests created by this user, can edit and hard delete this
     results: [{type: Schema.Types.ObjectId, ref: 'usertests'}], //Array of submitted tests that will hold marks/feedback/etc
+});
 
-
+UserSchema.pre('remove', function(next) {
+    console.log('attempting to remove test');
+    testsModel.find({test: this.test}).exec(function (err,test)
+    {
+        for(let i = 0; i < test.length; i++) {test[i].remove();}
+    });
+    next();
 });
 
 module.exports = mongoose.model('users', UserSchema);

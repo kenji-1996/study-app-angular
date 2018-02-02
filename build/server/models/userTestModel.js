@@ -46,7 +46,7 @@ let userTestSchema  = new Schema({
 });
 
 userTestSchema.pre('remove', function(next) {
-    console.log('attempting to remove shit lmao');
+    console.log('attempting to remove user test');
     usersModel.update({ $pull: { results: this._id } }, { multi: true }).exec();
     testsModel.update({ $pull: { userTestList: this._id } }, { multi: true }).exec();
     submittedTestModel.findOneAndRemove({test: this.test}).exec(function (err,subTest) { subTest.remove(); });
