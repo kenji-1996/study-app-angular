@@ -25,61 +25,68 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <div class="form-group">
                                 <nb-checkbox formControlName="allowHint">Allow hints</nb-checkbox>
+                                <p class="alert alert-info">Hints will allow the user to get a written hint by the author for each question if available</p>
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <div class="form-group">
                                 <nb-checkbox formControlName="fullPage">Full page</nb-checkbox>
+                                <p class="alert alert-info">Hints will allow the user to get a written hint by the author for each question if available</p>
                             </div>
                         </div>
-                        <div class="col-sm-4">
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
                             <div class="form-group">
-                                <nb-checkbox formControlName="shareable">Shareable</nb-checkbox>
+                                <nb-checkbox formControlName="handMarked">Hand marked</nb-checkbox>
+                                <p class="alert alert-info">Hints will allow the user to get a written hint by the author for each question if available</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <nb-checkbox formControlName="editable">User editable</nb-checkbox>
+                                <p class="alert alert-info">Hints will allow the user to get a written hint by the author for each question if available</p>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <div class="form-group">
-                                <nb-checkbox formControlName="handMarked">Hand marked</nb-checkbox>
+                                <nb-checkbox formControlName="shareable">Shareable</nb-checkbox>
+                                <p class="alert alert-info">Hints will allow the user to get a written hint by the author for each question if available</p>
                             </div>
                         </div>
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <nb-checkbox formControlName="editable">User editable</nb-checkbox>
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <div class="form-group">
                                 <nb-checkbox formControlName="showMarks">Show marks</nb-checkbox>
+                                <p class="alert alert-info">Hints will allow the user to get a written hint by the author for each question if available</p>
                             </div>
                         </div>
                     </div>
-                    <div class="row text-center">
-
+                    <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <nb-checkbox formControlName="expire">Expire</nb-checkbox>
                             </div>
-                            <div *ngIf="settingsFormGroup.controls['expire'].value" (click)="picker.open()">
-                                    <input [matDatepicker]="picker" class="form-control" placeholder="Expiry date" formControlName="expireDate" (dateChange)="addEvent($event)" type="text" (keypress)="onlyDecimalNumberKey($event)">
-                                    <mat-datepicker #picker></mat-datepicker>
+                            <div (click)="settingsFormGroup.controls['expire'].value? picker.open() : null">
+                                <input [disabled]="!settingsFormGroup.controls['expire'].value?'':null" [matDatepicker]="picker" class="form-control" placeholder="Expiry date" formControlName="expireDate" (dateChange)="addEvent($event)" [required]="settingsFormGroup.controls['expire'].value">
+                                <mat-datepicker #picker></mat-datepicker>
                                 <br />
                             </div>
+                            <p class="alert alert-info">Hints will allow the user to get a written hint by the author for each question if available</p>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <nb-checkbox formControlName="timerEnabled">Timer enabled</nb-checkbox>
                             </div>
-                            <div *ngIf="settingsFormGroup.controls['timerEnabled'].value" >
-                                <input class="form-control" placeholder="Test length in minutes" formControlName="timerLength">
+                                <input [attr.disabled]="!settingsFormGroup.controls['timerEnabled'].value?'':null" formControlName="timerLength"  class="form-control" placeholder="Test length in minutes" [required]="settingsFormGroup.controls['timerEnabled'].value">
                                 <br />
-                            </div>
+                            <p class="alert alert-info">Hints will allow the user to get a written hint by the author for each question if available</p>
                         </div>
                     </div>
                     <div class="row">
@@ -88,8 +95,8 @@
                                 <nb-card-header>
                                     Authors
                                 </nb-card-header>
-                                <nb-card-body>
-                                    <ul class="mb-5" *ngIf="test.authors">
+                                <nb-card-body style="min-height: 20px;">
+                                    <ul *ngIf="test.authors">
                                         <li *ngFor="let a of test.authors">
                                             {{a}}
                                         </li>
@@ -102,6 +109,7 @@
                                     </div>
                                 </nb-card-footer>
                             </nb-card>
+                            <p class="alert alert-info">Adding an author via ID will allow that user to mark submitted tests, modify settings and add/remove/edit questions </p>
                         </div>
                     </div>
 
@@ -151,28 +159,38 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="addQuestionsFormGroup.controls['type'].value" class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label for="inputQuestion">Question</label>
-                                <textarea rows="2" class="form-control" id="inputQuestion" placeholder="Question" formControlName="question"></textarea>
+                    <ng-container *ngIf="addQuestionsFormGroup.controls['type'].value">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="inputQuestion">Question</label>
+                                    <textarea rows="2" class="form-control" id="inputQuestion" placeholder="Question" formControlName="question"></textarea>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div *ngIf="addQuestionsFormGroup.controls['type'].value" class="row">
-                        <div class="col-md-6">
-                            <nb-checkbox formControlName="enableTimer" (click)="disableTimer()">Timer</nb-checkbox>
-                            <div class="form-group">
-                                <input class="form-control" id="inputTimer" placeholder="Time in seconds" formControlName="timer" type="text" (keypress)="onlyDecimalNumberKey($event)">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <nb-checkbox formControlName="enableTimer" (click)="disableTimer()">Timer</nb-checkbox>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group" *ngIf="settingsFormGroup.controls['allowHint'].value">
+                            <div class="col-md-6">
                                 <label for="inputHint">Hint</label>
-                                <input class="form-control" id="inputHint" placeholder="Hint" formControlName="hint">
                             </div>
                         </div>
-                    </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input class="form-control" id="inputTimer" placeholder="Time in seconds" formControlName="timer" type="text" (keypress)="onlyDecimalNumberKey($event)">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input [attr.disabled]="!settingsFormGroup.controls['allowHint'].value?'':null" class="form-control" id="inputHint" placeholder="Hint" formControlName="hint">
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
                     <hr>
 
                     <!-- keywords question -->

@@ -30,6 +30,7 @@ import { CreateTestComponent } from './components/create-test/create-test.compon
 import { LogOutComponent } from './components/log-out/log-out.component';
 import {DialogData} from "./dialogs/dialogData/dialog-data";
 import {ToasterModule} from "angular2-toaster";
+import { FormDisabledConditiionDirective } from './directives/form-disabled-conditiion.directive';
 
 
 @NgModule({
@@ -45,6 +46,7 @@ import {ToasterModule} from "angular2-toaster";
     NgIfMediaQuery,
     CreateTestComponent,
     LogOutComponent,
+    FormDisabledConditiionDirective,
   ],
   imports: [
     BrowserModule,

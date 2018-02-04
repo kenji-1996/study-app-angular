@@ -21,15 +21,6 @@ export class CreateTestComponent implements OnInit {
     test;
     questions:newQuestion[]=[];
     authors:string[] = [];
-    allowHint: false;
-    fullPage: false;
-    expire: false;
-    handMarked: false;
-    private: false;
-    editable: false;
-    shareable: false;
-    timerEnabled: false;
-    showMarks: false;
     timer = new FormControl({value: null, disabled: true}, Validators.pattern(/^\d+$/));
 
     //drag
@@ -63,7 +54,7 @@ export class CreateTestComponent implements OnInit {
 
     ngOnInit() {
         this.authors.push(JSON.parse(localStorage.getItem('userObject'))._id);
-        this.test = new newTest('temp title','temp category',this.questions,this.authors);
+        this.test = new newTest('','',this.questions,this.authors);
         this.settingsFormGroup = this.formBuilder.group({
             title: [null, Validators.required],
             category: [null, Validators.required],
