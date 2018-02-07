@@ -1,11 +1,25 @@
 /**
  * Created by Kenji on 1/4/2018.
  */
+export class user {
+    _id: string;
+    unique_id: string;
+    permissions: number;
+    userGroups: [string];
+    organizations: [string];
+    dateCreated: Date;
+    lastLogin: Date;
+    email: string;
+    name: string;
+    picture: string;
+    source: string;
+    results: allocatedTest[];
+}
 
 export class submittedTest {
-    _id: String;
-    user: String;
-    test: String;
+    _id: string;
+    user: string;
+    test: string;
     submittedQuestions: submittedQuestion[];
     dateSubmitted: Date;
     obtainedMark: Number;
@@ -16,51 +30,53 @@ export class submittedTest {
 }
 
 export class submittedQuestion {
-    _id: String;
-    question: String;
-    type: String;
-    keywordsAnswer: [String];
-    choicesAnswer: [String];
-    arrangement: [String];
-    shortAnswer: String;
-    feedback: String;
+    _id: string;
+    question: string;
+    type: string;
+    keywordsAnswer: [string];
+    choicesAnswer: [string];
+    arrangement: [string];
+    shortAnswer: string;
+    feedback: string;
 }
 
 export class allocatedTest {
-    _id: String;
-    //testId: String,//Reference test for result settings
+    _id: string;
+    //testId: string,//Reference test for result settings
     test: newTest;
-    user: String;//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
+    user: string;//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
     allocatedDate: Date;
-    submittedTests: [String];
-    finalMark: Number;//String or number?
+    submittedTests: [string];
+    finalMark: Number;//string or number?
     marksAvailable: Number;
-    feedback: String;
+    feedback: string;
     showMarker: Boolean;//Should the user see who marked them
-    marker: String; //Only shown if above is correct
+    marker: string; //Only shown if above is correct
     started: boolean;
     //client only options
     selected: boolean;
 }
 
 export class newTest {
-    _id: String;
-    title: String;
+    _id: string;
+    title: string;
     questions: newQuestion[];
-    category: String;
-    authors: [String];
+    category: string;
+    authors: [string];
     expire: boolean;//Should the test expire
     fullPage: boolean;//If the layout should be 1 question at a time or
     expireDate: Date;//If expire, default at 1 week later
     handMarked: boolean;//Results not calculated internally but rather by the markers
-    private: boolean;//If public, will be available to find on test browser
+    privateTest: boolean;//If public, will be available to find on test browser
     attemptsAllowed: number;//How many attempts allowed
     userEditable: boolean;
     shareable: boolean;
+    canSelfRemove: boolean;
     timerEnabled: boolean;
     timer: number;//number of minutes a test can be live after started, question specific timer in question schema
     hintAllowed: boolean;
     showMarks: boolean;//If it is marked, can we show?
+    showMarker: boolean;
     markDate: Date;
     locked: boolean;
     constructor(_title,_category,_questions,_authors) {
@@ -77,100 +93,44 @@ export class newTest {
 
 //New reformatted question and answer models
 export class newQuestion {
-    _id: String;
-    hint: String;
-    resources: [String];//References for attempting this question - Unused
-    images: [String];//Images relating to this question - Unused
+    _id: string;
+    hint: string;
+    resources: [string];//References for attempting this question - Unused
+    images: [string];//Images relating to this question - Unused
     //keywords,choices,arrangement,shortAnswer
-    type: String;
+    type: string;
     possibleMarks: Number;
     //Answer/Question variables, only one will be filled out depending on 'type' - Not user submitted (When they complete tests, creates 'submittedQuestion' + submittedTest)
-    question: String;
-    keywordsAnswer: [String];//Actual keywords in answer
-    //keywordsQuestion: String;//Question for keyword answer
+    question: string;
+    keywordsAnswer: [string];//Actual keywords in answer
+    //keywordsQuestion: string;//Question for keyword answer
 
-    choicesAnswer: [String];//Actual choices (contains only the choices that are correct)
-    choicesAll: [String];//Array of choices for one question (recommended 4, minimum of 2)
-    //choicesQuestion: String;
+    choicesAnswer: [string];//Actual choices (contains only the choices that are correct)
+    choicesAll: [string];//Array of choices for one question (recommended 4, minimum of 2)
+    //choicesQuestion: string;
 
-    arrangement: [String];//The actual arrangment of the items in normal order
-    //arrangementQuestion: [String];//The 4-x provided arrangment in random order
+    arrangement: [string];//The actual arrangment of the items in normal order
+    //arrangementQuestion: [string];//The 4-x provided arrangment in random order
 
-    shortAnswer: String;//Short answer question, THIS SHOULD ONLY BE DONE IN CASE OF 'handMarked' TESTS!
+    shortAnswer: string;//Short answer question, THIS SHOULD ONLY BE DONE IN CASE OF 'handMarked' TESTS!
 
     enableTimer: boolean;
     timer: number;
-    //shortAnswerQuestion: String;//Short answer question
+    //shortAnswerQuestion: string;//Short answer question
     //Allow author HTML (ensure XSS security though!!!) - Not yet implimented
     constructor() {
-        this.keywordsAnswer = <[String]>[];
-        this.choicesAnswer = <[String]>[];
-        this.choicesAll = <[String]>[];
-        this.arrangement = <[String]>[];
+        this.keywordsAnswer = <[string]>[];
+        this.choicesAnswer = <[string]>[];
+        this.choicesAll = <[string]>[];
+        this.arrangement = <[string]>[];
         this.shortAnswer = '';
         this.enableTimer = false;//false on default
     }
 }
 
-export class Test {
-    _id: String;
-    title: String;
-    questions: [String];
-    author: String;
-}
-export class TestToQuestion {
-    _id: String;
-    title: String;
-    questions: Question[];
-    author: String;
-    constructor(__id: string,_title:string, _questions: Question[],_author:string) {
-        this._id = __id;
-        this.title = _title;
-        this.questions = _questions;
-        this.author = _author;
-    }
-}
-export class Question {
-    _id: String;
-    question: String;
-    answer: String;
-    category: String;
-    hint: String;
-    keywords: String[];
-    constructor(__id:string,_question:string,_answer:string,_category:string,_hint:string,_keywords:string[]) {
-        this._id = __id;
-        this.question = _question;
-        this.answer = _answer;
-        this.category = _category;
-        this.hint = _hint;
-        this.keywords = _keywords;
-    }
-}
-
-export class Result {
-    _id: String;
-    question: String;
-    answer: String;
-    category: String;
-    givenAnswer: String;
-    timeLeft: number;
-    markPercent: number;
-    markCount: number;
-    constructor(__id:string,_question:string,_answer:string,_category:string,_givenAnswer:string,_timeLeft:number,_markPercent:number,_markCount:number) {
-        this._id = __id;
-        this.question = _question;
-        this.answer = _answer;
-        this.category = _category;
-        this.givenAnswer = _givenAnswer;
-        this.timeLeft = _timeLeft;
-        this.markPercent = _markPercent;
-        this.markCount = _markCount;
-    }
-}
-
 export class NavList {
-    categoryName: String;
-    icon: String;
+    categoryName: string;
+    icon: string;
     dropDown: boolean;
     subCategory: NavListItem[];
     constructor(_categoryName:string,_icon:string,_dropDown:boolean,_subCategory:NavListItem[]) {
@@ -182,7 +142,7 @@ export class NavList {
 }
 
 export class NavListItem {
-    subCategoryName: String;
-    subCategoryLink: String;
+    subCategoryName: string;
+    subCategoryLink: string;
     visable: boolean;
 }

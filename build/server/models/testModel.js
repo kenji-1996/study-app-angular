@@ -8,6 +8,7 @@
  * Only author can hard delete this item and its children (if children dont belong to other tests?)
  */
 let mongoose     = require('mongoose');
+let mongoosePaginate = require('mongoose-paginate');
 let Schema = mongoose.Schema;
 let questionsModel = require('../models/questionModel');
 let usersModel = require('../models/userModel');
@@ -32,20 +33,20 @@ let testSchema  = new Schema({
     fullPage: { type: Boolean, default:false },//If the layout should be 1 question at a time or
     handMarked: { type: Boolean, default:false },//Results not calculated internally but rather by the markers
     attemptsAllowed: { type: Number, default:0 },//If 0, infinite!
-    userEditable: { type: Boolean, default:false },
-    canSelfRemove: { type: Boolean, default:false },
+    userEditable: { type: Boolean, default:false },//Can the user edit this test
+    canSelfRemove: { type: Boolean, default:false },//Can the user unallocate themselves
     timerEnabled: { type: Boolean, default:false },
     timer: { type: Number, default:60 },//Number of minutes a test can be live after started, question specific timer in question schema
-    hintAllowed: { type: Boolean, default:true },//allow hint
+    hintAllowed: { type: Boolean, default:false },//allow hint
     sponsoredFeedback: { type: Boolean, default:false },//In future, markers can get rewarded for providing info/feedback
     markDate: {type: Date }, //If author wants user to have to wait till all users have done the test for it to be auto marked.
-    showMarks: { type: Boolean, default:true },//If it is marked, can we show?
-    showMarker: { type: Boolean, default:true },//Can the user see who marked them
+    showMarks: { type: Boolean, default:false },//If it is marked, can we show?
+    showMarker: { type: Boolean, default:false },//Can the user see who marked them
 
     /**If shareable it can be self assigned by any user with the ID
-     * If private, wont show in the test browser but sharing settings depend on above
+     * If privateTest, wont show in the test browser but sharing settings depend on above
      */
-    shareable: { type: Boolean, default:true },
+    shareable: { type: Boolean, default:false },
     private: { type: Boolean, default:false },
     /*Future concepts
     allowedUserGroups: [String],
@@ -54,6 +55,7 @@ let testSchema  = new Schema({
     sponsoredFeedback: { type: Boolean, default:false },
     */
 });
+testSchema.plugin(mongoosePaginate);
 
 /**
  * When removing a test, we call middleware function to remove all related documents

@@ -1,0 +1,46 @@
+<div [@fadeInOut] *ngIf="user">
+        <nb-card>
+            <nb-card-header>
+                <div fxLayout="row">
+                    <div fxLayout="column" fxFlexAlign="center">
+                        <h2>{{user.name}}</h2>
+                        <p class="text-muted" style="font-size:small">ID: <i>{{user._id}}</i>, Permissions: <i>{{user.permissions}}</i></p>
+                    </div>
+                    <span class="fill-remaining-space"></span>
+                    <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
+                        <div class="avatar" style="margin-top: -10px;" [ngStyle]="{'background-image':'url(' + user?.picture + ')'}"></div>
+                    </div>
+                </div>
+            </nb-card-header>
+            <nb-card-body>
+                <div fxLayout="row">
+                    <div fxLayout="column" fxFlexAlign="center">
+                        <p><Strong>Your email</Strong></p>
+                        <p>{{user.email}}</p>
+                    </div>
+                    <span class="fill-remaining-space"></span>
+                    <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
+                        <button type="button" class="btn btn-hero-info btn-tn" [disabled]="true">Edit email</button>
+                    </div>
+                </div>
+                <hr>
+                <div fxLayout="row">
+                    <div fxLayout="column" fxFlexAlign="center">
+                        <p><Strong>Your name</Strong></p>
+                        <p>{{user.name}}</p>
+                    </div>
+                    <span class="fill-remaining-space"></span>
+                    <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
+                        <button type="button" class="btn btn-hero-info btn-tn" [disabled]="true">Edit Name</button>
+                    </div>
+                </div>
+            </nb-card-body>
+            <nb-card-footer>
+                <div fxLayout="row" style="margin-top:5px;">
+                    <p fxFlexAlign="center" class="text-muted" style="font-size:small"><strong>Date created:</strong> {{user.dateCreated | date:'medium'}}</p>
+                    <span class="fill-remaining-space"></span>
+                    <p fxFlexAlign="center" class="text-muted" style="font-size:small"><strong>Last login:</strong> {{user.lastLogin | date:'medium'}}</p>
+                </div>
+            </nb-card-footer>
+        </nb-card>
+</div>

@@ -1,0 +1,40 @@
+<div *ngIf="test">
+    <!--<h2 (click)="updateTest()" style="cursor: text;"><span matTooltip="Click to edit!" matTooltipPosition="below">{{ test.title | uppercase }} Details </span>
+    </h2>-->
+    <!--<span class="fill-remaining-space"></span>-->
+    <!--<button  mat-raised-button matTooltip="Insert new question" (click)="upsertQuestion(null)" style="height: 35px;margin: 5px;">
+        <mat-icon>add</mat-icon>Add question
+    </button>
+    <button color="primary" mat-raised-button matTooltip="Save and submit question list" (click)="submitQuestions()" style="height: 35px;margin: 5px;">
+        <mat-icon>save</mat-icon>Save questions
+    </button>
+    <div style="height: 10px;"></div>-->
+
+    <nb-actions size="medium" fullWidth style="padding-top:10px;">
+        <nb-action>
+            <button class="btn btn-hero-success" (click)="submitQuestions()">Save questions</button>
+        </nb-action>
+        <nb-action>
+            <button class="btn btn-hero-info" (click)="upsertQuestion(null)">Add Question</button>
+        </nb-action>
+    </nb-actions>
+    <hr>
+    <div style="max-height: 500px;">
+        <div *ngFor="let q of test.questions | search:'question,category,_id':[searchString]" >
+            <div fxLayout="row">
+                <p style="font-style: italic;">{{q.question}}</p>
+                <span class="fill-remaining-space"></span>
+                <div fxLayout="row" fxFlexAlign="end center">
+                    <button fxFlex mat-icon-button  >
+                        <mat-icon (click)="upsertQuestion(q)">mode_edit</mat-icon>
+                    </button>
+                    <button fxFlex mat-icon-button >
+                        <mat-icon (click)="confirmRemoveTest(q)">delete</mat-icon>
+                    </button>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+
+</div>

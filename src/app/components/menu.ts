@@ -13,11 +13,29 @@ export const MENU_ITEMS: NbMenuItem[] = [
     },*/
     {
         title: 'User',
+        icon: 'nb-person',
+        children: [
+            {
+                title: 'Profile',
+                link: '/user/profile',
+            },
+            {
+                title: 'Sign out',
+                link: '/user/sign-out',
+            },
+        ],
+    },
+    {
+        title: 'Tests',
         icon: 'nb-compose',
         children: [
             {
-                title: 'Tests',
+                title: 'My tests',
                 link: '/user/tests',
+            },
+            {
+                title: 'Browser',
+                link: '/user/browse',
             },
             {
                 title: 'Test',

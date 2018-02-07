@@ -2,7 +2,6 @@ import {Component, NgModule, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {Observable} from "rxjs/Observable";
-import {Question, TestToQuestion} from "../../objects/objects";
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
 import * as global from '../../globals';
@@ -12,11 +11,9 @@ import {DataEmitterService} from "../../services/data-emitter.service";
 import {Title} from "@angular/platform-browser";
 import {fadeAnimate} from "../../misc/animation";
 import {SearchPipe} from "../../pipes/search.pipe";
-import {EditTestComponent} from "../edit-test/edit-test.module";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {DialogsService} from "../../services/dialogs.service";
 import {ConfirmChangesGuard} from "../../guards/confirm-changes.guard";
-import {NgbCheckBox} from "@ng-bootstrap/ng-bootstrap";
 import {NbCheckboxModule} from "@nebular/theme";
 
 @Component({
@@ -27,9 +24,6 @@ import {NbCheckboxModule} from "@nebular/theme";
 })
 export class TestComponent implements OnInit {
 
-
-  //Test variables
-  test$: Observable<TestToQuestion>;
   test;
   started = false;
   progress = '0';
@@ -68,20 +62,6 @@ export class TestComponent implements OnInit {
     this.activeRoute.params.subscribe((params: Params) => {
       let testId = params['testId'];
       this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(dataResult=> {
-        var questions:Array<Question> = [];
-        console.log(dataResult);
-        let test = new TestToQuestion(dataResult.data._id,dataResult.data.title,questions,'');
-        this.dataManagement.getDATA(global.url + '/api/tests/' + testId + '/questions').subscribe(dataResult=> {
-          for(var i = 0; i < dataResult.data.length; i++) {
-            questions.push(new Question(dataResult.data[i]._id,dataResult.data[i].question,dataResult.data[i].answer,dataResult.data[i].category,dataResult.data[i].hint,dataResult.data[i].keywords));
-          }
-          this.test$ = Observable.of(test);
-          this.test = test;
-          if(this.test) {
-            this.populateResults();
-          }
-          this.titleService.setTitle(this.test.title + ' test - DigitalStudy');
-        });
       });
     });
     this.dataEmitter.$dirty.subscribe(dirty=>this.dirty = dirty);
@@ -182,7 +162,6 @@ export class TestComponent implements OnInit {
   declarations: [
     TestComponent,
     SearchPipe,
-    EditTestComponent,
   ],
   imports: [
     RouterModule.forChild([

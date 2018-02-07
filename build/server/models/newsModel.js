@@ -6,6 +6,7 @@
  */
 var mongoose     = require('mongoose');
 var Schema = mongoose.Schema;
+let mongoosePaginate = require('mongoose-paginate');
 
 var newsSchema  = new Schema({
     _id: Schema.Types.ObjectId,
@@ -15,6 +16,7 @@ var newsSchema  = new Schema({
     tags: [String],
     date: { type: Date, default: Date.now },
 });
+newsSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('news', newsSchema);
 

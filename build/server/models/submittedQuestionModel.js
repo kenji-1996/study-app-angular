@@ -12,6 +12,7 @@
  */
 let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
+let mongoosePaginate = require('mongoose-paginate');
 
 let submittedQuestionsSchema  = new Schema({
     //Submitted questions unique ID

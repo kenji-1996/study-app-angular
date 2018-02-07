@@ -1,4 +1,4 @@
-import {Component, NgModule, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, NgModule, OnInit, Input} from '@angular/core';
 import {Router, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
@@ -8,23 +8,46 @@ import {allocatedTest} from '../../objects/objects';
 import {MatDialog} from "@angular/material";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import { ObservableMedia } from '@angular/flex-layout';
-import { Observable } from "rxjs/Observable";
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/takeWhile";
-import "rxjs/add/operator/startWith";
+import {Subject, Observable} from 'rxjs';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/delay';
 import {Title} from "@angular/platform-browser";
-import {fadeAnimate} from "../../misc/animation";
+import {fadeAnimate, SlideInOutAnimation} from "../../misc/animation";
+import {NgxPaginationModule, PaginationInstance} from "ngx-pagination";
 
 @Component({
   selector: 'app-test-manager',
   templateUrl: './user-tests.component.html',
   styleUrls: ['./user-tests.component.scss'],
-  animations: [ fadeAnimate ],
+  animations: [ SlideInOutAnimation, fadeAnimate ],
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class UserTestsComponent implements OnInit {
-
-  allocatedTests: allocatedTest[];
-  name;
+  @Input('data') tests;
+  total;
+  page;
+  itemLimit = 5;
+  filter: string = '';
+  sort;
+  shouldSort = false;
+  loading: boolean;
+  autoHide = false;
+  public keyUp = new Subject<any>();
+  animationState = 'out';
+  public config: PaginationInstance = {
+    id: 'advanced',
+    itemsPerPage: 5,
+    currentPage: 1
+  };
+  public labels: any = {
+    previousLabel: 'Previous',
+    nextLabel: 'Next',
+    screenReaderPaginationLabel: 'Pagination',
+    screenReaderPageLabel: 'page',
+    screenReaderCurrentLabel: `You're on page`
+  };
 
   constructor( public dataEmit: DataEmitterService,
                private data: DataManagementService,
@@ -34,12 +57,17 @@ export class UserTestsComponent implements OnInit {
                private titleService: Title,
 
   ) {
+    const subscription = this.keyUp
+        .map(event => event.target.value)
+        .debounceTime(250)
+        .distinctUntilChanged()
+        .flatMap(search => Observable.of(search).delay(250))
+        .subscribe(() => this.getPage(this.page));
   }
 
   ngOnInit() {
+    this.getPage(1);
     this.titleService.setTitle('Your tests - DigitalStudy');
-    this.name = JSON.parse(localStorage.getItem('userObject')).name;
-    this.refreshData();
   }
 
   removeTest(test:any) {
@@ -49,14 +77,40 @@ export class UserTestsComponent implements OnInit {
      this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });*/
   }
 
-  refreshData() {
+  getPage(page: number) {
+    this.animationState = 'out';
+    this.tests = null;
+    this.data.getDATA(global.url + '/api/users/'  + JSON.parse(localStorage.getItem('userObject'))._id +  '/tests?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort && this.shouldSort? ('&sort=' + this.sort) : '')).subscribe(res => {
+      this.total = res.data.total;
+      //Hacky client side filtering, can be done server side but moved to save processing, could be moved back
+      let index;
+      res.data.docs.some(function (a, i) { if (a.test === null) { index = i; return true; }}) && res.data.docs.splice(index, 1);
+      this.tests = res.data.docs;
+      this.config.currentPage = page;
+      this.page = page;
+      this.animationState = 'in';
+      console.log(this.tests);
+    });
+  }
+
+  searchType() {
+    setTimeout(() => this.getPage(this.page), 5000);
+  }
+
+  sortCheck() {
+    this.shouldSort = !this.shouldSort;
+    if(!(this.shouldSort && !this.sort)) {
+      this.getPage(this.page);
+    }
+  }
+
+  /*refreshData() {
     this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests').subscribe(dataResult=> {
       if(dataResult) {
         this.allocatedTests = dataResult.data;
-        console.log(this.allocatedTests);
       }
     });
-  }
+  }*/
 }
 
 @NgModule({
@@ -66,6 +120,7 @@ export class UserTestsComponent implements OnInit {
       { path: '', component: UserTestsComponent, pathMatch: 'full'}
     ]),
     ImportsModule,
+    NgxPaginationModule,
   ]
 })
 export class UserTestsModule {

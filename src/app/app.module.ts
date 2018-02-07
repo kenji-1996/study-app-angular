@@ -26,11 +26,11 @@ import {StateService} from "./services/state.service";
 import {NbMenuInternalService} from "@nebular/theme/components/menu/menu.service";
 import {DialogsModule} from "./dialogs/confirmDialog/dialogs.module";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import { CreateTestComponent } from './components/create-test/create-test.component';
 import { LogOutComponent } from './components/log-out/log-out.component';
 import {DialogData} from "./dialogs/dialogData/dialog-data";
 import {ToasterModule} from "angular2-toaster";
 import { FormDisabledConditiionDirective } from './directives/form-disabled-conditiion.directive';
+import { StringFilterPipe } from './pipes/string-filter.pipe';
 
 
 @NgModule({
@@ -44,7 +44,6 @@ import { FormDisabledConditiionDirective } from './directives/form-disabled-cond
     FourOhFourPage,
     StringtodatePipe,
     NgIfMediaQuery,
-    CreateTestComponent,
     LogOutComponent,
     FormDisabledConditiionDirective,
   ],
@@ -54,7 +53,6 @@ import { FormDisabledConditiionDirective } from './directives/form-disabled-cond
     ToasterModule,
     ImportsModule,
     BrowserAnimationsModule,
-    ReactiveFormsModule,
     NbThemeModule.forRoot({ name: 'default' }),
     NgbModule.forRoot(),
     DialogsModule,

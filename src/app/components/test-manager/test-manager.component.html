@@ -1,9 +1,153 @@
-<div class="row" *ngIf="tests" >
+<nb-card style="max-height: 800px;" [@fadeInOut]>
+    <nb-card-header>
+        Test browser
+    </nb-card-header>
+    <nb-card-body [@fadeInOut] style="max-height: 600px;">
+        <div *ngFor="let t of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}" class="allocatedTest cursor-click"><!--[routerLink]="['/user/test/selected/', sub._id]"-->
+            <nb-card>
+                <nb-card-header>{{t.title | uppercase}} TEST</nb-card-header>
+                <nb-card-body *ngIf="t.userTestList.length > 0">
+                    <div *ngFor="let sub of t.userTestList"  class="allocatedTest">
+                        <div fxLayout="row">
+                            <h5>{{sub.user.name}} <span class="text-muted" style="font-size:small">{{sub.user._id}}</span></h5>
+                            <span class="fill-remaining-space"></span>
+                            <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
+                                <div>
+                                    <i matTooltip="Removes test from user and deletes their results" matTooltipPosition="above" (click)="removeAllocatedTest(t,sub)" class="fa fa-trash cursor-click"></i>
+                                    <i matTooltip="Mark this user and/or provide feedback" matTooltipPosition="above" (click)="markAllocatedTest(t)" class="fa fa-pencil cursor-click"></i>
+                                    <i matTooltip="Change settings for this users allocated test" matTooltipPosition="above"(click)="settingsAllocatedTest(t)" class="fa fa-cog cursor-click"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-muted" style="font-size: small">
+                            <div class="row text-center">
+                                <div class="col-sm-4">
+                                    <strong>ID:</strong> {{sub._id}}
+                                </div>
+                                <div class="col-sm-4">
+                                    <strong>Allocated:</strong> {{sub.allocatedDate | date:'shortDate'}}
+                                </div>
+                                <div class="col-sm-4">
+                                    <strong>Attempts:</strong> {{sub.submittedTests.length}}
+                                </div>
+
+                            </div>
+                            <div class="row text-center">
+                                <div class="col-sm-4">
+                                    <ng-container *ngIf="sub.submittedTests.length < 1">
+                                        <strong>No attempt</strong>
+                                    </ng-container>
+                                    <ng-container *ngIf="sub.submittedTests.length >= 1">
+                                        <ng-container *ngIf="sub.finalMark || sub.finalMark === 0"><strong>Highest mark:</strong> {{sub.finalMark}}/{{sub.marksAvailable}}</ng-container>
+                                        <ng-container *ngIf="sub.finalMark === null"><strong>Mark:</strong> Provide mark</ng-container>
+                                    </ng-container>
+
+                                </div>
+                                <div class="col-sm-4">
+                                    <strong>Feedback:</strong>
+                                    <ng-container *ngIf="sub.feedback">{{sub.feedback}}</ng-container>
+                                    <ng-container *ngIf="!sub.feedback">Provide feedback</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dotted-hr"></div>
+                    </div>
+                </nb-card-body>
+
+                <nb-card-body *ngIf="t.userTestList.length < 1">
+                    Assign users to give them access and review their results
+                </nb-card-body>
+
+                <nb-card-footer>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-md-6 cursor-click" (click)="assignUserID(t,{'UserID': ''})" style="padding: 5px;" matTooltip="Allocate new user to this test" matTooltipPosition="below">
+                                    <i class="nb-paper-plane"></i><span>Assign</span>
+                                </div>
+                                <div class="col-md-6 cursor-click" (click)="lockTest(t)" style="padding: 5px;" matTooltip="Locks test, users cannot view questions or submit an attempt" matTooltipPosition="below">
+                                    <i class="nb-locked"></i><span  [innerHTML]="t.locked? 'Unlock' : 'Lock'"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div [routerLink]="['/author/edit/', t._id]" class="col-md-6 cursor-click" style="padding: 5px;" matTooltip="Edit test settings" matTooltipPosition="below">
+                                    <i class="nb-edit"></i><span>Edit</span>
+                                </div>
+                                <div class="col-md-6 cursor-click" (click)="removeTest(t)" style="padding: 5px;" matTooltip="Removes test including submitted attempts" matTooltipPosition="below">
+                                    <i class="nb-trash"></i><span>Delete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nb-card-footer>
+            </nb-card>
+        </div>
+    </nb-card-body>
+    <nb-card-footer>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>Search titles</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Title starts with..." [(ngModel)]="filter" (keyup.enter)="getPage(p)" (keyup)="keyUp.next($event)">
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger" (click)="getPage(p)">
+                              Search
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Results per page</label>
+                    <input type="number" class="form-control" placeholder="Results per page..." [(ngModel)]="itemLimit" (keyup.enter)="getPage(p)" (keyup)="keyUp.next($event)">
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Sort by</label>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <select class="form-control" [(ngModel)]="sort" [disabled]="!shouldSort" (click)="keyUp.next($event)">
+                                <option value="title">Title</option>
+                                <option value="category">Category</option>
+                                <option value="date">Date</option>
+                            </select>
+                            <span class="input-group-btn">
+                            <button class="btn" [ngClass]="{'btn-warning': shouldSort, 'btn-info': !shouldSort}" (click)="sortCheck()">{{shouldSort? '-' :  '+'}}</button>
+                        </span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <pagination-controls class="my-pagination text-center" [id]="config.id"
+                             [maxSize]="3"
+                             [directionLinks]="directionLinks"
+                             [autoHide]="autoHide"
+                             [previousLabel]="labels.previousLabel"
+                             [nextLabel]="labels.nextLabel"
+                             [screenReaderPaginationLabel]="labels.screenReaderPaginationLabel"
+                             [screenReaderPageLabel]="labels.screenReaderPageLabel"
+                             [screenReaderCurrentLabel]="labels.screenReaderCurrentLabel"
+                             (pageChange)="getPage($event)"></pagination-controls>
+    </nb-card-footer>
+</nb-card>
+
+<!--<div class="row" *ngIf="tests" >
     <div *ngFor="let t of tests" class="col-lg-12" [@fadeInOut]>
         <nb-card style="max-height: 800px;">
             <nb-card-header>{{t.title | uppercase}} TEST</nb-card-header>
             <nb-card-body *ngIf="t.userTestList.length > 0">
-                <div *ngFor="let sub of t.userTestList"  class="allocatedTest"> <!--(click)="sub.selected = !sub.selected">-->
+                <div *ngFor="let sub of t.userTestList"  class="allocatedTest">
                     <div fxLayout="row">
                         <h5>{{sub.user.name}} <span class="text-muted" style="font-size:small">{{sub.user._id}}</span></h5>
                         <span class="fill-remaining-space"></span>
@@ -49,6 +193,11 @@
                     <div class="dotted-hr"></div>
                 </div>
             </nb-card-body>
+
+            <nb-card-body *ngIf="t.userTestList.length < 1">
+                Assign users to give them access and review their results
+            </nb-card-body>
+
             <nb-card-footer>
                 <div class="row text-center">
                     <div class="col-6">
@@ -63,7 +212,7 @@
                     </div>
                     <div class="col-6">
                         <div class="row">
-                            <div class="col-md-6 cursor-click" style="padding: 5px;" matTooltip="Edit test settings" matTooltipPosition="below">
+                            <div [routerLink]="['/author/edit/', t._id]" class="col-md-6 cursor-click" style="padding: 5px;" matTooltip="Edit test settings" matTooltipPosition="below">
                                 <i class="nb-edit"></i><span>Edit</span>
                             </div>
                             <div class="col-md-6 cursor-click" (click)="removeTest(t)" style="padding: 5px;" matTooltip="Removes test including submitted attempts" matTooltipPosition="below">
@@ -78,17 +227,4 @@
 </div>
 <div class="text-center" *ngIf="tests && tests.length < 1">
     <h4 class="text-muted">No authored tests found</h4>
-</div>
-
-<!--</nb-card-body>
-<nb-card-footer>
-    <nb-actions size="medium" fullWidth>
-        <nb-action>
-            <span style="cursor: pointer"><i class="nb-search"></i>Search</span>
-        </nb-action>
-        <nb-action>
-            <span style="cursor: pointer" routerLink="/author/create"><i class="nb-plus"></i>Add</span>
-        </nb-action>
-    </nb-actions>
-</nb-card-footer>
-</nb-card>-->
+</div>-->

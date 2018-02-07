@@ -1,40 +1,393 @@
-<div *ngIf="test">
-    <!--<h2 (click)="updateTest()" style="cursor: text;"><span matTooltip="Click to edit!" matTooltipPosition="below">{{ test.title | uppercase }} Details </span>
-    </h2>-->
-    <!--<span class="fill-remaining-space"></span>-->
-    <!--<button  mat-raised-button matTooltip="Insert new question" (click)="upsertQuestion(null)" style="height: 35px;margin: 5px;">
-        <mat-icon>add</mat-icon>Add question
-    </button>
-    <button color="primary" mat-raised-button matTooltip="Save and submit question list" (click)="submitQuestions()" style="height: 35px;margin: 5px;">
-        <mat-icon>save</mat-icon>Save questions
-    </button>
-    <div style="height: 10px;"></div>-->
 
-    <nb-actions size="medium" fullWidth style="padding-top:10px;">
-        <nb-action>
-            <button class="btn btn-hero-success" (click)="submitQuestions()">Save questions</button>
-        </nb-action>
-        <nb-action>
-            <button class="btn btn-hero-info" (click)="upsertQuestion(null)">Add Question</button>
-        </nb-action>
-    </nb-actions>
-    <hr>
-    <div style="max-height: 500px;">
-        <div *ngFor="let q of test.questions | search:'question,category,_id':[searchString]" >
-            <div fxLayout="row">
-                <p style="font-style: italic;">{{q.question}}</p>
-                <span class="fill-remaining-space"></span>
-                <div fxLayout="row" fxFlexAlign="end center">
-                    <button fxFlex mat-icon-button  >
-                        <mat-icon (click)="upsertQuestion(q)">mode_edit</mat-icon>
-                    </button>
-                    <button fxFlex mat-icon-button >
-                        <mat-icon (click)="confirmRemoveTest(q)">delete</mat-icon>
-                    </button>
+<mat-vertical-stepper [linear]="!editing" *ngIf="test" [@fadeInOut]> <!-- TODO: change to true once complete -->
+    <!-- Settings step-->
+    <mat-step [stepControl]="settingsFormGroup" color="accent">
+        <form [formGroup]="settingsFormGroup">
+            <ng-template matStepLabel>Setttings</ng-template>
+
+            <!-- TODO: add expire date picker and timer input, ADD AUTHOR LIST -->
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="inputTitle">Title</label>
+                        <input type="text" class="form-control" [ngClass]="{'form-control-danger': settingsFormGroup.controls.title.invalid && (settingsFormGroup.controls.title.dirty || settingsFormGroup.controls.title.touched),'form-control-success': settingsFormGroup.controls.title.valid && (settingsFormGroup.controls.title.dirty || settingsFormGroup.controls.title.touched)}" id="inputTitle" placeholder="Title" formControlName="title" required>
+                        <small class="form-text text-danger" *ngIf="settingsFormGroup.controls.title.errors && (settingsFormGroup.controls.title.dirty || settingsFormGroup.controls.title.touched)">Title required</small>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="inputCategory">Category</label>
+                        <input type="text" class="form-control" [ngClass]="{'form-control-danger': settingsFormGroup.controls.category.invalid && (settingsFormGroup.controls.category.dirty || settingsFormGroup.controls.category.touched),'form-control-success': settingsFormGroup.controls.category.valid && (settingsFormGroup.controls.category.dirty || settingsFormGroup.controls.category.touched)}" id="inputCategory" placeholder="Category" formControlName="category" required>
+                        <small class="form-text text-danger" *ngIf="settingsFormGroup.controls.category.errors && (settingsFormGroup.controls.category.dirty || settingsFormGroup.controls.category.touched)">Category required</small>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="animationState = animationState === 'out' ? 'in' : 'out'" [innerText]="animationState === 'out' ? 'Show settings': 'Hide settings'"></button>
+            <div [@slideInOut]="animationState">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="allowHint">Allow hints</nb-checkbox>
+                            <small class="form-text">Hints will allow the user to get a written hint by the author for each question if available</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="fullPage">Full page</nb-checkbox>
+                            <small class="form-text">The test will not show one question at a time rather all questions on one page</small>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="handMarked">Hand marked</nb-checkbox>
+                            <small class="form-text">The server will not attempt to mark submitted attempts, the author(s) must provide a mark</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="editable">User editable</nb-checkbox>
+                            <small class="form-text">The test questions can be modified by allocated users</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="shareable">Shareable</nb-checkbox>
+                            <small class="form-text">The test can be self-allocated by any user with the ID</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="showMarks">Show marks</nb-checkbox>
+                            <small class="form-text">Whether the user can see the results for an attempt submitted</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="locked">Locked</nb-checkbox>
+                            <small class="form-text">If locked the user cannot see questions or attempt the quiz</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="selfRemovable">Self removeable</nb-checkbox>
+                            <small class="form-text">Allows the allocated user to remove the test from their allocated test list</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="private">Private</nb-checkbox>
+                            <small class="form-text">If private, the test will not show in the test browser</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="showMarker">Show marker</nb-checkbox>
+                            <small class="form-text">Show the user who marked them</small>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="limitAttempts">Limit attempts</nb-checkbox>
+                            <input  formControlName="limitAmount" type="number"  class="form-control" placeholder="Attempts allowed" [ngClass]="{
+                                    'form-control-danger': settingsFormGroup.controls.limitAmount.invalid && (settingsFormGroup.controls.limitAmount.dirty || settingsFormGroup.controls.limitAmount.touched) && settingsFormGroup.controls.limitAttempts.value,
+                                    'form-control-success': settingsFormGroup.controls.limitAmount.valid && (settingsFormGroup.controls.limitAmount.dirty || settingsFormGroup.controls.limitAmount.touched) && settingsFormGroup.controls.limitAttempts.value
+                                    }" [attr.disabled]="!settingsFormGroup.controls['limitAttempts'].value?'':null" [required]="settingsFormGroup.controls['limitAttempts'].value">
+                            <small class="form-text text-danger"
+                                   *ngIf="settingsFormGroup.controls.limitAmount.errors && (settingsFormGroup.controls.limitAmount.dirty || settingsFormGroup.controls.limitAmount.touched)
+                                           && settingsFormGroup.controls.limitAttempts.value">Attempts allowed requires number</small>
+                            <small class="form-text">The amount of attempts allowed by a user</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="expire">Expire</nb-checkbox>
+
+                            <div (click)="settingsFormGroup.controls['expire'].value? picker.open() : null">
+                                <input [disabled]="!settingsFormGroup.controls['expire'].value?'':null" [matDatepicker]="picker" class="form-control" placeholder="Expiry date" formControlName="expireDate" (dateChange)="addEvent($event,'expire')" [required]="settingsFormGroup.controls['expire'].value">
+                                <mat-datepicker #picker></mat-datepicker>
+                            </div>
+                            <small class="form-text text-danger"
+                                   *ngIf="settingsFormGroup.controls.expireDate.errors && (settingsFormGroup.controls.expireDate.dirty || settingsFormGroup.controls.expireDate.touched)
+                                           && settingsFormGroup.controls.expire.value">Expire date required</small>
+                            <small class="form-text">The date in which the test can no longer be attempted or questions viewed</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="timerEnabled">Timer enabled</nb-checkbox>
+                            <input formControlName="timerLength" type="number" class="form-control" placeholder="Test length in minutes" [ngClass]="{
+                                    'form-control-danger': settingsFormGroup.controls.timerLength.invalid && (settingsFormGroup.controls.timerLength.dirty || settingsFormGroup.controls.timerLength.touched) && settingsFormGroup.controls.timerEnabled.value,
+                                    'form-control-success': settingsFormGroup.controls.timerLength.valid && (settingsFormGroup.controls.timerLength.dirty || settingsFormGroup.controls.timerLength.touched) && settingsFormGroup.controls.timerEnabled.value
+                                    }"[attr.disabled]="!settingsFormGroup.controls['timerEnabled'].value?'':null" [required]="settingsFormGroup.controls['timerEnabled'].value">
+                            <small class="form-text text-danger"
+                                   *ngIf="settingsFormGroup.controls.timerLength.errors && (settingsFormGroup.controls.timerLength.dirty || settingsFormGroup.controls.timerLength.touched)
+                                           && settingsFormGroup.controls.timerEnabled.value">Timer length required</small>
+                            <small class="form-text">The timer for the overall test time from pressing start to finishing</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="mark">Mark date</nb-checkbox>
+
+                            <div (click)="settingsFormGroup.controls['mark'].value? markdatepicker.open() : null">
+                                <input [disabled]="!settingsFormGroup.controls['mark'].value?'':null" [matDatepicker]="markdatepicker" class="form-control" placeholder="Mark date" formControlName="markDate" (dateChange)="addEvent($event,'mark')" [required]="settingsFormGroup.controls['mark'].value">
+                                <mat-datepicker #markdatepicker></mat-datepicker>
+                            </div>
+                            <small class="form-text text-danger"
+                                   *ngIf="settingsFormGroup.controls.markDate.errors && (settingsFormGroup.controls.markDate.dirty || settingsFormGroup.controls.markDate.touched)
+                                           && settingsFormGroup.controls.mark.value">Mark date required</small>
+                            <small class="form-text">Date when marks will be released to the user</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <nb-card *ngIf="test.authors?.length > 0">
+                            <nb-card-body style="max-height: 200px;" >
+                                <div *ngFor="let a of test.authors" style="margin: 5px;">
+                                    <div fxLayout="row">
+                                        {{a}}
+                                        <span class="fill-remaining-space"></span>
+                                        <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
+                                            <div>
+                                                <i matTooltip="Remove author" matTooltipPosition="above" (click)="deleteAuthor(a)" class="fa fa-trash cursor-click"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="dotted-hr"></div>
+                                </div>
+                            </nb-card-body>
+                            <nb-card-footer>
+                                <div class="input-group" >
+                                    <input class="form-control" type="text" id="inputAuthor" placeholder="Add id" formControlName="authors" (keyup.enter)="addAuthor()"/>
+                                    <span class="input-group-btn"><button type="button" class="btn btn-info" (click)="addAuthor()">+</button></span>
+                                </div>
+                                <small class="form-text">Adding an author via ID will allow that user to mark submitted tests, modify settings and add/remove/edit questions</small>
+                            </nb-card-footer>
+                        </nb-card>
+                    </div>
                 </div>
             </div>
             <hr>
-        </div>
-    </div>
+            <div>
+                <button type="button" [disabled]="!settingsFormGroup.valid"  class="btn btn-hero-success main-btn btn-tn" matStepperNext>Next</button>
+                <small class="form-text text-warning" *ngIf="!settingsFormGroup.valid">Form requires attention</small>
+            </div>
+        </form>
+    </mat-step>
+    <!--end settings step-->
 
-</div>
+    <!-- Build questions step -->
+    <mat-step>
+        <div [formGroup]="addQuestionsFormGroup">
+            <ng-template matStepLabel>Questions</ng-template>
+            <!-- type select -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Question type</label>
+                        <select class="form-control" formControlName="type">
+                            <option value="keywords">Keywords</option>
+                            <option value="choices">Multiple choice</option>
+                            <option value="arrangement">Arrange order</option>
+                            <option value="shortAnswer">Short answer</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- individual question settings -->
+            <div [ngClass]="{'hidden': !addQuestionsFormGroup.controls['type'].value}">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="inputQuestion">Question</label>
+                            <textarea rows="2" class="form-control" id="inputQuestion" placeholder="Question" formControlName="question"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="enableTimer">Timer</nb-checkbox>
+                            <input [attr.disabled]="!addQuestionsFormGroup.controls['enableTimer'].value?'':null" [required]="addQuestionsFormGroup.controls['enableTimer'].value" class="form-control" id="inputTimer" placeholder="Time in seconds" formControlName="timer" type="number">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputHint">Hint</label>
+                        <input [attr.disabled]="!settingsFormGroup.controls['allowHint'].value?'':null" class="form-control" id="inputHint" placeholder="Hint" formControlName="hint">
+                    </div>
+                </div>
+            </div>
+
+            <!-- keywords question -->
+            <div class="row" [hidden]="addQuestionsFormGroup.controls['type'].value != 'keywords'">
+                <div class="col-sm-12">
+                    <div class="form-group" >
+                        <label>Keywords</label>
+                        <input class="form-control" style="width: 100%;" type="text" placeholder="New keyword..."
+                               [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                               [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addTag($event)" />
+                    </div>
+                    <mat-chip-list #chipList>
+                        <mat-chip *ngFor="let key of keywords" [selectable]="selectable" [removable]="removable" (remove)="removeTag(key)">
+                            {{key}}<mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                    </mat-chip-list>
+                </div> <!-- adding keywords -->
+                <div class="col-sm-12">
+                    <br/>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Heads up!</strong> Not sure how to create a keyword question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                    </div>
+                </div>
+            </div>
+            <!-- keywords question end -->
+
+            <!-- new choices question -->
+            <div class="row" [hidden]="addQuestionsFormGroup.controls['type'].value != 'choices'">
+                <div class="form-group col-sm-6">
+                    <nb-card >
+                        <nb-card-header>
+                            All choices
+                        </nb-card-header>
+                        <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="allChoices" style="touch-action: none">
+
+                        </nb-card-body>
+                        <nb-card-footer>
+                            <div class="input-group" >
+                                <input class="form-control" type="text" id="inputNewChoice" placeholder="New choice.." formControlName="newChoice" (keyup.enter)="addDragItem('allChoices',addQuestionsFormGroup.value.newChoice,'alert alert-danger')"/>
+                                <span class="input-group-btn"><button type="button" class="btn btn-info" (click)="addDragItem('allChoices',addQuestionsFormGroup.value.newChoice,'alert alert-danger')">+</button></span>
+                            </div>
+                        </nb-card-footer>
+                    </nb-card>
+                </div>
+                <div class="form-group col-sm-6">
+                    <nb-card>
+                        <nb-card-header>
+                            Correct choices
+                        </nb-card-header>
+                        <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="correctChoices" style="touch-action: none" >
+
+                        </nb-card-body>
+                    </nb-card>
+                </div>
+                <div class="col-sm-12">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Heads up!</strong> Not sure how to create a multi-choice question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                    </div>
+                </div>
+            </div>
+            <!-- new choices quiestion end -->
+
+            <!-- arrange question -->
+            <div class="row" [hidden]="addQuestionsFormGroup.controls['type'].value !=  'arrangement'">
+                <div class="form-group col-sm-12">
+                    <nb-card >
+                        <nb-card-header>
+                            Correct arrangement order
+                        </nb-card-header>
+                        <nb-card-body [dragula]='"arrange"' [dragulaOptions]="arrangementOptions" id="arrangeOptions" style="touch-action: none"></nb-card-body>
+                        <nb-card-footer>
+                            <div class="input-group" >
+                                <input class="form-control" type="text" id="inputNewArrange" placeholder="New item.." formControlName="newArrange" (keyup.enter)="addDragItem('arrangeOptions',addQuestionsFormGroup.value.newArrange,'alert alert-info')"/>
+                                <span class="input-group-btn"><button type="button" class="btn btn-info" (click)="addDragItem('arrangeOptions',addQuestionsFormGroup.value.newArrange,'alert alert-info')">+</button></span>
+                            </div>
+                        </nb-card-footer>
+                    </nb-card>
+                </div>
+                <div class="col-sm-12">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Heads up!</strong> Not sure how to create an arrangement question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                    </div>
+                </div>
+            </div>
+            <!-- arrange question end -->
+
+            <!-- short answer question -->
+            <div class="row" [hidden]="addQuestionsFormGroup.controls['type'].value != 'shortAnswer'">
+
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label for="inputShortAnswer">Answer</label>
+                        <textarea rows="2" class="form-control" id="inputShortAnswer" placeholder="Answer" formControlName="shortAnswer"></textarea>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="alert alert-danger" role="alert" *ngIf="!settingsFormGroup.controls['handMarked'].value">
+                        <strong>Warning</strong> It is strongly recommended that short answer should be used with the setting 'hand marked', read our FAQ on it  <a href="#" class="alert-link">here</a>
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Heads up!</strong> Not sure how to create an short answer question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                    </div>
+                </div>
+            </div>
+
+            <!-- submit question -->
+            <div *ngIf="addQuestionsFormGroup.controls.type.value" class="form-group">
+                <button type="button" class="btn btn-hero-warning btn-tn" *ngIf="addQuestionsFormGroup.controls.question.value || addQuestionsFormGroup.controls.type.value" (click)="cancel()">Cancel</button>
+                <button type="button" class="btn btn-hero-info btn-tn" [disabled]="!addQuestionsFormGroup.controls.question.value || !addQuestionsFormGroup.controls.type.value"  (click)="insertQuestion(addQuestionsFormGroup.controls.type.value)">{{questionEditing? 'Update question' : 'Submit question'}}</button>
+                <small class="form-text text-warning" *ngIf="!addQuestionsFormGroup.controls.question.value || !addQuestionsFormGroup.controls.type.value">Ensure question and type are selected</small>
+            </div>
+
+            <!-- Question list -->
+            <nb-card *ngIf="test.questions.length > 0">
+                <nb-card-body style="max-height: 200px;" >
+                    <div *ngFor="let q of test.questions" style="margin: 5px;">
+                        <div fxLayout="row">
+                            {{q.question}}<span class="text-muted">&nbsp;{{q.type}}</span>
+                            <span class="fill-remaining-space"></span>
+                            <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
+                                <div>
+                                    <i matTooltip="Removes question from array" matTooltipPosition="above" (click)="deleteQuestion(q)" class="fa fa-trash cursor-click"></i>
+                                    <i matTooltip="Modify this question" matTooltipPosition="above" (click)="modifyQuestion(q)" class="fa fa-pencil cursor-click"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dotted-hr"></div>
+                    </div>
+                </nb-card-body>
+            </nb-card>
+        </div>
+
+        <!-- back/next -->
+        <div>
+            <button type="button" class="btn btn-hero-info main-btn btn-tn" matStepperPrevious>Back</button>
+            <button type="button" class="btn btn-hero-success main-btn btn-tn" matStepperNext>Next</button>
+        </div>
+
+    </mat-step>
+    <!-- End build questions step -->
+
+    <!-- Confirm step -->
+    <mat-step>
+        <ng-template matStepLabel>{{editing? 'Update' : 'Confirm'}}</ng-template>
+        <div class="row">
+            <div class="col-sm-12">
+                Ensure you are happy with your settings and then update the test
+                <hr>
+                <div>
+                    <button  class="btn btn-hero-info main-btn btn-tn" matStepperPrevious>Back</button>
+                    <button  class="btn btn-hero-success main-btn btn-tn" [disabled]="submitted" (click)="confirmTest()">{{editing? 'Update test' : 'Confirm and create test'}}</button>
+                </div>
+            </div>
+        </div>
+    </mat-step>
+    <!--end confirm step -->
+
+</mat-vertical-stepper>

@@ -1,0 +1,13 @@
+@import "../../../theme";
+@import '~@nebular/theme/styles/global/bootstrap/breakpoints';
+@import '~bootstrap/scss/mixins/breakpoints';
+
+.allocatedTest:nth-child(odd) {
+
+}
+.allocatedTest:nth-child(even) {
+  background-color: rgba(248, 248, 248, 0.6);
+}
+//Nebular
+
+

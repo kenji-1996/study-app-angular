@@ -8,6 +8,7 @@
 let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
 let submittedQuestionModel = require('../models/submittedQuestionModel');
+let mongoosePaginate = require('mongoose-paginate');
 
 let submittedTestSchema  = new Schema({
     //Unique testSubmitted ID
@@ -35,5 +36,6 @@ submittedTestSchema.pre('remove', function(next) {
     submittedQuestionModel.remove({_id: { $in: this.submittedQuestions}}).exec();  //if reference exists in multiple documents
     next();
 });
+submittedTestSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('submittedtest', submittedTestSchema);

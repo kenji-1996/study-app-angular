@@ -4,7 +4,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {HttpClientModule} from "@angular/common/http";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {
     MatAutocompleteModule,
     MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatDatepickerModule, MatDialogModule,
@@ -24,6 +24,7 @@ import {
 } from "@nebular/theme";
 import {NgbCollapseModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {DragulaModule} from "ng2-dragula";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
     imports: [
@@ -31,6 +32,7 @@ import {DragulaModule} from "ng2-dragula";
         FormsModule,
         HttpClientModule,
         NgHttpLoaderModule,
+        ReactiveFormsModule,
 
         MatChipsModule,
         MatFormFieldModule,
@@ -77,6 +79,7 @@ import {DragulaModule} from "ng2-dragula";
         FormsModule,
         HttpClientModule,
         NgHttpLoaderModule,
+        ReactiveFormsModule,
 
         MatChipsModule,
         MatFormFieldModule,

@@ -8,6 +8,7 @@
 let GoogleAuth = require('google-auth-library');
 let mongoose     = require('mongoose');
 let bodyParser = require('body-parser');
+let User = require('../models/userModel');
 /**
  * We initialize the auth with our API link with Google
  * Then we connect to our mongodb hosted on my server, targeting the 'study' database.
@@ -89,8 +90,6 @@ module.exports.userPayload = function userPayload(token) {
     });
 };
 
-
-let User = require('../models/userModel');
 /**
  * Here we authenticate a home against a database, use their token to verify its from them,
  * then check their ID against the database permissions.
@@ -119,6 +118,25 @@ module.exports.authenticate = function authenticate(token) {
         );
     });
 };
+
+
+module.exports.checkAuth = function checkAuth(req) {
+    return new Promise((resolve) => {
+        let bearerToken;
+        let bearerHeader = req.headers["authorization"];
+        if (typeof bearerHeader !== 'undefined') {
+            let bearer = bearerHeader.split(" ");
+            bearerToken = bearer[1];
+            req.token = bearerToken;
+            this.userPayload(req.token).then((result) => {
+                resolve(result);
+            });
+        }else{
+            resolve(false);
+        }
+    });
+};
+
 /**
  * Here is the only authentication I now use, as it is the proper way to authenticate.
  * I check the headers for auth, then validate it against JWT verification, if its valid we return the user object, otherwise we return an error.
@@ -136,14 +154,12 @@ module.exports.ensureAuthorized = function ensureAuthorized(req, res) {
             req.token = bearerToken;
             this.userPayload(req.token).then((result) => {
                 if (!result) {
-                    //resolve(false);
                     return res.status(403).json({message:"Failed to verify token supplied in authorization header", data: null});
                 }else{
                     resolve(result);
                 }
             });
         } else {
-            //resolve(false);
             return res.status(403).json({message:"Failed to supply token in authorization header.", data: null});
         }
     });

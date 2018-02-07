@@ -1,5 +1,4 @@
 import {EventEmitter, Injectable} from '@angular/core';
-import {Result} from "../objects/objects";
 
 @Injectable()
 export class DataEmitterService {
@@ -7,7 +6,6 @@ export class DataEmitterService {
   public $updateArray: EventEmitter<any>;
   public $pushTestResult: EventEmitter<any>;
   public $loggedIn: EventEmitter<Boolean>;
-  public $results: EventEmitter<Result[]>;
   public $dirty: EventEmitter<boolean>;
   public $testSearchString: EventEmitter<any>;
   public $testAnswer: EventEmitter<any>;
@@ -16,7 +14,6 @@ export class DataEmitterService {
     this.$updateArray = new EventEmitter();
     this.$pushTestResult = new EventEmitter();
     this.$loggedIn = new EventEmitter();
-    this.$results = new EventEmitter();
     this.$dirty = new EventEmitter();
     this.$testSearchString = new EventEmitter();
     this.$testAnswer = new EventEmitter();
@@ -50,9 +47,4 @@ export class DataEmitterService {
   public pushTestResult(item:any) {
     this.$pushTestResult.emit(item);
   }
-
-  public pushResults(results:Result[]) {
-    this.$results.emit(results);
-  }
-
 }

@@ -9,6 +9,10 @@ button:focus {outline:0 !important; }
   cursor: pointer;
 }
 
+.hidden {
+  display: none;
+}
+
 .dotted-hr {
   border-top: 1px dotted #8c8b8b;
   margin-top: 5px;
@@ -36,9 +40,29 @@ button:focus {outline:0 !important; }
 }
 
 .fill-remaining-space {
-  /*This fills the remaining space, by using flexbox.
- Every toolbar row uses a flexbox row layout. */
   flex: 1 1 auto;
+}
+
+
+.my-pagination /deep/ .ngx-pagination {
+  height: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 500;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: none;
+  cursor: pointer;
+  padding: .75rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.25;
+  border-radius: 25px;
+}
+
+.my-pagination /deep/ .ngx-pagination .current {
+  border-radius: .375rem;
+}
+.my-pagination /deep/ .ngx-pagination .ng-star-inserted {
+  border-radius: .375rem;
 }
 
 //Material 2 theme

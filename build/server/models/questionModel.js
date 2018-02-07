@@ -11,6 +11,7 @@
  */
 let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
+let mongoosePaginate = require('mongoose-paginate');
 
 let questionSchema  = new Schema({
     //Question general information
@@ -47,5 +48,6 @@ let questionSchema  = new Schema({
     //Settings
     bonus: { type: Boolean, default: false },//If bonus, not counted on total answers mark, but will increase answer (implying user can get over 100% if bonus questions exist)
 });
+questionSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('questions', questionSchema);

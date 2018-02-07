@@ -1,9 +1,9 @@
 <nb-card [@fadeInOut]>
     <nb-card-header>
-        Create new test
+        Modify {{test}}
     </nb-card-header>
 
     <nb-card-body>
-        <app-edit-test [edit]="false"></app-edit-test>
+        <app-edit-test [test]="test" [edit]="true"></app-edit-test>
     </nb-card-body>
 </nb-card>

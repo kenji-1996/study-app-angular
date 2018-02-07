@@ -11,7 +11,7 @@ let questionsModel = require('../models/questionModel');
 /**
  * /api/tests [GET]
  * List ALL testsModel in DB.
- * {'test.private': false} --> Argument for only showing public testsModel
+ * {'test.privateTest': false} --> Argument for only showing public testsModel
  *
  * Note ->Need to control results outputted into pages, probably by 100 seperating.
  * Note ->Might need to hide this behind checks/fully
@@ -22,16 +22,17 @@ let questionsModel = require('../models/questionModel');
  * @return JSON {message,data}
  */
 exports.listTests = function(req, res) {
-    try {
-        testsModel.find({}, function(err, tests) {
-            if (err) return res.status(500).json({message: "Find test query failed", data: err});
-
-            return res.status(200).json({message: "Tests retrieved", data: tests});
-        });
-    } catch (err) {
-        return res.status(500).json({message: "Something went wrong fetching all tests", data: err});
-    }
+    let pageInput = req.query.page? Number.parseInt(req.query.page) : 1;
+    let limitInput = req.query.limit? Number.parseInt(req.query.limit) : 2;
+    let sortInput = req.query.sort? req.query.sort : "-date";
+    testsModel.paginate(
+        req.query.search? { "private": false ,"title": { $regex: req.query.search,$options: 'i' } } : {"private": false }, { page: pageInput, limit: limitInput, sort: sortInput, populate: [{path:'authors', select:"organizations name picture"}]},
+        function(err, result) {
+            if (err) return res.status(500).json({message: "Find tests query failed", data: err});
+            return res.status(200).json({message: "Tests retrieved", data: result});
+    });
 };
+
 /**
  * /api/tests [POST]
  * A home can add a test to their home if authorised (req.body.test object required example: "test": { "id": 0, "name": "Diana Faulkner"} )
@@ -64,11 +65,12 @@ exports.createTest = function(req, res) {
                     if(req.body.test.attemptsAllowed) {test.attemptsAllowed = req.body.test.attemptsAllowed; }
                     if(req.body.test.userEditable) {test.userEditable = req.body.test.userEditable; }
                     if(req.body.test.shareable) {test.shareable = req.body.test.shareable; }
-                    if(req.body.test.private) {test.private = req.body.test.private; }
+                    if(req.body.test.privateTest) {test.private = req.body.test.privateTest; }
                     if(req.body.test.hintAllowed) {test.hintAllowed = req.body.test.hintAllowed; }
                     if(req.body.test.showMarker) {test.showMarker = req.body.test.showMarker; }
                     if(req.body.test.canSelfRemove) {test.canSelfRemove = req.body.test.canSelfRemove; }
                     if(req.body.test.markDate) { test.markDate = req.body.test.markDate; }
+                    if(req.body.test.timerEnabled) { test.timer = req.body.test.timer; }else{ test.timer = 0; }
                     if(req.body.test.questions) {
                         test.questions = [];
                         let providedQuestions = req.body.test.questions;
@@ -107,7 +109,11 @@ exports.createTest = function(req, res) {
                             });
                         }
                     }
-                    let userTest = new userTestModel({
+                    test.save(function (err, result) {
+                        if (err) return res.status(500).json({message: "Save test query failed", data: null});
+                        return res.status(200).json({message: "Test generated successfully", data: result});
+                    });
+                    /*let userTest = new userTestModel({
                         _id: new mongoose.Types.ObjectId(),
                         test: test._id,
                         user: user._id,
@@ -119,11 +125,8 @@ exports.createTest = function(req, res) {
                         if (err) return res.status(500).json({message: "Save user test allocation query failed", data: err});
                         user.authoredTests.push(test.id);
                         test.userTestList.push(userTest.id);
-                        test.save(function (err, result) {
-                            if (err) return res.status(500).json({message: "Save test query failed", data: null});
-                            return res.status(200).json({message: "Test generated successfully", data: result});
-                        });
-                    });
+
+                    });*/
                 }else{
                     return res.status(400).json({message: "Bad request, req.body.test required", data: null});
                 }
@@ -143,7 +146,7 @@ exports.createTest = function(req, res) {
  * @param req
  * @param res
  */
-exports.listTest = function(req, res) {
+exports.listUserTest = function(req, res) {
     userTestModel.findOne({_id : req.params.testId})//Get all tests with given user ID
         .populate({
             path:'test', model:'tests',
@@ -182,6 +185,7 @@ exports.listTest = function(req, res) {
             }
         });
 };
+
 /**
  * /api/tests/:testId [PUT]
  * Update a TEST by ID, only if authorised
@@ -346,6 +350,29 @@ exports.updateQuestions = function(req, res) {
                         } else {
                             return res.status(404).json({message: "No questions found", data: null});
                         }
+                    });
+            });
+    });
+};
+
+/**
+ * /api/tests/author/:testId
+ * Gets a full test item and related questions/answers if the user is an author
+ *
+ * @param req
+ * @param res
+ */
+exports.listTest = function(req, res) {
+    settings.ensureAuthorized(req,res).then(function (authUser) {
+        if (!authUser) { return null; }
+        usersModel.findOne({unique_id: authUser['sub']})
+            .exec(function (err, user) {
+                testsModel.findOne({_id : req.params.testId, authors: user._id})//Get all tests with given user ID
+                    .populate({path:'questions', model:'questions'})
+                    .exec(function (err,test) {
+                        if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
+                        return res.status(200).json({message: 'Full test data retrieved for author', data: test});
+
                     });
             });
     });

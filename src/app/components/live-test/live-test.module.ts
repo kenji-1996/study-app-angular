@@ -138,58 +138,6 @@ export class LiveTestComponent implements OnInit, OnDestroy {
     }, () => {  },
         () => {this.route.navigate(['/user/tests']);}
     );
-    /*var answerTotal = 0;
-     for(var i = 0; i < this.test.questions.length; i++) {
-     answerTotal+= this.test.questions[i].keywords.length;
-     }
-     var markTotal = 0;
-     for( var i = 0; i < this.result.length; i++ ){
-     markTotal += this.result[i].markCount; //don't forget to add the base
-     }
-     var avg = ((markTotal/answerTotal) * 100).toFixed(1);
-     this.totalKeywords = answerTotal;
-     this.givenKeywords = markTotal;
-     this.percentResult = avg;
-
-     //Submit question to database
-     let questionToResult = [];
-     for(let i = 0; i < this.result.length; i++) {
-     questionToResult.push({_id:this.result[i]._id,mark:this.result[i].markCount + '/' + this.test.questions[i].keywords.length})
-     }
-     let postTestData = [];
-     postTestData.push({result: this.result, test:this.test,percentResult: this.percentResult,mark: this.givenKeywords + '/' + this.totalKeywords});
-     localStorage.setItem('result',JSON.stringify(postTestData));
-     this.route.navigate(['tests/result', this.test._id]);
-     var body = {
-     testId: this.test._id,
-     testTitle: this.test.title,
-     questionsToResult: questionToResult,
-     mark: this.givenKeywords + '/' + this.totalKeywords,
-     percent: parseInt(this.percentResult),
-     private: false,
-     };
-     this.dataManagement.postDATA(global.url + '/api/results', body).subscribe(dataResult => {
-     this.dataEmitter.pushUpdateArray(dataResult.message);
-     });*/
-  }
-
-  checkAnswer() {
-    /*var xd = this.answer.match(/\b(\w+)\b/g);
-    var inputSorted = [];
-    if(xd) {
-      for (var i = 0; i < xd.length; i++) {
-        inputSorted.push(xd[i].toLowerCase());
-      }
-      inputSorted.sort();
-    }
-    var answerSorted = [];
-    if(this.selectedQuestion.keywords) {
-      for (var i = 0; i < this.selectedQuestion.keywords.length; i++) {
-        answerSorted.push(this.selectedQuestion.keywords[i].toLowerCase());
-      }
-      answerSorted.sort();
-    }
-    return this.intersect_safe(answerSorted,inputSorted);*/
   }
 
 

@@ -3,7 +3,6 @@ import {ActivatedRoute, Params, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
 import * as global from '../../globals';
-import {Question, TestToQuestion} from "../../objects/objects";
 import {EditTestNameDialog} from "../../dialogs/editTestName/edit-test-name";
 import {MatDialog} from "@angular/material";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
@@ -15,11 +14,11 @@ import {ConfirmChangesGuard} from "../../guards/confirm-changes.guard";
 import {Observable} from "rxjs/Observable";
 
 @Component({
-  selector: 'app-edit-test',
-  templateUrl: './edit-test.component.html',
-  styleUrls: ['./edit-test.component.scss']
+  selector: 'app-edit-test-old',
+  templateUrl: './edit-test-old.component.html',
+  styleUrls: ['./edit-test-old.component.scss']
 })
-export class EditTestComponent implements OnInit  {
+export class EditTestOldComponent implements OnInit  {
   @Input('search') searchString: string;
   dirty: boolean;
   test;
@@ -43,17 +42,6 @@ export class EditTestComponent implements OnInit  {
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
       let testId = params['testId'];
-      this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(dataResult=> {
-        var questions:Array<Question> = [];
-        let test = new TestToQuestion(dataResult.data._id,dataResult.data.title,questions,dataResult.data.author);
-        this.dataManagement.getDATA(global.url + '/api/tests/' + testId + '/questions').subscribe(dataResult=> {
-          for(var i = 0; i < dataResult.data.length; i++) {
-            questions.push(new Question(dataResult.data[i]._id,dataResult.data[i].question,dataResult.data[i].answer,dataResult.data[i].category,dataResult.data[i].hint,dataResult.data[i].keywords));
-          }
-          this.test = test;
-          this.titleService.setTitle(this.test.title + ' test edit - DigitalStudy');
-        });
-      });
     });
   }
 
@@ -92,16 +80,6 @@ export class EditTestComponent implements OnInit  {
 
   upsertQuestion(question:any) {
     this.dataEmit.pushDirty(true);
-    let dialogRef = this.dialog.open(EditQuestionDialog, { width: '100%', data: (question? question : new Question('','','','','',[]))});
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
-      if(result) {
-        if(question) {
-          this.removeTest(question);
-        }
-        this.test.questions.push(result);
-      }
-    });
   }
 
 }
@@ -109,7 +87,7 @@ export class EditTestComponent implements OnInit  {
   declarations: [],
   imports: [
     RouterModule.forChild([
-      { path: '', component: EditTestComponent, pathMatch: 'full', canDeactivate: [ConfirmChangesGuard] }
+      { path: '', component: EditTestOldComponent, pathMatch: 'full', canDeactivate: [ConfirmChangesGuard] }
     ]),
     ImportsModule,
     InfiniteScrollModule
@@ -118,6 +96,6 @@ export class EditTestComponent implements OnInit  {
       ConfirmChangesGuard,
   ]
 })
-export class EditTestModule {
+export class EditTestOldModule {
 
 }

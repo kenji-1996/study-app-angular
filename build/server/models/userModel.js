@@ -5,6 +5,7 @@
  */
 var mongoose     = require('mongoose');
 var Schema = mongoose.Schema;
+let mongoosePaginate = require('mongoose-paginate');
 
 var UserSchema  = new Schema({
     //General information (collected from socials/submitted on registration)
@@ -25,6 +26,7 @@ var UserSchema  = new Schema({
     authoredTests: [{type: Schema.Types.ObjectId, ref: 'tests'}],//Tests created by this user, can edit and hard delete this
     results: [{type: Schema.Types.ObjectId, ref: 'usertests'}], //Array of submitted tests that will hold marks/feedback/etc
 });
+UserSchema.plugin(mongoosePaginate);
 
 /*UserSchema.pre('remove', function(next) {
     console.log('attempting to remove test');

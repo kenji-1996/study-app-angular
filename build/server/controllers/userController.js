@@ -20,11 +20,20 @@ let submittedQuestionModel = require('../models/submittedQuestionModel');
  * @return JSON {message,data}
  */
 exports.listUsers = function(req, res) {
-    usersModel.find({}, '_id name date picture source tests', function(err, users) {
-        if (err) return res.status(500).json({message: "Find home query failed", data: err});
-
-        return res.status(200).json({message: "Users retrieved", data: users});
-    });
+    let pageInput = req.query.page? Number.parseInt(req.query.page) : 1;
+    let limitInput = req.query.limit? Number.parseInt(req.query.limit) : 2;
+    let sortInput = req.query.sort? req.query.sort : "-date";
+    usersModel.paginate(
+        req.query.search? { "name": { $regex: req.query.search,$options: 'i' } } : {}, { page: pageInput, limit: limitInput, sort: sortInput},
+        function(err, result) {
+            if (err) return res.status(500).json({message: "Find tests query failed", data: err});
+            return res.status(200).json({message: "Tests retrieved", data: result});
+            // result.docs
+            // result.total
+            // result.limit - 10
+            // result.page - 3
+            // result.pages
+        });
 };
 /**
  * /api/users [POST]
@@ -65,10 +74,26 @@ exports.authenticateUser = function(req, res) {
  * @param res
  */
 exports.listUser = function(req, res) {
-    usersModel.find({_id: req.params.userId},'_id name date picture source tests', function(err, test) {
-        if (err) return res.status(500).json({message: "Find test query failed", data: err});
-        return res.status(200).json({message: "User found", data: test});
+    settings.checkAuth(req).then(function (authUser) {
+        if (!authUser) {
+            usersModel.findOne({_id: req.params.userId},'_id name date picture source organizations')
+                .exec( function(err, user) {
+                    if (err) return res.status(500).json({message: "Find user query failed", data: err});
+                    if(user) {
+                        return res.status(200).json({message: "User found", data: user});
+                    }else{
+                        return res.status(200).json({message: "Invalid ID or no user found", data: user});
+                    }
+                });
+        }else{
+            usersModel.findOne({unique_id: authUser['sub']})
+                .exec(function (err,user) {
+                    if (err) return res.status(500).json({message: "Find user query failed", data: err});
+                    return res.status(200).json({message: "Authenticated user found", data: user});
+                });
+        }
     });
+
 };
 /**
  * /api/users/:userId [PUT]
@@ -127,16 +152,31 @@ exports.deleteUser = function(req, res) {
  * @return JSON {message,data}
  */
 exports.listAllocatedTests = function(req, res) {
-    userTestModel.find({user : req.params.userId})//Get all tests with given user ID
-        .populate({path:'test', model:'tests'})
-        .exec(function (err,userTests) {
-            for(let i = 0; i < userTests.length; i++) {
-                if(!userTests[i].test.showMarks) {
-                    userTests[i].finalMark = null;
-                }
-            }
-            if (err) { return res.status(500).json({message: "Failed to query allocated tests", data: err}) }
-            return res.status(200).json({message: 'Allocated tests successfully retrieved', data: userTests});
+    let pageInput = req.query.page? Number.parseInt(req.query.page) : 1;
+    let limitInput = req.query.limit? Number.parseInt(req.query.limit) : 2;
+    let sortInput = req.query.sort? req.query.sort : "-date";
+    userTestModel.paginate({},
+        {
+            page: pageInput,
+            limit: limitInput,
+            sort: sortInput,
+            populate: [
+            {
+                path:'test',
+                match: req.query.search? { "title" : { $regex: req.query.search,$options: 'i' } } : {}
+            }]
+        },
+        function(err, result) {
+            if (err) return res.status(500).json({message: "Find allocated tests query failed", data: err});
+            var index;
+            //Hacky way to remove query results from pop search
+
+            return res.status(200).json({message: "Tests retrieved", data: result});
+            // result.docs
+            // result.total
+            // result.limit - 10
+            // result.page - 3
+            // result.pages
         });
 };
 /**
@@ -303,6 +343,8 @@ exports.submitTest = function(req, res) {
  * List all results for selected user
  * Show submitted tests? (Currently dont)
  *
+ * TODO: Change to paginate?
+ *
  * STATUS: Untested
  * @param req
  * @param res
@@ -347,7 +389,30 @@ exports.listTestResults = function(req, res) {
  * @return JSON {message,data}
  */
 exports.listAllAuthoredTests = function(req, res) {
-    testsModel.find({authors: req.params.userId})
+    let pageInput = req.query.page? Number.parseInt(req.query.page) : 1;
+    let limitInput = req.query.limit? Number.parseInt(req.query.limit) : 2;
+    let sortInput = req.query.sort? req.query.sort : "-date";
+    testsModel.paginate(req.query.search? { authors: req.params.userId ,"title": { $regex: req.query.search,$options: 'i' } } : {authors: req.params.userId },
+        {
+            page: pageInput,
+            limit: limitInput,
+            sort: sortInput,
+            populate: [
+                {
+                    path:'userTestList', model: 'usertests',
+                    populate: { path: 'user', model: 'users', select: 'name' },
+                }]
+        },
+        function(err, result) {
+            if (err) return res.status(500).json({message: "Find allocated tests query failed", data: err});
+            return res.status(200).json({message: "Tests retrieved", data: result});
+            // result.docs
+            // result.total
+            // result.limit - 10
+            // result.page - 3
+            // result.pages
+        });
+    /*testsModel.find({authors: req.params.userId})
         .populate({
             path:'userTestList', model: 'usertests',
                 populate: { path: 'user', model: 'users', select: 'name' }//[{ path: 'test', model: 'submittedtest', },
@@ -356,7 +421,7 @@ exports.listAllAuthoredTests = function(req, res) {
         .exec(function (err,resultsArray) {
             if (err) { return res.status(404).json({message: "No tests found", data: err}) }
             return res.status(200).json({message: 'Results found', data: resultsArray});
-        });
+        });*/
 };
 
 /**

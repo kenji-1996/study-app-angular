@@ -15,7 +15,7 @@ router.route('/tests')
 
 router.route('/tests/:testId')
     .get(function(req,res) {
-        testController.listTest(req,res);
+        testController.listUserTest(req,res);
     })
     .put(function(req,res) {
         testController.updateTest(req,res);
@@ -23,6 +23,10 @@ router.route('/tests/:testId')
     })
     .delete(function(req,res) {
         testController.hardDeleteTest(req,res);
+    });
+router.route('/tests/author/:testId')
+    .get(function(req,res) {
+        testController.listTest(req,res);
     });
 
 router.route('/tests/:testId/questions')

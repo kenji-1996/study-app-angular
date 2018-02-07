@@ -13,6 +13,7 @@ let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
 let submittedTestModel = require('../models/submittedTestModel');
 let usersModel = require('../models/userModel');
+let mongoosePaginate = require('mongoose-paginate');
 
 //One user only has 1 result object per 1 test
 let userTestSchema  = new Schema({
@@ -43,6 +44,8 @@ let userTestSchema  = new Schema({
      * -
      */
 });
+
+userTestSchema.plugin(mongoosePaginate);
 
 userTestSchema.pre('remove', function(next) {
     submittedTestModel.findOneAndRemove({test: this.test}).exec(function (err,subTest) { if(subTest) { subTest.remove(); } });
