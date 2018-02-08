@@ -2,7 +2,7 @@ import {Component, NgModule, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {Observable} from "rxjs/Observable";
-import {allocatedTest, newQuestion, submittedTest} from "../../objects/objects";
+import {allocatedTest, submittedTest} from "../../objects/objects";
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
 import * as global from '../../globals';
@@ -12,7 +12,6 @@ import {DataEmitterService} from "../../services/data-emitter.service";
 import {Title} from "@angular/platform-browser";
 import {fadeAnimate} from "../../misc/animation";
 import {SearchPipe} from "../../pipes/search.pipe";
-import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {DialogsService} from "../../services/dialogs.service";
 import {ConfirmChangesGuard} from "../../guards/confirm-changes.guard";
 import {NgbCheckBox} from "@ng-bootstrap/ng-bootstrap";
@@ -192,7 +191,6 @@ export class UserTestSelectedComponent implements OnInit {
       { path: '', component: UserTestSelectedComponent, pathMatch: 'full', canDeactivate: [ConfirmChangesGuard]}
     ]),
     ImportsModule,
-    InfiniteScrollModule,
     NbCheckboxModule,
   ],
   providers: [
