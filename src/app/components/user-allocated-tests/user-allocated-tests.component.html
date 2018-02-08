@@ -1,50 +1,56 @@
 <nb-card style="max-height: 800px;" [@fadeInOut]>
     <nb-card-header>
-        Test browser
+        Tests allocated to you
     </nb-card-header>
     <nb-card-body [@slideInOut]="animationState">
-        <div *ngFor="let test of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}" class="allocatedTest cursor-click"><!--[routerLink]="['/user/test/selected/', sub._id]"-->
+        <div *ngFor="let sub of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}"  class="allocatedTest cursor-click"><!--"-->
             <div fxLayout="row">
-                <h5>{{test.title}} <span class="text-muted" style="font-size:small">{{test._id}}</span></h5>
+                <h5>{{sub.test.title}} <span class="text-muted" style="font-size:small">{{sub.test._id}}</span></h5>
                 <span class="fill-remaining-space"></span>
                 <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
                     <div>
-                        <i *ngIf="!isAllocated(test)" matTooltip="Add this test and attempt it yourself" matTooltipPosition="above" (click)="allocateTest(test)" class="fa fa-plus cursor-click"></i>
-                        <i *ngIf="isAllocated(test)" matTooltip="Remove this test from your personal test library" matTooltipPosition="above" (click)="unallocateTest(test)" class="fa fa-trash cursor-click"></i>
+                        <i matTooltip="Attempt test" matTooltipPosition="above" [routerLink]="['/user/test/selected/', sub._id]" class="fa fa-play cursor-click"></i>
+                        <i *ngIf="canRemove(sub)" matTooltip="Author has allowed the user to remove this test" matTooltipPosition="above" (click)="removeTest(sub)" class="fa fa-trash cursor-click"></i>
                     </div>
                 </div>
             </div>
-
             <div class="text-muted" style="font-size: small">
                 <div class="row text-center">
                     <div class="col-sm-4">
-                        <strong>Authors:</strong> <span *ngFor="let author of test.authors; let i = index">{{author.name + (i == (test.authors.length -1)? '' : ',')}} </span>
+                        <strong>ID:</strong> {{sub._id}}
                     </div>
                     <div class="col-sm-4">
-                        <Strong>Date created:</Strong> {{test.date | date:'fullDate' }}
+                        <strong>Allocated:</strong> {{sub.allocatedDate | date:'shortDate'}}
                     </div>
                     <div class="col-sm-4">
-                        <Strong>Questions:</Strong> {{test.questions.length}}
+                        <strong>Attempts:</strong> {{sub.submittedTests.length}}/<span [innerText]="sub.test.attemptsAllowed < 1? '&#8734;' : '' + sub.test.attemptsAllowed"></span>
                     </div>
                 </div>
                 <div class="row text-center">
                     <div class="col-sm-4">
-                        <Strong>Attempts allowed:</Strong> <span [innerText]="test.attemptsAllowed < 1? '&#8734;' : '' + test.attemptsAllowed"></span>
+                        <strong>Mark:</strong> <span [innerText]="sub.finalMark? (sub.finalMark+'/'+sub.marksAvailable ) : 'Seeing mark currently disabled'"></span>
                     </div>
                     <div class="col-sm-4">
-                        <Strong>Users:</Strong> {{test.userTestList.length + test.selfAllocatedTestList.length}}
+                        <strong>Feedback:</strong>
+                        <ng-container *ngIf="sub.feedback">{{sub.feedback}}</ng-container>
+                        <ng-container *ngIf="!sub.feedback">N/A</ng-container>
                     </div>
                     <div class="col-sm-4">
-                        <ng-container *ngIf="test.expire">
-                            <strong>Expires:</strong> {{test.expireDate | date:'fullDate' }}
+                        <ng-container *ngIf="sub.test.expire">
+                            <strong>Expires:</strong> {{sub.test.expireDate | date:'fullDate' }}
                         </ng-container>
-                        <ng-container *ngIf="!test.expire">
+                        <ng-container *ngIf="!sub.test.expire">
                             <strong>Expires:</strong> never
                         </ng-container>
                     </div>
                 </div>
             </div>
             <div class="dotted-hr"></div>
+        </div>
+        <div *ngIf="tests?.length < 1" >
+            <div class="alert alert-info" role="alert">
+                <strong>Heads up!</strong> Allocated tests are usually from an employer, teacher or similar. Try the <a [routerLink]="['/user/browse']" class="alert-link">test browser</a> for personal knowledge growth!
+            </div>
         </div>
     </nb-card-body>
     <nb-card-footer>
@@ -102,4 +108,3 @@
                              (pageChange)="getPage($event)"></pagination-controls>
     </nb-card-footer>
 </nb-card>
-

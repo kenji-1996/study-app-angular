@@ -96,6 +96,7 @@ export class EditTestComponent implements OnInit {
             this.test = new newTest('','',this.questions,this.authorList);
         }else{
             this.dataManagement.getDATA(global.url + '/api/tests/author/' + this.testId).subscribe(httpTest => {
+                console.log(this.test);
                 this.test = httpTest.data;
                 this.settingsFormGroup.controls.title.setValue(this.test.title);
                 this.settingsFormGroup.controls.category.setValue(this.test.category);
@@ -113,7 +114,7 @@ export class EditTestComponent implements OnInit {
                 this.settingsFormGroup.controls.limitAmount.setValue(this.test.attemptsAllowed === 0? null : this.test.attemptsAllowed);
                 this.settingsFormGroup.controls.locked.setValue(this.test.locked);
                 this.settingsFormGroup.controls.selfRemovable.setValue(this.test.canSelfRemove);
-                this.settingsFormGroup.controls.mark.setValue(this.test.markDate !== null);
+                this.settingsFormGroup.controls.mark.setValue(this.test.markDate);
                 this.settingsFormGroup.controls.markDate.setValue(this.test.markDate);
                 this.settingsFormGroup.controls.private.setValue(this.test.private);
                 this.settingsFormGroup.controls.showMarker.setValue(this.test.showMarker);
@@ -324,10 +325,11 @@ export class EditTestComponent implements OnInit {
         this.test.timerEnabled = this.settingsFormGroup.controls['timerEnabled'].value;
         this.test.timer = this.settingsFormGroup.controls['timerEnabled'].value? this.settingsFormGroup.controls['timerLength'].value : 0;
         this.test.markDate =  this.settingsFormGroup.controls['mark'].value? this.settingsFormGroup.controls['markDate'].value : null;
-        let body = { test: this.test};
+        let body = { test: this.test };
         if(this.editing) {
             this.dataManagement.putDATA(global.url + '/api/tests/' + this.test._id, body).subscribe(dataResult=> {
                 if(dataResult) {
+                    this.submitted = false;
                     this.dataEmit.pushUpdateArray(dataResult.message);
                     this.router.navigate(['author/tests']);
                 }
@@ -335,6 +337,7 @@ export class EditTestComponent implements OnInit {
         }else{
             this.dataManagement.postDATA(global.url + '/api/tests', body).subscribe(dataResult=> {
                 if(dataResult) {
+                    this.submitted = false;
                     this.dataEmit.pushUpdateArray(dataResult.message);
                     this.router.navigate(['author/tests']);
                 }

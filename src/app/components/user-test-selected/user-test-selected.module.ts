@@ -67,7 +67,7 @@ export class UserTestSelectedComponent implements OnInit {
         this.allocatedTest = allocatedTestResult.data;
         //Check here if expired/attempts past due etc
         if(this.allocatedTest.test.expire && Date.now() > new Date(this.allocatedTest.test.expireDate).getTime()) { alert('test expired'); }// TODO: do something with expired test
-        if(this.allocatedTest.test.attemptsAllowed != 0 && this.allocatedTest.test.attemptsAllowed >= this.allocatedTest.submittedTests.length) { alert('no attempts left'); }
+        if(this.allocatedTest.test.attemptsAllowed != 0 && this.allocatedTest.submittedTests.length >= this.allocatedTest.test.attemptsAllowed) { alert('no attempts left'); }
         this.titleService.setTitle(this.allocatedTest.test.title + ' test - DigitalStudy');
         this.populateSubmitted();
       });

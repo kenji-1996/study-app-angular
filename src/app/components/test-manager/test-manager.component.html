@@ -111,16 +111,15 @@
                     <label>Sort by</label>
                     <div class="form-group">
                         <div class="input-group">
-                            <select class="form-control" [(ngModel)]="sort" [disabled]="!shouldSort" (click)="keyUp.next($event)">
-                                <option value="title">Title</option>
-                                <option value="category">Category</option>
-                                <option value="date">Date</option>
+                            <select class="form-control" [(ngModel)]="sort" (change)="onChange($event.target.value)">
+                                <option value="">Default (Date descending)</option>
+                                <option value="title">Title Ascending</option>
+                                <option value="-title">Title Descending</option>
+                                <option value="category">Category Ascending</option>
+                                <option value="-category">Category Descending</option>
+                                <option value="date">Date Ascending</option>
                             </select>
-                            <span class="input-group-btn">
-                            <button class="btn" [ngClass]="{'btn-warning': shouldSort, 'btn-info': !shouldSort}" (click)="sortCheck()">{{shouldSort? '-' :  '+'}}</button>
-                        </span>
                         </div>
-
                     </div>
 
                 </div>

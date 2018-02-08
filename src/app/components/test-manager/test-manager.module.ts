@@ -74,7 +74,7 @@ export class TestManagerComponent implements OnInit {
     getPage(page: number) {
         this.animationState = 'out';
         this.tests = null;
-        this.data.getDATA(global.url + '/api/users/' +  JSON.parse(localStorage.getItem('userObject'))._id +  '/authored?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort && this.shouldSort? ('&sort=' + this.sort) : '')).subscribe(res => {
+        this.data.getDATA(global.url + '/api/users/' +  JSON.parse(localStorage.getItem('userObject'))._id +  '/authored?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
             this.total = res.data.total;
             this.tests = res.data.docs;
             this.config.currentPage = page;
@@ -84,15 +84,8 @@ export class TestManagerComponent implements OnInit {
         });
     }
 
-    searchType() {
-        setTimeout(() => this.getPage(this.page), 5000);
-    }
-
-    sortCheck() {
-        this.shouldSort = !this.shouldSort;
-        if(!(this.shouldSort && !this.sort)) {
-            this.getPage(this.page);
-        }
+    onChange(deviceValue) {
+        this.getPage(this.page);
     }
 
     assignUserID(test:newTest,data:any): void{

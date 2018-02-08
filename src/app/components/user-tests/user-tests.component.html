@@ -3,8 +3,18 @@
         Your tests
     </nb-card-header>
     <nb-card-body [@slideInOut]="animationState">
-        <div *ngFor="let sub of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}" [routerLink]="['/user/test/selected/', sub._id]" class="allocatedTest cursor-click"><!--"-->
-            <h5>{{sub.test.title}} <span class="text-muted" style="font-size:small">{{sub.test._id}}</span></h5>
+        <div *ngFor="let sub of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}"  class="allocatedTest"><!--"-->
+            <div fxLayout="row">
+                <h5>{{sub.test.title}} <span class="text-muted" style="font-size:small">{{sub.test._id}}</span></h5>
+                <span class="fill-remaining-space"></span>
+                <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
+                    <div>
+                        <i matTooltip="Attempt test" matTooltipPosition="above" [routerLink]="['/user/test/selected/', sub._id]" class="fa fa-play cursor-click"></i>
+                        <i matTooltip="Remove this test from your personal test library" matTooltipPosition="above" (click)="unallocateTest(sub)" class="fa fa-trash cursor-click"></i>
+                    </div>
+                </div>
+            </div>
+
             <div class="text-muted" style="font-size: small">
                 <div class="row text-center">
                     <div class="col-sm-4">
@@ -70,16 +80,15 @@
                     <label>Sort by</label>
                     <div class="form-group">
                         <div class="input-group">
-                            <select class="form-control" [(ngModel)]="sort" [disabled]="!shouldSort" (click)="keyUp.next($event)">
-                                <option value="title">Title</option>
-                                <option value="category">Category</option>
-                                <option value="date">Date</option>
+                            <select class="form-control" [(ngModel)]="sort" (change)="onChange($event.target.value)">
+                                <option value="">Default (Date descending)</option>
+                                <option value="title">Title Ascending</option>
+                                <option value="-title">Title Descending</option>
+                                <option value="category">Category Ascending</option>
+                                <option value="-category">Category Descending</option>
+                                <option value="date">Date Ascending</option>
                             </select>
-                            <span class="input-group-btn">
-                            <button class="btn" [ngClass]="{'btn-warning': shouldSort, 'btn-info': !shouldSort}" (click)="sortCheck()">{{shouldSort? '-' :  '+'}}</button>
-                        </span>
                         </div>
-
                     </div>
 
                 </div>

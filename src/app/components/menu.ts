@@ -34,6 +34,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
                 link: '/user/tests',
             },
             {
+                title: 'Allocated tests',
+                link: '/user/allocated-tests',
+            },
+            {
                 title: 'Browser',
                 link: '/user/browse',
             },

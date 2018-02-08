@@ -15,6 +15,7 @@ const routes: Routes = [
     //User
     { path: 'user/sign-out', component: LogOutComponent,  canActivate:[AuthGuard] },
     { path: 'user/tests', loadChildren: '../components/user-tests/user-tests.module#UserTestsModule', canActivate:[AuthGuard] },//List of tests
+    { path: 'user/allocated-tests', loadChildren: '../components/user-allocated-tests/user-allocated-tests.module#UserAllocatedTestsModule', canActivate:[AuthGuard] },//List of tests
     { path: 'user/test/selected/:testId', loadChildren: '../components/user-test-selected/user-test-selected.module#UserTestSelectedModule', canActivate:[AuthGuard] },//The edit/result menu of a users view (shows attempts on this test, its settings, etc
     { path: 'user/test/live/:testId', loadChildren: '../components/live-test/live-test.module#LiveTestModule', canActivate:[AuthGuard] },//Live attempt page of test
     { path: 'user/profile', loadChildren: '../components/user-profile/user-profile.module#UserProfileModule', canActivate:[AuthGuard] },

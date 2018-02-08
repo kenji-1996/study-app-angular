@@ -32,8 +32,8 @@ export class TestBrowserComponent implements OnInit {
     page;
     itemLimit = 5;
     filter: string = '';
+    oldSort;
     sort;
-    shouldSort = false;
     loading: boolean;
     autoHide = false;
     public keyUp = new Subject<any>();
@@ -67,13 +67,13 @@ export class TestBrowserComponent implements OnInit {
 
     ngOnInit() {
         this.getPage(1);
-        this.titleService.setTitle('Your tests - DigitalStudy');
+        this.titleService.setTitle('Public test library - DigitalStudy');
     }
 
     getPage(page: number) {
         this.animationState = 'out';
         this.tests = null;
-        this.data.getDATA(global.url + '/api/tests?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort && this.shouldSort? ('&sort=' + this.sort) : '')).subscribe(res => {
+        this.data.getDATA(global.url + '/api/tests?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
             this.total = res.data.total;
             this.tests = res.data.docs;
             this.config.currentPage = page;
@@ -82,17 +82,36 @@ export class TestBrowserComponent implements OnInit {
         });
     }
 
-    searchType() {
-        setTimeout(() => this.getPage(this.page), 5000);
-    }
-
-    sortCheck() {
-        this.shouldSort = !this.shouldSort;
-        if(!(this.shouldSort && !this.sort)) {
-            this.getPage(this.page);
+    isAllocated(test:any) {
+        if(!test.selfAllocatedTestList.length) { return false; }
+        for(let i = 0; i < test.selfAllocatedTestList.length; i++) {
+            if(test.selfAllocatedTestList[i].user === JSON.parse(localStorage.getItem('userObject'))._id){
+                return test.selfAllocatedTestList[i]._id;
+            }
         }
     }
 
+    onChange(deviceValue) {
+        this.getPage(this.page);
+    }
+
+    allocateTest(test:any) {
+        let body = { testid: test._id };
+        this.data.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/self',body).subscribe(dataResult=> {
+            if(dataResult) {
+                this.dataEmit.pushUpdateArray(dataResult.data.name + ' was assigned to ' + test.title,'New user assigned','success');
+                this.getPage(this.page);
+            }
+        });
+    }
+    unallocateTest(test:any) {
+        this.data.deleteDATA(global.url + '/api/tests/' +test._id + '/self/' + this.isAllocated(test),{}).subscribe(dataResult=> {
+            if(dataResult) {
+                this.dataEmit.pushUpdateArray(dataResult.message);
+                this.getPage(this.page);
+            }
+        });
+    }
 }
 
 @NgModule({
