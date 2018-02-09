@@ -273,11 +273,12 @@ exports.submitTest = function(req, res) {
                                                 marksAvailable += tempTest.questions[i].choicesAnswer.length;
                                                 break;
                                             case "arrangement":
+
                                                 break;
                                             case "shortAnswer":
                                                 break;
                                             default://If no type is set, break
-                                                console.log('incorrect answer format' + subTest.submittedQuestions[i].type);
+                                                console.log('incorrect answer format ' + subTest.submittedQuestions[i].type);
                                             //return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});
                                         }
                                     }
@@ -308,9 +309,9 @@ exports.submitTest = function(req, res) {
                                         .exec(function (err, userTest) {
                                             userTest.marksAvailable = subTest.marksAvailable;
                                             if(!tempTest.handMarked) {
-                                                if(userTest.finalMark) {
-                                                    if(subTest.obtainedMark > userTest.finalMark) { userTest.finalMark = subTest.obtainedMark;}
-                                                }else{
+                                                if(userTest.finalMark && subTest.obtainedMark >= userTest.finalMark) {
+                                                    userTest.finalMark = subTest.obtainedMark;
+                                                }else if(!userTest.finalMark) {
                                                     userTest.finalMark = subTest.obtainedMark;
                                                 }
                                             }

@@ -82,7 +82,6 @@ exports.createTest = function(req, res) {
                                 type: providedQuestions[i].type,
                                 question: providedQuestions[i].question,
                             });
-                            if(providedQuestions[i].enableTimer &&  providedQuestions[i].timer) { question.enableTimer = true; question.timer =  providedQuestions[i].timer }
                             if(test.hintAllowed && providedQuestions[i].hint) { question.hint = providedQuestions[i].hint; }
                             if(providedQuestions[i].resources) { question.resources = providedQuestions[i].resources; }
                             if(providedQuestions[i].images) { question.images = providedQuestions[i].images; }
@@ -202,7 +201,6 @@ exports.updateTest = function(req, res) {
                                     type: providedQuestions[i].type,
                                     question: providedQuestions[i].question,
                                 });
-                                if(providedQuestions[i].enableTimer &&  providedQuestions[i].timer) { question.enableTimer = true; question.timer =  providedQuestions[i].timer }
                                 if(test.hintAllowed && providedQuestions[i].hint) { question.hint = providedQuestions[i].hint; }
                                 if(providedQuestions[i].resources) { question.resources = providedQuestions[i].resources; }
                                 if(providedQuestions[i].images) { question.images = providedQuestions[i].images; }

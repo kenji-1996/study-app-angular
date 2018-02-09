@@ -217,20 +217,8 @@
                     <div class="col-sm-12">
                         <div class="form-group">
                             <label for="inputQuestion">Question</label>
-                            <textarea rows="2" class="form-control" id="inputQuestion" placeholder="Question" formControlName="question"></textarea>
+                            <textarea rows="1" class="form-control" id="inputQuestion" placeholder="Question" formControlName="question"></textarea>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <nb-checkbox formControlName="enableTimer">Timer</nb-checkbox>
-                            <input [attr.disabled]="!addQuestionsFormGroup.controls['enableTimer'].value?'':null" [required]="addQuestionsFormGroup.controls['enableTimer'].value" class="form-control" id="inputTimer" placeholder="Time in seconds" formControlName="timer" type="number">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="inputHint">Hint</label>
-                        <input [attr.disabled]="!settingsFormGroup.controls['allowHint'].value?'':null" class="form-control" id="inputHint" placeholder="Hint" formControlName="hint">
                     </div>
                 </div>
             </div>
@@ -244,18 +232,13 @@
                                [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                                [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addTag($event)" />
                     </div>
-                    <mat-chip-list #chipList>
+                    <mat-chip-list #chipList style="margin-bottom: 10px;">
                         <mat-chip *ngFor="let key of keywords" [selectable]="selectable" [removable]="removable" (remove)="removeTag(key)">
                             {{key}}<mat-icon matChipRemove>cancel</mat-icon>
                         </mat-chip>
                     </mat-chip-list>
                 </div> <!-- adding keywords -->
-                <div class="col-sm-12">
-                    <br/>
-                    <div class="alert alert-info" role="alert">
-                        <strong>Heads up!</strong> Not sure how to create a keyword question? <a href="#" class="alert-link">our guide</a> should be a good reference!
-                    </div>
-                </div>
+
             </div>
             <!-- keywords question end -->
 
@@ -287,11 +270,6 @@
                         </nb-card-body>
                     </nb-card>
                 </div>
-                <div class="col-sm-12">
-                    <div class="alert alert-info" role="alert">
-                        <strong>Heads up!</strong> Not sure how to create a multi-choice question? <a href="#" class="alert-link">our guide</a> should be a good reference!
-                    </div>
-                </div>
             </div>
             <!-- new choices quiestion end -->
 
@@ -311,38 +289,62 @@
                         </nb-card-footer>
                     </nb-card>
                 </div>
-                <div class="col-sm-12">
-                    <div class="alert alert-info" role="alert">
-                        <strong>Heads up!</strong> Not sure how to create an arrangement question? <a href="#" class="alert-link">our guide</a> should be a good reference!
-                    </div>
-                </div>
             </div>
             <!-- arrange question end -->
 
             <!-- short answer question -->
             <div class="row" [hidden]="addQuestionsFormGroup.controls['type'].value != 'shortAnswer'">
-
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label for="inputShortAnswer">Answer</label>
                         <textarea rows="2" class="form-control" id="inputShortAnswer" placeholder="Answer" formControlName="shortAnswer"></textarea>
                     </div>
                 </div>
-                <div class="col-sm-12">
-                    <div class="alert alert-danger" role="alert" *ngIf="!settingsFormGroup.controls['handMarked'].value">
-                        <strong>Warning</strong> It is strongly recommended that short answer should be used with the setting 'hand marked', read our FAQ on it  <a href="#" class="alert-link">here</a>
+            </div>
+
+            <div [ngClass]="{'hidden': !addQuestionsFormGroup.controls['type'].value}">
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-md-12">
+                        <label for="inputHint">User hint</label>
+                        <input class="form-control" id="inputHint" placeholder="Hint" formControlName="hint">
                     </div>
-                    <div class="alert alert-info" role="alert">
-                        <strong>Heads up!</strong> Not sure how to create an short answer question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-12" [hidden]="addQuestionsFormGroup.controls['type'].value != 'shortAnswer'">
+                        <div class="alert alert-danger" role="alert" *ngIf="!settingsFormGroup.controls['handMarked'].value">
+                            <strong>Warning</strong> It is strongly recommended that short answer should be used with the setting 'hand marked', read our FAQ on it  <a href="#" class="alert-link">here</a>
+                        </div>
+                        <div class="alert alert-info" role="alert">
+                            <strong>Heads up!</strong> Not sure how to create an short answer question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                        </div>
+                    </div>
+                    <div class="col-sm-12" [hidden]="addQuestionsFormGroup.controls['type'].value != 'arrangement'">
+                        <div class="alert alert-info" role="alert">
+                            <strong>Heads up!</strong> Not sure how to create an arrangement question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                        </div>
+                    </div>
+                    <div class="col-sm-12" [hidden]="addQuestionsFormGroup.controls['type'].value != 'choices'">
+                        <div class="alert alert-info" role="alert">
+                            <strong>Heads up!</strong> Not sure how to create a multi-choice question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                        </div>
+                    </div>
+                    <div class="col-sm-12" [hidden]="addQuestionsFormGroup.controls['type'].value != 'keywords'">
+                        <div class="alert alert-info" role="alert">
+                            <strong>Heads up!</strong> Not sure how to create a keyword question? <a href="#" class="alert-link">our guide</a> should be a good reference!
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- submit question -->
             <div *ngIf="addQuestionsFormGroup.controls.type.value" class="form-group">
-                <button type="button" class="btn btn-hero-warning btn-tn" *ngIf="addQuestionsFormGroup.controls.question.value || addQuestionsFormGroup.controls.type.value" (click)="cancel()">Cancel</button>
-                <button type="button" class="btn btn-hero-info btn-tn" [disabled]="!addQuestionsFormGroup.controls.question.value || !addQuestionsFormGroup.controls.type.value"  (click)="insertQuestion(addQuestionsFormGroup.controls.type.value)">{{questionEditing? 'Update question' : 'Submit question'}}</button>
-                <small class="form-text text-warning" *ngIf="!addQuestionsFormGroup.controls.question.value || !addQuestionsFormGroup.controls.type.value">Ensure question and type are selected</small>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-hero-warning btn-tn" *ngIf="addQuestionsFormGroup.controls.question.value || addQuestionsFormGroup.controls.type.value" (click)="cancel()">Cancel</button>
+                        <button type="button" class="btn btn-hero-info btn-tn" [disabled]="!addQuestionsFormGroup.controls.question.value || !addQuestionsFormGroup.controls.type.value"  (click)="insertQuestion(addQuestionsFormGroup.controls.type.value)">{{questionEditing? 'Update question' : 'Submit question'}}</button>
+                        <small class="form-text text-warning" *ngIf="!addQuestionsFormGroup.controls.question.value || !addQuestionsFormGroup.controls.type.value">Ensure question and type are selected</small>
+                    </div>
+                </div>
             </div>
 
             <!-- Question list -->

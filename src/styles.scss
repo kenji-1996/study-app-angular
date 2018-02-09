@@ -44,25 +44,25 @@ button:focus {outline:0 !important; }
 }
 
 
-.my-pagination /deep/ .ngx-pagination {
-  height: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  font-weight: 500;
-  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  transition: none;
-  cursor: pointer;
-  padding: .75rem 1.5rem;
-  font-size: 1rem;
-  line-height: 1.25;
-  border-radius: 25px;
+.ngx-pagination {
+  height: 20px !important;
+  text-transform: uppercase !important;;
+  letter-spacing: 0.4px !important;;
+  font-weight: 500 !important;;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;;
+  transition: none !important;;
+  cursor: pointer !important;;
+  padding: .75rem 1.5rem !important;;
+  font-size: 1rem !important;;
+  line-height: 1.25 !important;;
+  border-radius: 25px !important;;
 }
 
-.my-pagination /deep/ .ngx-pagination .current {
-  border-radius: .375rem;
+.ngx-pagination .current {
+  border-radius: .375rem  !important;
 }
-.my-pagination /deep/ .ngx-pagination .ng-star-inserted {
-  border-radius: .375rem;
+.ngx-pagination .ng-star-inserted {
+  border-radius: .375rem  !important;;
 }
 
 //Material 2 theme
