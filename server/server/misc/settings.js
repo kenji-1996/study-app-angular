@@ -228,11 +228,16 @@ module.exports.keywordContains = function(answerUnsorted, inputUnsorted) {
  * @return {number}
  */
 module.exports.correctChoices = function(answer, input, possibleAnswers) {
-    let result = this.keywordContains(answer,input);
-    let penalty = 0;
-    if(input.length > possibleAnswers) {
-        penalty = (input.length - possibleAnswers);
+    try {
+        let result = this.keywordContains(answer,input);
+        let penalty = 0;
+        if(input.length > possibleAnswers) {
+            penalty = (input.length - possibleAnswers);
+        }
+        return (result - penalty);
+    }catch (ex) {
+        console.log(ex);
+        return 0;
     }
-    return (result - penalty);
 };
 

@@ -18,100 +18,98 @@ import {fadeAnimate, SlideInOutAnimation} from "../../misc/animation";
 import {NgxPaginationModule, PaginationInstance} from "ngx-pagination";
 
 @Component({
-  selector: 'app-test-manager',
-  templateUrl: './user-allocated-tests.component.html',
-  styleUrls: ['./user-allocated-tests.component.scss'],
-  animations: [ SlideInOutAnimation, fadeAnimate ],
-  changeDetection: ChangeDetectionStrategy.Default
+    selector: 'app-test-manager',
+    templateUrl: './user-allocated-tests.component.html',
+    styleUrls: ['./user-allocated-tests.component.scss'],
+    animations: [ SlideInOutAnimation, fadeAnimate ],
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class UserAllocatedTestsComponent implements OnInit {
-  @Input('data') tests;
-  total;
-  page;
-  itemLimit = 5;
-  filter: string = '';
-  sort;
-  shouldSort = false;
-  loading: boolean;
-  autoHide = false;
-  public keyUp = new Subject<any>();
-  animationState = 'out';
-  public config: PaginationInstance = {
-    id: 'advanced',
-    itemsPerPage: 5,
-    currentPage: 1
-  };
-  public labels: any = {
-    previousLabel: 'Previous',
-    nextLabel: 'Next',
-    screenReaderPaginationLabel: 'Pagination',
-    screenReaderPageLabel: 'page',
-    screenReaderCurrentLabel: `You're on page`
-  };
+    @Input('data') tests;
+    total;
+    page;
+    itemLimit = 5;
+    filter: string = '';
+    sort;
+    shouldSort = false;
+    loading: boolean;
+    autoHide = false;
+    public keyUp = new Subject<any>();
+    animationState = 'out';
+    public config: PaginationInstance = {
+        id: 'advanced',
+        itemsPerPage: 5,
+        currentPage: 1
+    };
+    public labels: any = {
+        previousLabel: 'Previous',
+        nextLabel: 'Next',
+        screenReaderPaginationLabel: 'Pagination',
+        screenReaderPageLabel: 'page',
+        screenReaderCurrentLabel: `You're on page`
+    };
 
-  constructor( public dataEmit: DataEmitterService,
-               private data: DataManagementService,
-               private dialog: MatDialog,
-               private observableMedia: ObservableMedia,
-               private router: Router,
-               private titleService: Title,
+    constructor( public dataEmit: DataEmitterService,
+                 private data: DataManagementService,
+                 private dialog: MatDialog,
+                 private observableMedia: ObservableMedia,
+                 private router: Router,
+                 private titleService: Title,
 
-  ) {
-    const subscription = this.keyUp
-        .map(event => event.target.value)
-        .debounceTime(250)
-        .distinctUntilChanged()
-        .flatMap(search => Observable.of(search).delay(250))
-        .subscribe(() => this.getPage(this.page));
-  }
+    ) {
+        const subscription = this.keyUp
+            .map(event => event.target.value)
+            .debounceTime(250)
+            .distinctUntilChanged()
+            .flatMap(search => Observable.of(search).delay(250))
+            .subscribe(() => this.getPage(this.page));
+    }
 
-  ngOnInit() {
-    this.getPage(1);
-    this.titleService.setTitle('Your tests - DigitalStudy');
-  }
+    ngOnInit() {
+        this.getPage(1);
+        this.titleService.setTitle('Your tests - DigitalStudy');
+    }
 
-  canRemove(allocatedTest:any) {
-    return allocatedTest.test.canSelfRemove;
-  }
+    canRemove(allocatedTest:any) {
+        return allocatedTest.test.canSelfRemove;
+    }
 
-  removeTest(allocatedTest:any) {
-    alert('should check settings to see if removable/usable');
-    //test.test.canSelfRemove?
-    /*console.log('attempting to remove ' + JSON.stringify(test));
-     this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });*/
-  }
+    removeTest(allocatedTest:any) {
+        alert('should check settings to see if removable/usable');
+        //test.test.canSelfRemove?
+        /*console.log('attempting to remove ' + JSON.stringify(test));
+         this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });*/
+    }
 
-  getPage(page: number) {
-    this.animationState = 'out';
-    this.tests = null;
-    this.data.getDATA(global.url + '/api/users/'  + JSON.parse(localStorage.getItem('userObject'))._id +  '/tests?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
-      console.log(res.data);
-      this.total = res.data.total;
-      //Hacky client side filtering, can be done server side but moved to save processing, could be moved back
-      let index;
-      res.data.docs.some(function (a, i) { if (a.test === null) { index = i; return true; }}) && res.data.docs.splice(index, 1);
-      this.tests = res.data.docs;
-      this.config.currentPage = page;
-      this.page = page;
-      this.animationState = 'in';
-      console.log(this.tests);
-    });
-  }
+    getPage(page: number) {
+        this.animationState = 'out';
+        this.tests = null;
+        this.data.getDATA(global.url + '/api/users/'  + JSON.parse(localStorage.getItem('userObject'))._id +  '/tests?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
+            this.total = res.data.total;
+            //Hacky client side filtering, can be done server side but moved to save processing, could be moved back
+            let index;
+            res.data.docs.some(function (a, i) { if (a.test === null) { index = i; return true; }}) && res.data.docs.splice(index, 1);
+            this.tests = res.data.docs;
+            this.config.currentPage = page;
+            this.page = page;
+            this.animationState = 'in';
+        });
+    }
 
-  onChange(deviceValue) {
-    this.getPage(this.page);
-  }
+    onChange(deviceValue) {
+        this.getPage(this.page);
+    }
 }
 
 @NgModule({
-  declarations: [UserAllocatedTestsComponent],
-  imports: [
-    RouterModule.forChild([
-      { path: '', component: UserAllocatedTestsComponent, pathMatch: 'full'}
-    ]),
-    ImportsModule,
-    NgxPaginationModule,
-  ]
+    declarations: [UserAllocatedTestsComponent],
+    imports: [
+        RouterModule.forChild([
+            { path: '', component: UserAllocatedTestsComponent, pathMatch: 'full'}
+        ]),
+        ImportsModule,
+        NgxPaginationModule,
+    ]
 })
 export class UserAllocatedTestsModule {
 
