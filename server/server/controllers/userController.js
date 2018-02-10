@@ -273,7 +273,8 @@ exports.submitTest = function(req, res) {
                                                 marksAvailable += tempTest.questions[i].choicesAnswer.length;
                                                 break;
                                             case "arrangement":
-
+                                                obtainedMark+= settings.arrangeOrderCount(tempTest.questions[i].arrangement,req.body.submittedTest.submittedQuestions[i].arrangement);
+                                                marksAvailable+= req.body.submittedTest.submittedQuestions[i].arrangement.length;
                                                 break;
                                             case "shortAnswer":
                                                 break;

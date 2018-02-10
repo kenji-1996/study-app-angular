@@ -241,3 +241,15 @@ module.exports.correctChoices = function(answer, input, possibleAnswers) {
     }
 };
 
+module.exports.arrangeOrderCount = function(correctArrangement,submittedArrangement) {
+    let answerCount = 0;
+    for(let i = 0; i < correctArrangement.length; i++ ) {
+        if (correctArrangement[i] === submittedArrangement[i]) {
+            answerCount++;
+        }
+    }
+    console.log(answerCount);
+    console.log(correctArrangement.length);
+    return answerCount;
+};
+
