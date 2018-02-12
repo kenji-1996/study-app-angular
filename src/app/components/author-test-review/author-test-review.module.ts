@@ -32,23 +32,29 @@ export class AuthorTestReview implements OnInit, OnDestroy {
     ) { }
     allocatedTest: allocatedTest;
     test:newTest = new newTest('','',[],[]);
-    subTest:submittedTest = new submittedTest();
+    subTest;
     newSubTest:submittedTest = this.subTest;
 
     selectedId;
     answer;
     subscription;
+    pickedId = null;
 
     feedbackCount = 0;
     overallTestFeedback;
 
     onBroadcastAnswer(event) {
-        if(this.feedbackCount === 0) { this.newSubTest.submittedQuestions = []; }
+        if(this.feedbackCount === 0) { this.newSubTest = this.subTest; this.newSubTest.submittedQuestions = []; }
         this.newSubTest.submittedQuestions.push(event);
         this.feedbackCount++;
         if(this.feedbackCount >= this.subTest.submittedQuestions.length) {
              this.submitFeedback();
         }
+    }
+
+    setSubTest(sub:any) {
+        this.pickedId = sub;
+        this.subTest = this.allocatedTest.submittedTests[sub];
     }
 
     ngOnInit() {
@@ -58,30 +64,33 @@ export class AuthorTestReview implements OnInit, OnDestroy {
                 console.log(allocatedTestResult);
                 this.allocatedTest = allocatedTestResult.data;
                 this.test = allocatedTestResult.data.test;
-                this.subTest = allocatedTestResult.data.submittedTests[0];
-                for(let i = 0; i < this.test.questions.length; i++) {
-                    this.test.questions[i].feedback = this.subTest.submittedQuestions[i].feedback;
-                    this.test.questions[i].mark = this.subTest.submittedQuestions[i].mark;
-                    switch (this.test.questions[i].type) {
-                        case "keywords":
-                            this.test.questions[i].keywordsAnswer = this.subTest.submittedQuestions[i].keywordsAnswer;
-                            break;
-                        case "choices":
-                            this.test.questions[i].choicesAnswer = this.subTest.submittedQuestions[i].choicesAnswer;
-                            break;
-                        case "arrangement":
-                            this.test.questions[i].arrangement = this.subTest.submittedQuestions[i].arrangement;
-                            //this.test.questions[i].possibleMarks = this.test.questions[i].arrangement.length;
-                            break;
-                        case "shortAnswer":
-                            //this.test.questions[i].possibleMarks = 1;
-                            this.test.questions[i].shortAnswer = this.subTest.submittedQuestions[i].shortAnswer;
-                            break;
-                        default://If no type is set, break
-                        //return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});
+                this.overallTestFeedback = this.allocatedTest.feedback;
+                for(let j = 0; j < this.allocatedTest.submittedTests.length;j++) {
+                    let subTest = this.allocatedTest.submittedTests[j];
+                    for (let i = 0; i < this.test.questions.length; i++) {
+                        this.test.questions[i].feedback = subTest.submittedQuestions[i].feedback;
+                        this.test.questions[i].mark = subTest.submittedQuestions[i].mark + '';
+                        switch (this.test.questions[i].type) {
+                            case "keywords":
+                                this.test.questions[i].keywordsAnswer = subTest.submittedQuestions[i].keywordsAnswer;
+                                break;
+                            case "choices":
+                                this.test.questions[i].choicesAnswer = subTest.submittedQuestions[i].choicesAnswer;
+                                break;
+                            case "arrangement":
+                                this.test.questions[i].arrangement = subTest.submittedQuestions[i].arrangement;
+                                //this.test.questions[i].possibleMarks = this.test.questions[i].arrangement.length;
+                                break;
+                            case "shortAnswer":
+                                //this.test.questions[i].possibleMarks = 1;
+                                this.test.questions[i].shortAnswer = subTest.submittedQuestions[i].shortAnswer;
+                                break;
+                            default://If no type is set, break
+                            //return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});
+                        }
+                        this.subTest.push(subTest);
                     }
                 }
-                this.overallTestFeedback = this.allocatedTest.feedback;
                 this.titleService.setTitle('Mark tests - DigitalStudy');
             });
         });

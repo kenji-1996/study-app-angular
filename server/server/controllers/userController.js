@@ -248,15 +248,18 @@ exports.submitTest = function(req, res) {
                                 });
                                 obtainedMark = 0;
                                 marksAvailable = 0;
+                                handMarkedMmarksAvailable = 0;
                                 for(let i = 0; i < req.body.submittedTest.submittedQuestions.length; i++) {
                                     let subQuestion = new submittedQuestionModel({
                                         _id: new mongoose.Types.ObjectId(),
                                         question:  req.body.submittedTest.submittedQuestions[i]._id,
                                         type:  req.body.submittedTest.submittedQuestions[i].type,
                                     });
+                                    subQuestion.gradedMarksAvailable+=tempTest.questions[i].possibleAllocatedMarks? tempTest.questions[i].possibleAllocatedMarks: 0;
                                     if(!tempTest.handMarked) {
                                         let calculatedMark = 0;
                                         switch (req.body.submittedTest.submittedQuestions[i].type) {
+
                                             case "keywords":
                                                 calculatedMark = settings.keywordContains(tempTest.questions[i].keywordsAnswer, req.body.submittedTest.submittedQuestions[i].keywordsAnswer);
                                                 subQuestion.mark = calculatedMark;
@@ -527,10 +530,5 @@ exports.listSelfAllocatedTests = function(req, res) {
             //Hacky way to remove query results from pop search
 
             return res.status(200).json({message: "Tests retrieved", data: result});
-            // result.docs
-            // result.total
-            // result.limit - 10
-            // result.page - 3
-            // result.pages
         });
 };

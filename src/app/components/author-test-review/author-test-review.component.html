@@ -1,4 +1,41 @@
 <div [@fadeInOut] *ngIf="test && test.questions.length > 0">
+    <nb-card style="max-height: 800px;">
+        <nb-card-header>
+            Select a submitted test
+        </nb-card-header>
+        <nb-card-body *ngIf="allocatedTest.submittedTests" [@fadeInOut]>
+            <div *ngFor="let sub of allocatedTest.submittedTests;let i = index" style="font-size: small;" (click)="setSubTest(i)" class="cursor-click">
+                <div class="row text-center">
+                    <div class="col-sm-4">
+                        ID: {{sub._id}}
+                    </div>
+                    <div class="col-sm-4">
+                        Date submitted: {{sub.dateSubmitted | date:'fullDate'}}
+                    </div>
+                    <div class="col-sm-4">
+                        Mark:
+                        {{sub.obtainedMark}} / {{sub.marksAvailable}}
+                    </div>
+                </div>
+
+                <div class="dotted-hr"></div>
+            </div><br/>
+
+            <div class="form-group">
+                <label>Overall test feedback</label>
+                <textarea rows="3" placeholder="Overall feedback" class="form-control" [(ngModel)]="overallTestFeedback"></textarea>
+            </div>
+            <div class="text-center">
+                <div class="form-group">
+                    <button class="btn btn-hero-success" [disabled]="submitted" (click)="submitAll = true">Submit test review</button>
+                </div>
+            </div>
+        </nb-card-body>
+
+    </nb-card>
+
+</div>
+<div [@fadeInOut] *ngIf="test && test.questions.length > 0 && pickedId !== null">
 
     <div *ngFor="let question of test.questions; let i = index">
         <ng-container *ngIf="question.type === 'keywords'">
@@ -14,21 +51,4 @@
             <app-shortanswer-question [mark]="true" [subQuestion]="subTest.submittedQuestions[i]" (broadcastResult)="onBroadcastAnswer($event)" [test]="test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-shortanswer-question>
         </ng-container>
     </div>
-
-    <nb-card>
-        <nb-card-header>
-            Evaluate test
-        </nb-card-header>
-        <nb-card-body>
-            <div class="form-group">
-                <label>Overall test feedback</label>
-                <textarea rows="3" placeholder="Overall feedback" class="form-control" [(ngModel)]="overallTestFeedback"></textarea>
-            </div>
-            <div class="text-center">
-                <div class="form-group">
-                    <button class="btn btn-hero-success" [disabled]="submitted" (click)="submitAll = true">Submit</button>
-                </div>
-            </div>
-        </nb-card-body>
-    </nb-card>
 </div>

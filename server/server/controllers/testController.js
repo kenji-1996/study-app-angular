@@ -258,6 +258,7 @@ exports.updateTest = function(req, res) {
                             if(providedQuestions[i].images) { question.images = providedQuestions[i].images; }
                             if(providedQuestions[i].bonus) { question.bonus = providedQuestions[i].bonus; }
                             question.possibleAllocatedMarks =  providedQuestions[i].possibleAllocatedMarks;
+                            question.gradedMarksAvailable+=tempTest.questions[i].possibleAllocatedMarks? tempTest.questions[i].possibleAllocatedMarks: 0;
                             switch(question.type) {
                                 case "keywords":
                                     question.keywordsAnswer = providedQuestions[i].keywordsAnswer;//Array
