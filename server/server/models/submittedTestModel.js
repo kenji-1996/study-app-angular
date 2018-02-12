@@ -33,7 +33,7 @@ let submittedTestSchema  = new Schema({
 });
 
 submittedTestSchema.pre('remove', function(next) {
-    submittedQuestionModel.remove({_id: { $in: this.submittedQuestions}}).exec();  //if reference exists in multiple documents
+    submittedQuestionModel.remove({_id: { $in: this.submittedQuestions}}).exec();
     next();
 });
 submittedTestSchema.plugin(mongoosePaginate);

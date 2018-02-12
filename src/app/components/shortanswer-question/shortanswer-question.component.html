@@ -3,39 +3,58 @@
 <nb-card>
     <nb-card-header>
         <div fxLayout="row">
-            <div>{{question.question}}</div>
+            <div>{{test.questions[index].question}}</div>
             <span class="fill-remaining-space"></span>
             <div fxLayout="row" fxFlexAlign="end">
-                <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="question"></h4>
+                <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="test.questions[index]"></h4>
             </div>
         </div>
     </nb-card-header>
     <nb-card-body>
-        <div class="form-group row" (keyup.enter)="fullPage? null : onNext.emit(true)">
+        <div class="form-group row" (keyup.enter)="fullPage? null : (index === (test.questions.length -1)? null : (onNext.emit(true)))">
             <div class="col-sm-12">
-                <textarea rows="10" placeholder="Answer" class="form-control" [(ngModel)]="answer" ></textarea>
+                <textarea rows="10" placeholder="Answer" class="form-control" [(ngModel)]="answer" [disabled]="mark" ></textarea>
             </div>
         </div>
-        <div fxLayout="row">
-            <button *ngIf="!fullPage && index !== 0" class="btn btn-hero-warning btn-tn" (click)="onBack.emit(true)">Back</button>
+        <div fxLayout="row" *ngIf="!fullPage">
+            <button  [disabled]="index === 0" class="btn btn-hero-warning btn-tn" (click)="onBack.emit(true)">Back</button>
             <span class="fill-remaining-space"></span>
             <div fxLayout="row" fxFlexAlign="end">
-                <button *ngIf="!fullPage" class="btn btn-hero-success btn-tn" (click)="onNext.emit(true)">Next</button>
+                <button [disabled]="index === (test.questions.length -1)" class="btn btn-hero-success btn-tn" (click)="onNext.emit(true)">Next</button>
             </div>
         </div>
-        <ng-container *ngIf="question.hint">
+        <ng-container *ngIf="test.questions[index].hint">
             <div class="alert alert-hint" role="alert" style="margin-top: 5px;">
-                <strong>Hint</strong> <span style="font-style: italic">{{question.hint}}</span>
+                <strong>Hint</strong> <span style="font-style: italic">{{test.questions[index].hint}}</span>
             </div>
         </ng-container>
 
     </nb-card-body>
     <nb-card-footer>
-        <div fxLayout="row">
-            <h4  class="text-center text-muted lead" style="font-size: small;" *ngIf="question">Available marks: {{question.possibleMarks}}</h4>
+        <div *ngIf="mark">
+            <div class="row form-group">
+                <div class="col-sm-6">
+                    <label>Feedback</label>
+                    <textarea rows="1" placeholder="Feedback" class="form-control" [(ngModel)]="feedback"></textarea>
+                </div>
+                <div class="col-sm-6">
+                    <label>Result</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [disabled]="!test.handMarked">
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger">
+                              / {{test.handMarked? test.questions[index].possibleAllocatedMarks : test.questions[index].possibleMarks}}
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="row" *ngIf="!mark">
+            <h4  class="text-center text-muted lead" style="font-size: small;" *ngIf="test.questions[index]">Available marks: {{test.questions[index].possibleMarks}}</h4>
             <span class="fill-remaining-space"></span>
             <div fxLayout="row" fxFlexAlign="end">
-                <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="question">{{index + 1}}</h4>
+                <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="test.questions[index]">{{index + 1}}</h4>
             </div>
         </div>
     </nb-card-footer>

@@ -25,20 +25,21 @@ let questionSchema  = new Schema({
     //keywords,choices,arrangement,shortAnswer
     type: { type:String, required: true, default: 'keywords'},
     possibleMarks: { type: Number, default: 0 },
+    possibleAllocatedMarks: { type: Number, default: null },
 
     question: { type:String, required:true },
     //Answer/Question variables, only one will be filled out depending on 'type' - Not user submitted (When they complete tests, creates 'submittedQuestion' + submittedTest)
-    keywordsAnswer: [String],//Actual keywords in answer
+    keywordsAnswer: {type:[String], default: null},//Actual keywords in answer
     //keywordsQuestion: String,//Question for keyword answer
 
-    choicesAnswer: [String],//Actual choices (contains only the choices that are correct)
-    choicesAll: [String],//Array of choices for one question (recommended 4, minimum of 2)
+    choicesAnswer: {type:[String], default: null},//Actual choices (contains only the choices that are correct)
+    choicesAll: {type:[String], default: null},//Array of choices for one question (recommended 4, minimum of 2)
     //choicesQuestion: String,
 
-    arrangement: [String],//The arrangment in random order
+    arrangement: {type:[String], default: null},//The arrangment in random order
     //arrangementOriginal: [String],//The 4-x provided arrangment actual order
 
-    shortAnswer: String,//Short answer question, THIS SHOULD ONLY BE DONE IN CASE OF 'handMarked' TESTS!
+    shortAnswer: {type:String, default: null},//Short answer question, THIS SHOULD ONLY BE DONE IN CASE OF 'handMarked' TESTS!
 
     //Settings
     bonus: { type: Boolean, default: false },//If bonus, not counted on total answers mark, but will increase answer (implying user can get over 100% if bonus questions exist)

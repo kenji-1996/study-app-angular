@@ -21,7 +21,7 @@ let userTestSchema  = new Schema({
     //testId: String,//Reference test for result settings
     test: {type: Schema.Types.ObjectId, ref: 'tests'},
     user: {type: Schema.Types.ObjectId, ref: 'users'},
-    allocatedDate: { type: Date, default: Date.now },
+    date: { type: Date, default: Date.now },
     started: { type: Boolean, default: false },
 
     //List of submitted tests from different users
@@ -44,11 +44,17 @@ let userTestSchema  = new Schema({
      * -
      */
 });
-
 userTestSchema.plugin(mongoosePaginate);
 
 userTestSchema.pre('remove', function(next) {
-    submittedTestModel.findOneAndRemove({test: this.test}).exec(function (err,subTest) { if(subTest) { subTest.remove(); } });
+    console.log('user test pre remove ' + this._id);
+    //submittedTestModel.findOneAndRemove({test: this.test}).exec(function (err,subTest) { if(subTest) { subTest.remove(); } });
+    submittedTestModel.find({test: this.test, user: this.user}).exec(function (err,subTest) {
+        for(let i = 0; i < subTest.length; i++) {
+            console.log('attempting to remove usertest ' + subTest[i]._id);
+            subTest[i].remove();
+        }
+    });
     next();
 });
 

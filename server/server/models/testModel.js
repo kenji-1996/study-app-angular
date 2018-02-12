@@ -65,10 +65,15 @@ testSchema.plugin(mongoosePaginate);
  */
 
 testSchema.pre('remove', function(next) {
-    questionsModel.remove({_id: { $in: this.questions}}).exec();
-    userTestModel.find({test: this._id}).exec(function (err,userTest) { for(let i = 0; i < userTest.length; i++) {userTest[i].remove();} });
-    //usersModel.findOneAndUpdate({_id: this.authors }, { $pull: { authoredTests: this._id} }).exec(function (err,user) {  });
+    userTestModel.find({test: this._id}).exec(function (err,userTest) {
+        for(let i = 0; i < userTest.length; i++) {
+            userTest[i].remove();
+        }
+    });
     next();
+});
+testSchema.post('remove', function() {
+    questionsModel.remove({_id: { $in: this.questions}}).exec();
 });
 
 module.exports = mongoose.model('tests', testSchema);

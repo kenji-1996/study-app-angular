@@ -7,6 +7,8 @@ let testsModel = require('../models/testModel');
 let usersModel = require('../models/userModel');
 let userTestModel = require('../models/userTestModel');
 let questionsModel = require('../models/questionModel');
+let submittedTestModel = require('../models/submittedTestModel');
+let submittedQuestionModel = require('../models/submittedQuestionModel');
 let selfAllocatedTestModel = require('../models/selfAllocatedTest');
 
 /**
@@ -35,6 +37,58 @@ exports.listTests = function(req, res) {
 };
 
 /**
+ * /api/tests/:testId/submitlist [GET]
+ * usertest submitted tests for feedback
+ *
+ * @param req
+ * @param res
+ */
+exports.listSubmits = function(req,res) {
+    //query for which sub test?
+    let matchInput = req.query.subTest? {_id : req.query.subTest} : {};
+    userTestModel.findOne({_id: req.params.testId})
+        .populate([
+            { path:'submittedTests',match: matchInput, populate: { path: 'submittedQuestions'} }, {path: 'test', select: 'handMarked questions', populate: {path: 'questions'}}
+        ])
+        .exec(function(err, result) {
+            if (err) return res.status(500).json({message: "Find tests query failed", data: err});
+            if(result === null) return res.status(404).json({message: "Test not found", data: null});
+            return res.status(200).json({message: "Tests retrieved", data: result});
+        });
+};
+
+/**
+ * /api/tests/:testId/submitlist [POST]
+ * usertest submitted tests for feedback
+ *
+ * @param req
+ * @param res
+ */
+exports.reviewSubmits = function(req,res) {
+    //authenticate for author
+    settings.ensureAuthorized(req,res).then(function (authUser) {
+        if (!authUser) {return null;}
+        usersModel.findOne({unique_id: authUser['sub']})
+            .exec(function (err,user) {//submittedTest
+                testsModel.findOne({_id: req.params.testId, authors: user._id})
+                    .exec(function (err,test) {
+                        if (err) return res.status(500).json({message: "No test found ", data: err});
+                        userTestModel.findByIdAndUpdate(req.body.submittedTest.test, {'$set': {feedback: req.body.testFeedback}})
+                            .exec(function (err) {if (err) return res.status(500).json({message: "Failed to update overall feedback", data: err});});
+                        for(let i = 0; i < req.body.submittedTest.submittedQuestions.length; i++) {
+                            submittedQuestionModel.findByIdAndUpdate(req.body.submittedTest.submittedQuestions[i]._id,{"$set" : { feedback : req.body.submittedTest.submittedQuestions[i].feedback, mark: req.body.submittedTest.submittedQuestions[i].mark } },{ "new": true, "upsert": true },)
+                                .exec(function (err,subQ) {
+                                    if (err) return res.status(500).json({message: "Failed to update submitted question", data: err});
+                                });
+                        }
+                        return res.status(200).json({message: "Test reviewed successfully", data: null});
+                    });
+            });
+
+    });
+};
+
+/**
  * /api/tests [POST]
  * A home can add a test to their home if authorised (req.body.test object required example: "test": { "id": 0, "name": "Diana Faulkner"} )
  *
@@ -44,83 +98,83 @@ exports.listTests = function(req, res) {
  * @return JSON {message,data}
  */
 exports.createTest = function(req, res) {
-    try {
-        settings.ensureAuthorized(req,res).then(function (user) {
-            if(!user) { return null; }
-            usersModel.findOne({unique_id: user['sub']}, function (err, user) {
-                if (err) return res.status(404).json({message: "User not found/Valid", data: err});
-                if (req.body.test) {
-                    //Info inside new model is required!
-                    let test = new testsModel({
-                        _id: new mongoose.Types.ObjectId(),
-                        title: req.body.test.title,
-                        category: req.body.test.category,
-                        authors: req.body.test.authors,
-                        //In future accept array of userIds, displayed as friends on UI
-                    });
-                    if(req.body.test.hintAllowed) { test.hintAllowed = true; }
-                    if(req.body.test.expire) {test.expire = req.body.test.expire; }
-                    if(req.body.test.expireDate) {test.expireDate = req.body.test.expireDate; }//Date.now type date
-                    if(req.body.test.handMarked) {test.handMarked = req.body.test.handMarked; }
-                    if(req.body.test.showMarks) {test.showMarks = req.body.test.showMarks; }
-                    if(req.body.test.attemptsAllowed) {test.attemptsAllowed = req.body.test.attemptsAllowed; }
-                    if(req.body.test.userEditable) {test.userEditable = req.body.test.userEditable; }
-                    if(req.body.test.shareable) {test.shareable = req.body.test.shareable; }
-                    if(req.body.test.privateTest) {test.private = req.body.test.privateTest; }
-                    if(req.body.test.hintAllowed) {test.hintAllowed = req.body.test.hintAllowed; }
-                    if(req.body.test.showMarker) {test.showMarker = req.body.test.showMarker; }
-                    if(req.body.test.canSelfRemove) {test.canSelfRemove = req.body.test.canSelfRemove; }
-                    if(req.body.test.markDate) { test.markDate = req.body.test.markDate; }
-                    if(req.body.test.timerEnabled) { test.timer = req.body.test.timer; }else{ test.timer = 0; }
-                    if(req.body.test.questions) {
-                        test.questions = [];
-                        let providedQuestions = req.body.test.questions;
-                        for (let i = 0; i < providedQuestions.length; i++) {
-                            //Building question from body
-                            let question = new questionsModel({
-                                _id: new mongoose.Types.ObjectId(),
-                                type: providedQuestions[i].type,
-                                question: providedQuestions[i].question,
-                            });
-                            if(test.hintAllowed && providedQuestions[i].hint) { question.hint = providedQuestions[i].hint; }
-                            if(providedQuestions[i].resources) { question.resources = providedQuestions[i].resources; }
-                            if(providedQuestions[i].images) { question.images = providedQuestions[i].images; }
-                            if(providedQuestions[i].bonus) { question.bonus = providedQuestions[i].bonus; }
-                            switch(question.type) {
-                                case "keywords":
-                                    question.keywordsAnswer = providedQuestions[i].keywordsAnswer;//Array
-                                    break;
-                                case "choices":
-                                    question.choicesAnswer = providedQuestions[i].choicesAnswer;//Array
-                                    question.choicesAll = providedQuestions[i].choicesAll;//Array (Randomized server side(on get))
-                                    break;
-                                case "arrangement":
-                                    question.arrangement = providedQuestions[i].arrangement;//Array
-                                    break;
-                                case "shortAnswer"://Rare, should be used only in hand-marked, warn user when creating a Q as short answer with this setting enabled
-                                    question.shortAnswer = providedQuestions[i].shortAnswer;//String
-                                    break;
-                                default://If no type is set, break
-                                    return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});
-                            }
-                            test.questions.push(question.id);
-                            question.save(function (err) {
-                                if (err) return res.status(500).json({ message: "Question save query failed",  data: err });
-                            });
+    settings.ensureAuthorized(req,res).then(function (user) {
+        if(!user) { return null; }
+        usersModel.findOne({unique_id: user['sub']}, function (err, user) {
+            if (err) return res.status(404).json({message: "User not found/Valid", data: err});
+            if (req.body.test) {
+                //Info inside new model is required!
+                let test = new testsModel({
+                    _id: new mongoose.Types.ObjectId(),
+                    title: req.body.test.title,
+                    category: req.body.test.category,
+                    authors: req.body.test.authors,
+                    //In future accept array of userIds, displayed as friends on UI
+                });
+                if(req.body.test.hintAllowed) { test.hintAllowed = true; }
+                if(req.body.test.expire) {test.expire = req.body.test.expire; }
+                if(req.body.test.expireDate) {test.expireDate = req.body.test.expireDate; }//Date.now type date
+                if(req.body.test.handMarked) {test.handMarked = req.body.test.handMarked; }
+                if(req.body.test.showMarks) {test.showMarks = req.body.test.showMarks; }
+                if(req.body.test.attemptsAllowed) {test.attemptsAllowed = req.body.test.attemptsAllowed; }
+                if(req.body.test.userEditable) {test.userEditable = req.body.test.userEditable; }
+                if(req.body.test.shareable) {test.shareable = req.body.test.shareable; }
+                if(req.body.test.privateTest) {test.private = req.body.test.privateTest; }
+                if(req.body.test.showMarker) {test.showMarker = req.body.test.showMarker; }
+                if(req.body.test.canSelfRemove) {test.canSelfRemove = req.body.test.canSelfRemove; }
+                if(req.body.test.markDate) { test.markDate = req.body.test.markDate; }
+                if(req.body.test.timerEnabled) { test.timer = req.body.test.timer; }else{ test.timer = 0; }
+                if(req.body.test.questions) {
+                    test.questions = [];
+                    let providedQuestions = req.body.test.questions;
+                    for (let i = 0; i < providedQuestions.length; i++) {
+                        //Building question from body
+                        let question = new questionsModel({
+                            _id: new mongoose.Types.ObjectId(),
+                            type: providedQuestions[i].type,
+                            question: providedQuestions[i].question,
+                        });
+                        if(test.hintAllowed && providedQuestions[i].hint) { question.hint = providedQuestions[i].hint; }
+                        if(providedQuestions[i].resources) { question.resources = providedQuestions[i].resources; }
+                        if(providedQuestions[i].images) { question.images = providedQuestions[i].images; }
+                        if(providedQuestions[i].bonus) { question.bonus = providedQuestions[i].bonus; }
+                        question.possibleAllocatedMarks =  providedQuestions[i].possibleAllocatedMarks;
+                        switch(question.type) {
+                            case "keywords":
+                                question.keywordsAnswer = providedQuestions[i].keywordsAnswer;//Array
+                                question.possibleMarks =  providedQuestions[i].keywordsAnswer.length;
+                                break;
+                            case "choices":
+                                question.choicesAnswer = providedQuestions[i].choicesAnswer;//Array
+                                question.choicesAll = providedQuestions[i].choicesAll;//Array (Randomized server side(on get))
+                                question.possibleMarks =  providedQuestions[i].choicesAnswer.length;
+                                break;
+                            case "arrangement":
+                                question.arrangement = providedQuestions[i].arrangement;//Array
+                                question.possibleMarks =  providedQuestions[i].arrangement.length;
+                                break;
+                            case "shortAnswer"://Rare, should be used only in hand-marked, warn user when creating a Q as short answer with this setting enabled
+                                question.shortAnswer = providedQuestions[i].shortAnswer;//String
+                                question.possibleMarks =  1;
+                                break;
+                            default://If no type is set, break
+                                return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});
                         }
+                        test.questions.push(question.id);
+                        question.save(function (err) {
+                            if (err) return res.status(500).json({ message: "Question save query failed",  data: err });
+                        });
                     }
-                    test.save(function (err, result) {
-                        if (err) return res.status(500).json({message: "Save test query failed", data: null});
-                        return res.status(200).json({message: "Test generated successfully", data: result});
-                    });
-                }else{
-                    return res.status(400).json({message: "Bad request, req.body.test required", data: null});
                 }
-            });
+                test.save(function (err, result) {
+                    if (err) return res.status(500).json({message: "Save test query failed", data: null});
+                    return res.status(200).json({message: "Test generated successfully", data: result});
+                });
+            }else{
+                return res.status(400).json({message: "Bad request, req.body.test required", data: null});
+            }
         });
-    } catch (err) {
-        return res.status(500).json({message: "Something went wrong creating new test", data: err});
-    }
+    });
 };
 
 /**
@@ -150,14 +204,11 @@ exports.listUserTest = function(req, res) {
                     for (let i = 0; i < modifiedResult.test.questions.length; i++) {//Check and shuffle arrangment before returing result
                         if (modifiedResult.test.questions[i].type === 'arrangement') {
                             modifiedResult.test.questions[i].arrangement = settings.shuffleArray(modifiedResult.test.questions[i].arrangement);
-                            modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].arrangement.length;
                         }
                         if(modifiedResult.test.questions[i].type === 'keywords') {
-                            modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].keywordsAnswer.length;
                             modifiedResult.test.questions[i].keywordsAnswer = null;
                         }
                         if(modifiedResult.test.questions[i].type === 'choices') {
-                            modifiedResult.test.questions[i].possibleMarks = modifiedResult.test.questions[i].choicesAnswer.length;
                             modifiedResult.test.questions[i].choicesAnswer = null;
                         }
                         if(!modifiedResult.test.hintAllowed) {
@@ -195,37 +246,43 @@ exports.updateTest = function(req, res) {
                     .exec(function (err, test) {
                         if (err) { console.log(err); return res.status(500).json({message: "Test updated query failed", data: err}); }
                         test.questions = [];
-                        for(let i = 0; i < providedQuestions.length; i++) {
-                                let question = new questionsModel({
-                                    _id: new mongoose.Types.ObjectId(),
-                                    type: providedQuestions[i].type,
-                                    question: providedQuestions[i].question,
-                                });
-                                if(test.hintAllowed && providedQuestions[i].hint) { question.hint = providedQuestions[i].hint; }
-                                if(providedQuestions[i].resources) { question.resources = providedQuestions[i].resources; }
-                                if(providedQuestions[i].images) { question.images = providedQuestions[i].images; }
-                                if(providedQuestions[i].bonus) { question.bonus = providedQuestions[i].bonus; }
-                                switch(question.type) {
-                                    case "keywords":
-                                        question.keywordsAnswer = providedQuestions[i].keywordsAnswer;//Array
-                                        break;
-                                    case "choices":
-                                        question.choicesAnswer = providedQuestions[i].choicesAnswer;//Array
-                                        question.choicesAll = providedQuestions[i].choicesAll;//Array (Randomized server side(on get))
-                                        break;
-                                    case "arrangement":
-                                        question.arrangement = providedQuestions[i].arrangement;//Array
-                                        break;
-                                    case "shortAnswer"://Rare, should be used only in hand-marked, warn user when creating a Q as short answer with this setting enabled
-                                        question.shortAnswer = providedQuestions[i].shortAnswer;//String
-                                        break;
-                                    default://If no type is set, break
-                                        return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});
-                                }
-                                test.questions.push(question.id);
-                                question.save(function (err) {
-                                    if (err) return res.status(500).json({ message: "Question save query failed",  data: err });
-                                });
+                        for (let i = 0; i < providedQuestions.length; i++) {
+                            //Building question from body
+                            let question = new questionsModel({
+                                _id: new mongoose.Types.ObjectId(),
+                                type: providedQuestions[i].type,
+                                question: providedQuestions[i].question,
+                            });
+                            if(test.hintAllowed && providedQuestions[i].hint) { question.hint = providedQuestions[i].hint; }
+                            if(providedQuestions[i].resources) { question.resources = providedQuestions[i].resources; }
+                            if(providedQuestions[i].images) { question.images = providedQuestions[i].images; }
+                            if(providedQuestions[i].bonus) { question.bonus = providedQuestions[i].bonus; }
+                            question.possibleAllocatedMarks =  providedQuestions[i].possibleAllocatedMarks;
+                            switch(question.type) {
+                                case "keywords":
+                                    question.keywordsAnswer = providedQuestions[i].keywordsAnswer;//Array
+                                    question.possibleMarks =  providedQuestions[i].keywordsAnswer.length;
+                                    break;
+                                case "choices":
+                                    question.choicesAnswer = providedQuestions[i].choicesAnswer;//Array
+                                    question.choicesAll = providedQuestions[i].choicesAll;//Array (Randomized server side(on get))
+                                    question.possibleMarks =  providedQuestions[i].choicesAnswer.length;
+                                    break;
+                                case "arrangement":
+                                    question.arrangement = providedQuestions[i].arrangement;//Array
+                                    question.possibleMarks =  providedQuestions[i].arrangement.length;
+                                    break;
+                                case "shortAnswer"://Rare, should be used only in hand-marked, warn user when creating a Q as short answer with this setting enabled
+                                    question.shortAnswer = providedQuestions[i].shortAnswer;//String
+                                    question.possibleMarks =  1;
+                                    break;
+                                default://If no type is set, break
+                                    return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});
+                            }
+                            test.questions.push(question.id);
+                            question.save(function (err) {
+                                if (err) return res.status(500).json({ message: "Question save query failed",  data: err });
+                            });
                         }
                         test.save(function (err,testSaved) {
                             if (err) { console.log(err); return res.status(500).json({message: "Question update query failed", data: err}); }
@@ -233,23 +290,6 @@ exports.updateTest = function(req, res) {
                         });
                     });
             });
-
-        //Find the user making the request, if they are the author they can edit it (May need more authors/editors in test model soon)
-        /*usersModel.findOne({unique_id: user['sub']}, function (err, user) {
-         if (err) return res.status(404).json({message: "User not found/Valid", data: err});
-
-         testsModel.findOneAndUpdate({_id: req.params.testId, authors: user.id }, req.body.test, {new: true}, function (err, test) {//Find the test where the id is the param and the user is an author
-         if (err) { console.log(err); return res.status(500).json({message: "Test updated query failed", data: err}); }
-         return res.status(200).json({message: ('Test ' + test._id + ' updated'), data: test});
-         });
-         test.save(function (err, testSaved) {
-         if (err) { console.log(err); return res.status(500).json({message: "Test updated query failed", data: err}); }
-         return res.status(200).json({message: ('Test ' + testSaved._id + ' updated'), data: testSaved});
-         });
-         });
-
-
-         });*/
     });
 };
 

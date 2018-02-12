@@ -38,6 +38,7 @@ export class submittedQuestion {
     arrangement: [string];
     shortAnswer: string;
     feedback: string;
+    mark: number;
 }
 
 export class allocatedTest {
@@ -46,7 +47,7 @@ export class allocatedTest {
     test: newTest;
     user: string;//Only 1 result per test per user, can have x amount of submitted tests depending on attempts
     allocatedDate: Date;
-    submittedTests: [string];
+    submittedTests: [any];
     finalMark: Number;//string or number?
     marksAvailable: Number;
     feedback: string;
@@ -102,6 +103,9 @@ export class newQuestion {
     possibleMarks: Number;
     //Answer/Question variables, only one will be filled out depending on 'type' - Not user submitted (When they complete tests, creates 'submittedQuestion' + submittedTest)
     question: string;
+    feedback: string;
+    mark: string;
+    possibleAllocatedMarks: string;
     keywordsAnswer: [string];//Actual keywords in answer
     //keywordsQuestion: string;//Question for keyword answer
 

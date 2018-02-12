@@ -24,6 +24,15 @@ router.route('/tests/:testId')
     .delete(function(req,res) {
         testController.hardDeleteTest(req,res);
     });
+
+router.route('/tests/:testId/submitlist')
+    .get(function(req,res) {
+        testController.listSubmits(req,res);
+    })
+    .post(function(req,res) {
+        testController.reviewSubmits(req,res);
+    });
+
 //Self allocated (not allocated by author!)
 router.route('/tests/:testId/self/:allocatedId')
     .get(function(req,res) {

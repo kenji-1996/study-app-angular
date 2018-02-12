@@ -61,6 +61,7 @@ export class EditTestComponent implements OnInit {
             type: [null],
             question: [null],
             hint: [null],
+            mark: [null],
             enableTimer: false,
             timer: null,
             newChoice: [null],
@@ -96,8 +97,8 @@ export class EditTestComponent implements OnInit {
             this.test = new newTest('','',this.questions,this.authorList);
         }else{
             this.dataManagement.getDATA(global.url + '/api/tests/author/' + this.testId).subscribe(httpTest => {
-                console.log(this.test);
                 this.test = httpTest.data;
+                console.log(this.test);
                 this.settingsFormGroup.controls.title.setValue(this.test.title);
                 this.settingsFormGroup.controls.category.setValue(this.test.category);
                 this.settingsFormGroup.controls.allowHint.setValue(this.test.hintAllowed);
@@ -138,6 +139,7 @@ export class EditTestComponent implements OnInit {
         this.addQuestionsFormGroup.controls['hint'].setValue(q.hint);
         this.addQuestionsFormGroup.controls['enableTimer'].setValue(q.enableTimer);
         this.addQuestionsFormGroup.controls['timer'].setValue(q.timer);
+        this.addQuestionsFormGroup.controls['mark'].setValue(q.possibleAllocatedMarks);
         if(q.type === 'keywords') {
             this.keywords =  q.keywordsAnswer;
         }else if(q.type === 'shortAnswer') {
@@ -180,7 +182,6 @@ export class EditTestComponent implements OnInit {
         if(type === 'mark') {
             this.test.markDate = new Date(event.value);
         }
-
     }
 
     removeTag(word:any) {
@@ -208,6 +209,7 @@ export class EditTestComponent implements OnInit {
     insertQuestion(type:any) {
         let finalQuestion = new newQuestion();
         finalQuestion.type = type;
+        finalQuestion.possibleAllocatedMarks = this.addQuestionsFormGroup.controls['mark'].value;
         if(this.addQuestionsFormGroup.controls['question'].value) {
             finalQuestion.question = this.addQuestionsFormGroup.controls['question'].value;
         }else{
@@ -216,10 +218,6 @@ export class EditTestComponent implements OnInit {
         }
         if(this.addQuestionsFormGroup.controls['hint'].value) {
             finalQuestion.hint = this.addQuestionsFormGroup.controls['hint'].value;
-        }
-        if(this.addQuestionsFormGroup.controls['enableTimer'].value && this.addQuestionsFormGroup.controls['timer'].value) {
-            finalQuestion.enableTimer = true;
-            finalQuestion.timer = this.addQuestionsFormGroup.controls['timer'].value;
         }
         switch (type) {
             case "keywords":

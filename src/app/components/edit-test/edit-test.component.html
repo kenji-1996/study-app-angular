@@ -310,6 +310,12 @@
                     </div>
                 </div>
                 <div class="row"  style="margin-bottom: 15px;">
+                    <div class="col-md-12" [hidden]="!settingsFormGroup.controls['handMarked'].value">
+                        <label>Possible marks</label>
+                        <input class="form-control" placeholder="Mark" formControlName="mark">
+                    </div>
+                </div>
+                <div class="row"  style="margin-bottom: 15px;">
                     <div class="col-12" [hidden]="addQuestionsFormGroup.controls['type'].value != 'shortAnswer'">
                         <div class="alert alert-danger" role="alert" *ngIf="!settingsFormGroup.controls['handMarked'].value">
                             <strong>Warning</strong> It is strongly recommended that short answer should be used with the setting 'hand marked', read our FAQ on it  <a href="#" class="alert-link">here</a>

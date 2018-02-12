@@ -14,6 +14,7 @@ import {KeywordQuestionComponent} from "../keyword-question/keyword-question.com
 import {ChoiceQuestionComponent} from "../choice-question/choice-question.component";
 import {ArrangementComponent} from "../arrangement-question/arrangement-question.component";
 import {ShortanswerQuestionComponent} from "../shortanswer-question/shortanswer-question.component";
+import {SharedModule} from "../../modules/shared.module";
 
 @Component({
     selector: 'app-live-test',
@@ -34,6 +35,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
     selectedQuestion: newQuestion;
     submitTest: submittedTest = new submittedTest();
     progress = '0';
+    submitted = false;
 
     selectedId;
     answer;
@@ -44,8 +46,10 @@ export class LiveTestComponent implements OnInit, OnDestroy {
     submitAll = false;
 
     onBroadcastAnswer(answer:any) {
+        console.log(answer);
         this.submitQuestion(answer.question, answer.answer);
         if(this.submitTest.submittedQuestions.length === this.allocatedTest.test.questions.length) {
+            this.submitted = true;
             this.testFinished();
         }
     }
@@ -75,7 +79,6 @@ export class LiveTestComponent implements OnInit, OnDestroy {
                 this.startTest();
             });
         });
-        //this.subscriber = this.dataEmitter.$testAnswer.subscribe(answer => {this.answer = answer; this.submitQuestion();});
     }
 
     private startTest() {
@@ -100,7 +103,28 @@ export class LiveTestComponent implements OnInit, OnDestroy {
     }
 
     public submitQuestion(question: newQuestion, answer: any) {
-        if(!this.allocatedTest.test.fullPage) {
+        let submit = new submittedQuestion();
+        submit.type = question.type;
+        submit._id = question._id;
+        if(answer) {
+            switch (submit.type) {
+                case 'keywords':
+                    let stringArray = answer.split(/(\s+)/);
+                    submit.keywordsAnswer = stringArray;
+                    break;
+                case 'choices':
+                    submit.choicesAnswer = answer;
+                    break;
+                case 'arrangement':
+                    submit.arrangement = answer;
+                    break;
+                case 'shortAnswer':
+                    submit.shortAnswer = answer;
+                    break;
+            }
+        }
+        this.submitTest.submittedQuestions.push(submit);
+        /*if(!this.allocatedTest.test.fullPage) {
             if(answer) {
                 switch (question.type) {
                     case 'keywords':
@@ -124,29 +148,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
             this.selectedId++;
             this.selectedQuestion = this.allocatedTest.test.questions[this.selectedId];
             this.testTimer();
-        }else{
-            let submit = new submittedQuestion();
-            submit.type = question.type;
-            submit._id = question._id;
-            if(answer) {
-                switch (submit.type) {
-                    case 'keywords':
-                        let stringArray = answer.split(/(\s+)/);
-                        submit.keywordsAnswer = stringArray;
-                        break;
-                    case 'choices':
-                        submit.choicesAnswer = answer;
-                        break;
-                    case 'arrangement':
-                        submit.arrangement = answer;
-                        break;
-                    case 'shortAnswer':
-                        submit.shortAnswer = answer;
-                        break;
-                }
-            }
-            this.submitTest.submittedQuestions.push(submit);
-        }
+        }*/
     }
 
     testFinished() {
@@ -170,12 +172,13 @@ export class LiveTestComponent implements OnInit, OnDestroy {
 
 
 @NgModule({
-    declarations: [LiveTestComponent,KeywordQuestionComponent, ChoiceQuestionComponent, ArrangementComponent, ShortanswerQuestionComponent],
+    declarations: [LiveTestComponent],
     imports: [
         RouterModule.forChild([
             { path: '', component: LiveTestComponent, pathMatch: 'full'}
         ]),
-        ImportsModule
+        ImportsModule,
+        SharedModule
     ]
 })
 export class LiveTestModule {

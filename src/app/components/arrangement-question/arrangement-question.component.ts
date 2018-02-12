@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, Output, EventEmitter, OnChanges} from '@angular/core';
 import {DataEmitterService} from "../../services/data-emitter.service";
 import {DragulaService} from "ng2-dragula";
-import {newQuestion} from "../../objects/objects";
+import {newQuestion, newTest, submittedQuestion, submittedTest} from "../../objects/objects";
 
 @Component({
     selector: 'app-arrangement-question',
@@ -11,11 +11,15 @@ import {newQuestion} from "../../objects/objects";
 export class ArrangementComponent implements OnInit,OnChanges {
     @Input('fullpage') fullPage: boolean;
     @Input('submit') submit: boolean;
-    @Input('question') question: newQuestion;
+    @Input('test') test: newTest;
+    @Input('subQuestion') subQuestion: submittedQuestion;
     @Input('index') index: number;
-    @Output() broadcastAnswer: EventEmitter<any> = new EventEmitter<any>();
+    @Input('mark') mark: boolean;
+    @Output() broadcastResult: EventEmitter<any> = new EventEmitter<any>();
     @Output('onBack') onBack: EventEmitter<any> = new EventEmitter<any>();
     @Output('onNext') onNext: EventEmitter<any> = new EventEmitter<any>();
+    feedback;
+    finalMark;// set as submitted q mark
     answer = [];
     arrangementOptions;
 
@@ -23,22 +27,34 @@ export class ArrangementComponent implements OnInit,OnChanges {
         private dataEmit: DataEmitterService,
         private dragulaService: DragulaService,
     ) {
-        this.arrangementOptions = { revertOnSpill: true, };
+        dragulaService.setOptions('arrange', {
+            moves: (el, source, handle, sibling) => !this.mark
+        });
+        this.arrangementOptions = {
+            revertOnSpill: true,
+        };
         dragulaService.drop.subscribe((value) => {this.onDrop(value);});
     }
 
     ngOnChanges() {
         if(this.submit) {
-            let arrangementNode = document.getElementById("arrangeOptions");
-            for(let i = 0; i < arrangementNode.children.length; i++){
-                this.answer.push(arrangementNode.children[i].id)
+            if(this.mark) {
+                this.subQuestion.feedback = this.feedback;
+                this.subQuestion.mark = this.finalMark;
+                this.broadcastResult.emit(this.subQuestion);
+            }else{
+                let arrangementNode = document.getElementById("arrangeOptions");
+                for(let i = 0; i < arrangementNode.children.length; i++){
+                    this.answer.push(arrangementNode.children[i].id)
+                }
+                this.broadcastResult.emit({question: this.test.questions[this.index], answer: this.answer});
             }
-            this.broadcastAnswer.emit({question: this.question, answer: this.answer});
         }
     }
 
     ngOnInit() {
-
+        this.feedback = this.test.questions[this.index].feedback;
+        this.finalMark = this.test.questions[this.index].mark;
     }
 
     onSubmit() {
@@ -46,7 +62,7 @@ export class ArrangementComponent implements OnInit,OnChanges {
         for(let i = 0; i < arrangementNode.children.length; i++){
             this.answer.push(arrangementNode.children[i].id)
         }
-        this.broadcastAnswer.emit({question: this.question, answer: this.answer});
+        this.broadcastResult.emit({question: this.test.questions[this.index], answer: this.answer});
         this.answer = [];
     }
 

@@ -21,7 +21,7 @@
                         <strong>ID:</strong> {{sub._id}}
                     </div>
                     <div class="col-sm-4">
-                        <strong>Allocated:</strong> {{sub.allocatedDate | date:'shortDate'}}
+                        <strong>Allocated:</strong> {{sub.date | date:'shortDate'}}
                     </div>
                     <div class="col-sm-4">
                         <strong>Attempts:</strong> {{sub.submittedTests.length}}/<span [innerText]="sub.test.attemptsAllowed < 1? '&#8734;' : '' + sub.test.attemptsAllowed"></span>

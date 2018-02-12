@@ -22,13 +22,13 @@ let submittedQuestionsSchema  = new Schema({
     type: String,
 
     //Answer variables (if type is 'keywords', only these variables will be checked and validated) (subject to change)
-    keywordsAnswer: [String],//User submitted answer
-    choicesAnswer: [String],
-    arrangement: [String],
-    shortAnswer: String,
-
+    keywordsAnswer: {type:[String], default: null},//User submitted answer
+    choicesAnswer: {type:[String], default: null},
+    arrangement: {type:[String], default: null},
+    mark: {type: Number, default: 0 },
+    shortAnswer: { type:String, default: '' },
     //Temp
-    feedback: String,
+    feedback: { type:String, default: '' }
 });
 
 module.exports = mongoose.model('submittedquestion', submittedQuestionsSchema);

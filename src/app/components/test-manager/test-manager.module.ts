@@ -115,12 +115,8 @@ export class TestManagerComponent implements OnInit {
         });
     }
 
-    markAllocatedTest(test:any) {
-        alert('todo');
-    }
-
     settingsAllocatedTest(test:any) {
-        alert('todo');
+        alert('Not yet implimented');
     }
 
     lockTest(test:any) {

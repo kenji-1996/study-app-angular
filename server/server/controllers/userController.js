@@ -199,7 +199,7 @@ exports.listAllocatedTests = function(req, res) {
     let pageInput = req.query.page? Number.parseInt(req.query.page) : 1;
     let limitInput = req.query.limit? Number.parseInt(req.query.limit) : 2;
     let sortInput = req.query.sort? req.query.sort : "-date";
-    userTestModel.paginate({},
+    userTestModel.paginate({user: req.params.userId},
         {
             page: pageInput,
             limit: limitInput,
@@ -212,15 +212,7 @@ exports.listAllocatedTests = function(req, res) {
         },
         function(err, result) {
             if (err) return res.status(500).json({message: "Find allocated tests query failed", data: err});
-            var index;
-            //Hacky way to remove query results from pop search
-
             return res.status(200).json({message: "Tests retrieved", data: result});
-            // result.docs
-            // result.total
-            // result.limit - 10
-            // result.page - 3
-            // result.pages
         });
 };
 
@@ -259,22 +251,29 @@ exports.submitTest = function(req, res) {
                                 for(let i = 0; i < req.body.submittedTest.submittedQuestions.length; i++) {
                                     let subQuestion = new submittedQuestionModel({
                                         _id: new mongoose.Types.ObjectId(),
-                                        question:  req.body.submittedTest.submittedQuestions[i].question,
+                                        question:  req.body.submittedTest.submittedQuestions[i]._id,
                                         type:  req.body.submittedTest.submittedQuestions[i].type,
                                     });
                                     if(!tempTest.handMarked) {
+                                        let calculatedMark = 0;
                                         switch (req.body.submittedTest.submittedQuestions[i].type) {
                                             case "keywords":
-                                                obtainedMark += settings.keywordContains(tempTest.questions[i].keywordsAnswer, req.body.submittedTest.submittedQuestions[i].keywordsAnswer);
+                                                calculatedMark = settings.keywordContains(tempTest.questions[i].keywordsAnswer, req.body.submittedTest.submittedQuestions[i].keywordsAnswer);
+                                                subQuestion.mark = calculatedMark;
+                                                obtainedMark += calculatedMark;
                                                 marksAvailable += tempTest.questions[i].keywordsAnswer.length;
                                                 break;
                                             case "choices":
-                                                obtainedMark += settings.correctChoices(tempTest.questions[i].choicesAnswer, req.body.submittedTest.submittedQuestions[i].choicesAnswer, tempTest.questions[i].choicesAnswer.length);
+                                                calculatedMark =settings.correctChoices(tempTest.questions[i].choicesAnswer, req.body.submittedTest.submittedQuestions[i].choicesAnswer, tempTest.questions[i].choicesAnswer.length);
+                                                subQuestion.mark = calculatedMark;
+                                                obtainedMark += calculatedMark;
                                                 marksAvailable += tempTest.questions[i].choicesAnswer.length;
                                                 break;
                                             case "arrangement":
-                                                obtainedMark+= settings.arrangeOrderCount(tempTest.questions[i].arrangement,req.body.submittedTest.submittedQuestions[i].arrangement);
-                                                marksAvailable+= req.body.submittedTest.submittedQuestions[i].arrangement.length;
+                                                calculatedMark = settings.arrangeOrderCount(tempTest.questions[i].arrangement,req.body.submittedTest.submittedQuestions[i].arrangement);
+                                                subQuestion.mark = calculatedMark;
+                                                obtainedMark += calculatedMark;
+                                                marksAvailable += req.body.submittedTest.submittedQuestions[i].arrangement.length;
                                                 break;
                                             case "shortAnswer":
                                                 break;
@@ -401,11 +400,6 @@ exports.listAllAuthoredTests = function(req, res) {
         function(err, result) {
             if (err) return res.status(500).json({message: "Find allocated tests query failed", data: err});
             return res.status(200).json({message: "Tests retrieved", data: result});
-            // result.docs
-            // result.total
-            // result.limit - 10
-            // result.page - 3
-            // result.pages
         });
     /*testsModel.find({authors: req.params.userId})
         .populate({
@@ -518,7 +512,7 @@ exports.listSelfAllocatedTests = function(req, res) {
     let pageInput = req.query.page? Number.parseInt(req.query.page) : 1;
     let limitInput = req.query.limit? Number.parseInt(req.query.limit) : 2;
     let sortInput = req.query.sort? req.query.sort : "-date";
-    selfAllocatedTestModel.paginate({},
+    selfAllocatedTestModel.paginate({user: req.params.userId},
         {
             page: pageInput,
             limit: limitInput,

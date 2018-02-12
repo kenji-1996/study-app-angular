@@ -1,11 +1,11 @@
-<nb-card style="max-height: 800px;" [@fadeInOut]>
+<nb-card style="max-height: 800px;" [@fadeInOut] >
     <nb-card-header>
         Test browser
     </nb-card-header>
-    <nb-card-body [@fadeInOut] style="max-height: 600px;">
+    <nb-card-body style="max-height: 600px;">
         <div *ngFor="let t of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}" class="allocatedTest cursor-click"><!--[routerLink]="['/user/test/selected/', sub._id]"-->
-            <nb-card>
-                <nb-card-header>{{t.title | uppercase}} TEST</nb-card-header>
+            <nb-card [@fadeInOut]>
+                <nb-card-header>{{t.title | uppercase}}</nb-card-header>
                 <nb-card-body *ngIf="t.userTestList.length > 0">
                     <div *ngFor="let sub of t.userTestList"  class="allocatedTest">
                         <div fxLayout="row">
@@ -14,7 +14,7 @@
                             <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
                                 <div>
                                     <i matTooltip="Removes test from user and deletes their results" matTooltipPosition="above" (click)="removeAllocatedTest(t,sub)" class="fa fa-trash cursor-click"></i>
-                                    <i matTooltip="Mark this user and/or provide feedback" matTooltipPosition="above" (click)="markAllocatedTest(t)" class="fa fa-pencil cursor-click"></i>
+                                    <i *ngIf="sub.submittedTests.length > 0" matTooltip="Mark this user and/or provide feedback" matTooltipPosition="above" [routerLink]="['/author/review/', sub._id]" class="fa fa-pencil cursor-click"></i>
                                     <i matTooltip="Change settings for this users allocated test" matTooltipPosition="above"(click)="settingsAllocatedTest(t)" class="fa fa-cog cursor-click"></i>
                                 </div>
                             </div>
@@ -25,7 +25,7 @@
                                     <strong>ID:</strong> {{sub._id}}
                                 </div>
                                 <div class="col-sm-4">
-                                    <strong>Allocated:</strong> {{sub.allocatedDate | date:'shortDate'}}
+                                    <strong>Allocated:</strong> {{sub.date | date:'shortDate'}}
                                 </div>
                                 <div class="col-sm-4">
                                     <strong>Attempts:</strong> {{sub.submittedTests.length}}
@@ -140,6 +140,7 @@
                              (pageChange)="getPage($event)"></pagination-controls>
     </nb-card-footer>
 </nb-card>
+<p *ngIf="tests && tests.length < 1">No tests created</p>
 
 <!--<div class="row" *ngIf="tests" >
     <div *ngFor="let t of tests" class="col-lg-12" [@fadeInOut]>

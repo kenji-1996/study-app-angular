@@ -26,6 +26,7 @@ const routes: Routes = [
     //Author
     { path: 'author/tests', loadChildren: '../components/test-manager/test-manager.module#TestManagerModule', canActivate:[AuthGuard] },//List, will link out to create and result
     { path: 'author/create', loadChildren: '../components/create-test/create-test.module#CreateTestModule',  canActivate:[AuthGuard] },
+    { path: 'author/review/:testId', loadChildren: '../components/author-test-review/author-test-review.module#AuthorTestModule',  canActivate:[AuthGuard] },
     { path: 'author/edit/:testId', loadChildren: '../components/modify-test/modify-test.module#ModifyTestModule',  canActivate:[AuthGuard] },
     /*{ path: 'author/result/:testId', component: CreateTestComponent,  canActivate:[AuthGuard] },//Author marks/provides feedback on tests they made/are assigned,gets ID from author/tests
     */

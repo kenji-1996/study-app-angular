@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, Output, EventEmitter, OnChanges} from '@angular/core';
 import {DataEmitterService} from "../../services/data-emitter.service";
 import {DragulaService} from "ng2-dragula";
-import {newQuestion} from "../../objects/objects";
+import {newQuestion, newTest, submittedQuestion} from "../../objects/objects";
 
 @Component({
     selector: 'app-choice-question',
@@ -11,12 +11,15 @@ import {newQuestion} from "../../objects/objects";
 export class ChoiceQuestionComponent implements OnInit,OnChanges {
     @Input('fullpage') fullPage: boolean;
     @Input('submit') submit: boolean;
-    @Input('question') question: newQuestion;
-    @Input('choices') choicesArray: [String];
+    @Input('test') test: newTest;
     @Input('index') index: number;
-    @Output() broadcastAnswer: EventEmitter<any> = new EventEmitter<any>();
+    @Input('mark') mark: boolean;
+    @Input('subQuestion') subQuestion: submittedQuestion;
+    @Output() broadcastResult: EventEmitter<any> = new EventEmitter<any>();
     @Output('onBack') onBack: EventEmitter<any> = new EventEmitter<any>();
     @Output('onNext') onNext: EventEmitter<any> = new EventEmitter<any>();
+    feedback;
+    finalMark;// set as submitted q mark
     answer = [];
     choicesOptions;
 
@@ -24,31 +27,33 @@ export class ChoiceQuestionComponent implements OnInit,OnChanges {
         private dataEmit: DataEmitterService,
         private dragulaService: DragulaService,
     ) {
+        dragulaService.setOptions('choices', {
+            moves: (el, source, handle, sibling) => !this.mark
+        });
         this.choicesOptions = {copy: true, copySortSource: true};
         dragulaService.drop.subscribe((value) => {this.onDrop(value);});
     }
 
     ngOnInit() {
-
+        this.feedback = this.test.questions[this.index].feedback;
+        this.finalMark = this.test.questions[this.index].mark;
     }
 
     ngOnChanges() {
         if(this.submit) {
-            let correctChoicesNode = document.getElementById("correctChoices");
-            for(let i = 0; i < correctChoicesNode.children.length; i++){
-                this.answer.push(correctChoicesNode.children[i].id)
+            if(this.mark) {
+                this.subQuestion.feedback = this.feedback;
+                this.subQuestion.mark = this.finalMark;
+                this.broadcastResult.emit(this.subQuestion);
+            }else{
+                let correctChoicesNode = document.getElementById("correctChoices");
+                for(let i = 0; i < correctChoicesNode.children.length; i++){
+                    this.answer.push(correctChoicesNode.children[i].id)
+                }
+                this.broadcastResult.emit({question: this.test.questions[this.index], answer: this.answer});
             }
-            this.broadcastAnswer.emit({question: this.question, answer: this.answer});
-        }
-    }
 
-    onSubmit() {
-        let correctChoicesNode = document.getElementById("correctChoices");
-        for(let i = 0; i < correctChoicesNode.children.length; i++){
-            this.answer.push(correctChoicesNode.children[i].id)
         }
-        this.broadcastAnswer.emit({question: this.question, answer: this.answer});
-        this.answer = [];
     }
 
     private onDrop(value) {
