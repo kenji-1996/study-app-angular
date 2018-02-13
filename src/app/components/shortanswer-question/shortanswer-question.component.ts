@@ -28,9 +28,7 @@ export class ShortanswerQuestionComponent implements OnInit, OnChanges {
     ngOnChanges() {
         if(this.submit) {
             if(this.mark) {
-                this.subQuestion.feedback = this.feedback;
-                this.subQuestion.mark = this.finalMark;
-                this.broadcastResult.emit(this.subQuestion);
+                this.broadcastResult.emit({id: this.subQuestion._id,mark: this.finalMark, feedback: this.feedback});
             }else{
                 this.broadcastResult.emit({question: this.test.questions[this.index], answer: this.answer});
             }

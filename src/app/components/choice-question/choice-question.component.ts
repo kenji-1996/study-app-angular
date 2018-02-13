@@ -40,19 +40,15 @@ export class ChoiceQuestionComponent implements OnInit,OnChanges {
     }
 
     ngOnChanges() {
-        if(this.submit) {
-            if(this.mark) {
-                this.subQuestion.feedback = this.feedback;
-                this.subQuestion.mark = this.finalMark;
-                this.broadcastResult.emit(this.subQuestion);
-            }else{
-                let correctChoicesNode = document.getElementById("correctChoices");
-                for(let i = 0; i < correctChoicesNode.children.length; i++){
-                    this.answer.push(correctChoicesNode.children[i].id)
-                }
-                this.broadcastResult.emit({question: this.test.questions[this.index], answer: this.answer});
+        if(this.submit && this.mark) {
+            this.broadcastResult.emit({id: this.subQuestion._id,mark: this.finalMark, feedback: this.feedback});
+        }
+        if(this.submit && !this.mark) {
+            let correctChoicesNode = document.getElementById("correctChoices");
+            for(let i = 0; i < correctChoicesNode.children.length; i++){
+                this.answer.push(correctChoicesNode.children[i].id)
             }
-
+            this.broadcastResult.emit({question: this.test.questions[this.index], answer: this.answer});
         }
     }
 

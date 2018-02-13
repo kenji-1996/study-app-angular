@@ -2,7 +2,7 @@
     <nb-card-header>
         Test browser
     </nb-card-header>
-    <nb-card-body [@slideInOut]="animationState">
+    <nb-card-body [@slideInOut]="showTestSettingsState">
         <div *ngFor="let test of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}" class="allocatedTest cursor-click"><!--[routerLink]="['/user/test/selected/', sub._id]"-->
             <div fxLayout="row">
                 <h5>{{test.title}} <span class="text-muted" style="font-size:small">{{test._id}}</span></h5>

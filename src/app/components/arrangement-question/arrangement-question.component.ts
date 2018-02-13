@@ -6,13 +6,13 @@ import {newQuestion, newTest, submittedQuestion, submittedTest} from "../../obje
 @Component({
     selector: 'app-arrangement-question',
     templateUrl: './arrangement-question.component.html',
-    styleUrls: ['./arrangement-question.component.scss']
+    styleUrls: ['./arrangement-question.component.scss'],
 })
 export class ArrangementComponent implements OnInit,OnChanges {
     @Input('fullpage') fullPage: boolean;
     @Input('submit') submit: boolean;
     @Input('test') test: newTest;
-    @Input('subQuestion') subQuestion: submittedQuestion;
+    @Input('subQuestion') subQuestion: submittedQuestion = new submittedQuestion;
     @Input('index') index: number;
     @Input('mark') mark: boolean;
     @Output() broadcastResult: EventEmitter<any> = new EventEmitter<any>();
@@ -27,11 +27,11 @@ export class ArrangementComponent implements OnInit,OnChanges {
         private dataEmit: DataEmitterService,
         private dragulaService: DragulaService,
     ) {
-        dragulaService.setOptions('arrange', {
-            moves: (el, source, handle, sibling) => !this.mark
-        });
+        const bag: any = this.dragulaService.find('arrange');
+        if (bag !== undefined ) this.dragulaService.destroy('arrange');
         this.arrangementOptions = {
             revertOnSpill: true,
+            moves: (el, source, handle, sibling) => !this.mark
         };
         dragulaService.drop.subscribe((value) => {this.onDrop(value);});
     }
@@ -39,9 +39,7 @@ export class ArrangementComponent implements OnInit,OnChanges {
     ngOnChanges() {
         if(this.submit) {
             if(this.mark) {
-                this.subQuestion.feedback = this.feedback;
-                this.subQuestion.mark = this.finalMark;
-                this.broadcastResult.emit(this.subQuestion);
+                this.broadcastResult.emit({id: this.subQuestion._id,mark: this.finalMark, feedback: this.feedback});
             }else{
                 let arrangementNode = document.getElementById("arrangeOptions");
                 for(let i = 0; i < arrangementNode.children.length; i++){

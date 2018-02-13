@@ -105,7 +105,7 @@ export class newQuestion {
     question: string;
     feedback: string;
     mark: string;
-    possibleAllocatedMarks: string;
+    handMarked: boolean;
     keywordsAnswer: [string];//Actual keywords in answer
     //keywordsQuestion: string;//Question for keyword answer
 

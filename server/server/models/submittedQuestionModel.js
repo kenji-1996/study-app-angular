@@ -25,9 +25,10 @@ let submittedQuestionsSchema  = new Schema({
     keywordsAnswer: {type:[String], default: null},//User submitted answer
     choicesAnswer: {type:[String], default: null},
     arrangement: {type:[String], default: null},
-    mark: {type: Number, default: 0 },
     shortAnswer: { type:String, default: '' },
-    //Temp
+
+    //Feedback
+    mark: {type: Number, default: 0 },
     feedback: { type:String, default: '' }
 });
 

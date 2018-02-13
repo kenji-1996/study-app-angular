@@ -22,8 +22,8 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="animationState = animationState === 'out' ? 'in' : 'out'" [innerText]="animationState === 'out' ? 'Show settings': 'Hide settings'"></button>
-            <div [@slideInOut]="animationState">
+            <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showTestSettingsState = showTestSettingsState === 'out' ? 'in' : 'out'" [innerText]="animationState === 'out' ? 'Show settings': 'Hide settings'"></button>
+            <div [@slideInOut]="showTestSettingsState">
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -232,11 +232,12 @@
                                [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                                [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addTag($event)" />
                     </div>
-                    <mat-chip-list #chipList style="margin-bottom: 10px;">
+                    <mat-chip-list #chipList>
                         <mat-chip *ngFor="let key of keywords" [selectable]="selectable" [removable]="removable" (remove)="removeTag(key)">
                             {{key}}<mat-icon matChipRemove>cancel</mat-icon>
                         </mat-chip>
                     </mat-chip-list>
+                    <div style="height: 10px"></div>
                 </div> <!-- adding keywords -->
 
             </div>
@@ -296,25 +297,40 @@
             <div class="row" [hidden]="addQuestionsFormGroup.controls['type'].value != 'shortAnswer'">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <label for="inputShortAnswer">Answer</label>
+                        <label for="inputShortAnswer">Typical answer</label>
                         <textarea rows="2" class="form-control" id="inputShortAnswer" placeholder="Answer" formControlName="shortAnswer"></textarea>
                     </div>
                 </div>
             </div>
 
-            <div [ngClass]="{'hidden': !addQuestionsFormGroup.controls['type'].value}">
-                <div class="row"  style="margin-bottom: 15px;">
-                    <div class="col-md-12">
-                        <label for="inputHint">User hint</label>
-                        <input class="form-control" id="inputHint" placeholder="Hint" formControlName="hint">
+            <div class="form-group" [ngClass]="{'hidden': !addQuestionsFormGroup.controls['type'].value}">
+                <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showQuestionSettingsState = showQuestionSettingsState === 'out' ? 'in' : 'out'" [innerText]="showQuestionSettingsState === 'out' ? 'Show settings': 'Hide settings'"></button>
+                <div [@slideInOut]="showQuestionSettingsState" >
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <nb-checkbox [value]="addQuestionsFormGroup.controls.hint.valid && (addQuestionsFormGroup.controls.hint.dirty || addQuestionsFormGroup.controls.hint.touched) && addQuestionsFormGroup.controls.hint.value">Hint</nb-checkbox>
+                                <input  formControlName="hint"  class="form-control" placeholder="Question hint">
+                                <small class="form-text">A hint for the user, leave blank to not have hint or disable all hints in test settings</small>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" *ngIf="addQuestionsFormGroup.controls['type'].value">
+                                <nb-checkbox formControlName="handMarked">Hand marked</nb-checkbox>
+                                <input formControlName="mark" type="number" class="form-control" placeholder="Allocated mark" [ngClass]="{
+                                    'form-control-danger': addQuestionsFormGroup.controls.mark.invalid && (addQuestionsFormGroup.controls.mark.dirty || addQuestionsFormGroup.controls.mark.touched) && addQuestionsFormGroup.controls.handMarked.value,
+                                    'form-control-success': addQuestionsFormGroup.controls.mark.valid && (addQuestionsFormGroup.controls.mark.dirty || addQuestionsFormGroup.controls.mark.touched) && addQuestionsFormGroup.controls.mark.value
+                                    }" [attr.disabled]="!addQuestionsFormGroup.controls['handMarked'].value?'':null" [required]="addQuestionsFormGroup.controls['handMarked'].value">
+                                <small class="form-text text-danger" *ngIf="addQuestionsFormGroup.controls.mark.errors && (addQuestionsFormGroup.controls.mark.dirty || addQuestionsFormGroup.controls.mark.touched) && addQuestionsFormGroup.controls.handMarked.value">Allocated mark for this question required</small>
+                                <small class="form-text">The amount of marks this question is worth when hand marked.</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="row"  style="margin-bottom: 15px;">
-                    <div class="col-md-12" [hidden]="!settingsFormGroup.controls['handMarked'].value">
-                        <label>Possible marks</label>
-                        <input class="form-control" placeholder="Mark" formControlName="mark">
-                    </div>
-                </div>
+            </div>
+
+            <!-- Tip/Help for question -->
+            <div class="form-group">
                 <div class="row"  style="margin-bottom: 15px;">
                     <div class="col-12" [hidden]="addQuestionsFormGroup.controls['type'].value != 'shortAnswer'">
                         <div class="alert alert-danger" role="alert" *ngIf="!settingsFormGroup.controls['handMarked'].value">
@@ -341,6 +357,7 @@
                     </div>
                 </div>
             </div>
+
 
             <!-- submit question -->
             <div *ngIf="addQuestionsFormGroup.controls.type.value" class="form-group">

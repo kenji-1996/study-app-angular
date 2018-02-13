@@ -14,7 +14,7 @@
                     </div>
                     <div class="col-sm-4">
                         Mark:
-                        {{sub.obtainedMark}} / {{sub.marksAvailable}}
+                        {{sub.obtainedMark == null? 'N/A' : sub.obtainedMark + '/' + test.marksAvailable}}
                     </div>
                 </div>
 
@@ -27,7 +27,7 @@
             </div>
             <div class="text-center">
                 <div class="form-group">
-                    <button class="btn btn-hero-success" [disabled]="submitted" (click)="submitAll = true">Submit test review</button>
+                    <button class="btn btn-hero-success" [disabled]="submitted" (click)="onSubmit()">Submit test review</button>
                 </div>
             </div>
         </nb-card-body>

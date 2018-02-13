@@ -26,6 +26,7 @@ let testSchema  = new Schema({
     userTestList: [{type: Schema.Types.ObjectId, ref: 'usertests'}],//Array of resultsSchema._id that can hold x amount of submittedTests (depending on attemptsAllowed)
     selfAllocatedTestList: [{type: Schema.Types.ObjectId, ref: 'selfallocatedtests'}],
     authors: [{type: Schema.Types.ObjectId, ref: 'users'}],
+    marksAvailable: {type: Number, default: 0 },
 
     //Settings
     locked:{ type: Boolean, default:false },

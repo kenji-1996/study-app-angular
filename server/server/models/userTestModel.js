@@ -26,8 +26,7 @@ let userTestSchema  = new Schema({
 
     //List of submitted tests from different users
     submittedTests: [{type: Schema.Types.ObjectId, ref: 'submittedtest'}],//The size of this array is the amount of attempts
-    finalMark: { type: Number, default: null },
-    marksAvailable: { type: Number, default: null },
+    finalMark: { type: Number, default: 0 },
     feedback: { type: String, default: null },
     marker: {type: Schema.Types.ObjectId, ref: 'users' }, //Marker is the author who marked the test or provided feedback
     //Show marker
@@ -47,11 +46,9 @@ let userTestSchema  = new Schema({
 userTestSchema.plugin(mongoosePaginate);
 
 userTestSchema.pre('remove', function(next) {
-    console.log('user test pre remove ' + this._id);
     //submittedTestModel.findOneAndRemove({test: this.test}).exec(function (err,subTest) { if(subTest) { subTest.remove(); } });
     submittedTestModel.find({test: this.test, user: this.user}).exec(function (err,subTest) {
         for(let i = 0; i < subTest.length; i++) {
-            console.log('attempting to remove usertest ' + subTest[i]._id);
             subTest[i].remove();
         }
     });

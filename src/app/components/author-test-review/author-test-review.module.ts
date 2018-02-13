@@ -15,6 +15,7 @@ import {ChoiceQuestionComponent} from "../choice-question/choice-question.compon
 import {ArrangementComponent} from "../arrangement-question/arrangement-question.component";
 import {ShortanswerQuestionComponent} from "../shortanswer-question/shortanswer-question.component";
 import {SharedModule} from "../../modules/shared.module";
+import {isNullOrUndefined} from "util";
 
 @Component({
     selector: 'app-author-test-review',
@@ -32,23 +33,46 @@ export class AuthorTestReview implements OnInit, OnDestroy {
     ) { }
     allocatedTest: allocatedTest;
     test:newTest = new newTest('','',[],[]);
-    subTest;
-    newSubTest:submittedTest = this.subTest;
+    subTest: Array<any> = [];
+    questionResults = [];
 
     selectedId;
     answer;
     subscription;
     pickedId = null;
 
-    feedbackCount = 0;
     overallTestFeedback;
+    submitAll = false;
+
+    onSubmit() {
+        if(this.pickedId == null) {
+            this.submitFeedback();
+        }else{
+            this.submitAll = true;
+        }
+    }
 
     onBroadcastAnswer(event) {
-        if(this.feedbackCount === 0) { this.newSubTest = this.subTest; this.newSubTest.submittedQuestions = []; }
-        this.newSubTest.submittedQuestions.push(event);
-        this.feedbackCount++;
-        if(this.feedbackCount >= this.subTest.submittedQuestions.length) {
-             this.submitFeedback();
+        console.log(event);
+        this.questionResults.push(event);
+        if (this.questionResults.length >= this.allocatedTest.test.questions.length) {
+            this.submitAll = false;
+            let loop = 0;
+            let valid = true;
+            for(let i = 0; i < this.questionResults.length; i++) {
+                loop++;
+                if(!this.questionResults[i].mark) {
+                    valid = false;
+                }
+            }
+            if(loop >= this.questionResults.length && valid) {
+                this.submitFeedback();
+                this.questionResults = [];
+            }else{
+                alert('Marks required if you wish to submit test feedback');
+                this.questionResults = [];
+            }
+            //this.handleEvents(this.questionResults.submittedQuestions);
         }
     }
 
@@ -61,7 +85,6 @@ export class AuthorTestReview implements OnInit, OnDestroy {
         this.activeRoute.params.subscribe((params: Params) => {
             let testId = params['testId'];//usertest
             this.dataManagement.getDATA(global.url + '/api/tests/' + testId + '/submitlist').subscribe(allocatedTestResult => {
-                console.log(allocatedTestResult);
                 this.allocatedTest = allocatedTestResult.data;
                 this.test = allocatedTestResult.data.test;
                 this.overallTestFeedback = this.allocatedTest.feedback;
@@ -69,7 +92,7 @@ export class AuthorTestReview implements OnInit, OnDestroy {
                     let subTest = this.allocatedTest.submittedTests[j];
                     for (let i = 0; i < this.test.questions.length; i++) {
                         this.test.questions[i].feedback = subTest.submittedQuestions[i].feedback;
-                        this.test.questions[i].mark = subTest.submittedQuestions[i].mark + '';
+                        this.test.questions[i].mark = subTest.submittedQuestions[i].mark;
                         switch (this.test.questions[i].type) {
                             case "keywords":
                                 this.test.questions[i].keywordsAnswer = subTest.submittedQuestions[i].keywordsAnswer;
@@ -97,12 +120,13 @@ export class AuthorTestReview implements OnInit, OnDestroy {
     }
 
     submitFeedback() {
-        this.newSubTest.test = this.allocatedTest._id;
-        let body = { submittedTest: this.newSubTest, testFeedback: this.overallTestFeedback };
+        let body = { questionResults: this.pickedId != null? this.questionResults : null,
+            testFeedback: this.overallTestFeedback,
+            subTest: this.pickedId != null? this.allocatedTest.submittedTests[this.pickedId]._id : null,
+            test: this.allocatedTest._id};
         this.dataManagement.postDATA(global.url + '/api/tests/' + this.test._id + '/submitList', body).subscribe(dataResult=> {
                 if(dataResult) {
                     this.dataEmitter.pushUpdateArray(dataResult.message,'Test submitted','success');
-                    //this.route.navigate(['/user/allocated-tests']);
                 }
             }
         );

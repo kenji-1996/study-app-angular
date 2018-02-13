@@ -238,6 +238,7 @@ exports.submitTest = function(req, res) {
                 }else if((tempTest.expire && Date.now() > new Date(tempTest.expireDate).getTime())) {
                     return res.status(400).json({message: "Test has expired", data: null});
                 }else{
+                    let handMarked = false;
                     usersModel.findOne({unique_id: authUser['sub']})
                         .exec(function (err, user) {
                             if (req.body.submittedTest && req.body.userTestId) {
@@ -246,77 +247,57 @@ exports.submitTest = function(req, res) {
                                     user: user.id,
                                     test: req.body.submittedTest.test,
                                 });
-                                obtainedMark = 0;
-                                marksAvailable = 0;
-                                handMarkedMmarksAvailable = 0;
                                 for(let i = 0; i < req.body.submittedTest.submittedQuestions.length; i++) {
+                                    if(tempTest.questions[i].handMarked) {
+                                        handMarked = true;
+                                    }
                                     let subQuestion = new submittedQuestionModel({
                                         _id: new mongoose.Types.ObjectId(),
                                         question:  req.body.submittedTest.submittedQuestions[i]._id,
                                         type:  req.body.submittedTest.submittedQuestions[i].type,
                                     });
-                                    subQuestion.gradedMarksAvailable+=tempTest.questions[i].possibleAllocatedMarks? tempTest.questions[i].possibleAllocatedMarks: 0;
-                                    if(!tempTest.handMarked) {
-                                        let calculatedMark = 0;
-                                        switch (req.body.submittedTest.submittedQuestions[i].type) {
-
-                                            case "keywords":
-                                                calculatedMark = settings.keywordContains(tempTest.questions[i].keywordsAnswer, req.body.submittedTest.submittedQuestions[i].keywordsAnswer);
-                                                subQuestion.mark = calculatedMark;
-                                                obtainedMark += calculatedMark;
-                                                marksAvailable += tempTest.questions[i].keywordsAnswer.length;
-                                                break;
-                                            case "choices":
-                                                calculatedMark =settings.correctChoices(tempTest.questions[i].choicesAnswer, req.body.submittedTest.submittedQuestions[i].choicesAnswer, tempTest.questions[i].choicesAnswer.length);
-                                                subQuestion.mark = calculatedMark;
-                                                obtainedMark += calculatedMark;
-                                                marksAvailable += tempTest.questions[i].choicesAnswer.length;
-                                                break;
-                                            case "arrangement":
-                                                calculatedMark = settings.arrangeOrderCount(tempTest.questions[i].arrangement,req.body.submittedTest.submittedQuestions[i].arrangement);
-                                                subQuestion.mark = calculatedMark;
-                                                obtainedMark += calculatedMark;
-                                                marksAvailable += req.body.submittedTest.submittedQuestions[i].arrangement.length;
-                                                break;
-                                            case "shortAnswer":
-                                                break;
-                                            default://If no type is set, break
-                                                console.log('incorrect answer format ' + subTest.submittedQuestions[i].type);
-                                            //return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});
-                                        }
-                                    }
-                                    if(req.body.submittedTest.submittedQuestions[i].keywordsAnswer) {
-                                        subQuestion.keywordsAnswer = req.body.submittedTest.submittedQuestions[i].keywordsAnswer;
-                                    }
-                                    if(req.body.submittedTest.submittedQuestions[i].choicesAnswer) {
-                                        subQuestion.choicesAnswer = req.body.submittedTest.submittedQuestions[i].choicesAnswer;
-                                    }
-                                    if(req.body.submittedTest.submittedQuestions[i].arrangement) {
-                                        subQuestion.arrangement = req.body.submittedTest.submittedQuestions[i].arrangement;
-                                    }
-                                    if(req.body.submittedTest.submittedQuestions[i].shortAnswer) {
-                                        subQuestion.shortAnswer = req.body.submittedTest.submittedQuestions[i].shortAnswer;
+                                    let calculatedMark = 0;
+                                    switch (req.body.submittedTest.submittedQuestions[i].type) {
+                                        case "keywords":
+                                            calculatedMark = settings.keywordContains(tempTest.questions[i].keywordsAnswer, req.body.submittedTest.submittedQuestions[i].keywordsAnswer);
+                                             subQuestion.mark = tempTest.questions[i].handMarked? null : tempTest.questions[i].handMarked? null : calculatedMark;
+                                            subTest.obtainedMark += calculatedMark;
+                                            subQuestion.keywordsAnswer = req.body.submittedTest.submittedQuestions[i].keywordsAnswer;
+                                            break;
+                                        case "choices":
+                                            calculatedMark = settings.correctChoices(tempTest.questions[i].choicesAnswer, req.body.submittedTest.submittedQuestions[i].choicesAnswer, tempTest.questions[i].choicesAnswer.length);
+                                             subQuestion.mark = tempTest.questions[i].handMarked? null : calculatedMark;
+                                            subTest.obtainedMark += calculatedMark;
+                                            subQuestion.choicesAnswer = req.body.submittedTest.submittedQuestions[i].choicesAnswer;
+                                            break;
+                                        case "arrangement":
+                                            calculatedMark = settings.arrangeOrderCount(tempTest.questions[i].arrangement,req.body.submittedTest.submittedQuestions[i].arrangement);
+                                             subQuestion.mark = tempTest.questions[i].handMarked? null : calculatedMark;
+                                            subTest.obtainedMark += calculatedMark;
+                                            subQuestion.arrangement = req.body.submittedTest.submittedQuestions[i].arrangement;
+                                            break;
+                                        case "shortAnswer":
+                                             subQuestion.mark = tempTest.questions[i].handMarked? null : calculatedMark;
+                                            subQuestion.shortAnswer = req.body.submittedTest.submittedQuestions[i].shortAnswer;
+                                            break;
+                                        default:
                                     }
                                     subQuestion.save(function (err) {
                                         if (err) return res.status(500).json({message: "Submitted question saving failed", data: err});
                                     });
                                     subTest.submittedQuestions.push(subQuestion._id);
                                 }
-                                if(!tempTest.handMarked) {
-                                    subTest.obtainedMark = obtainedMark;
-                                    subTest.marksAvailable = marksAvailable;
+                                if(handMarked) {
+                                    subTest.obtainedMark = null;
                                 }
                                 subTest.save(function (err) {
                                     if (err) return res.status(500).json({message: "Submitted test saving failed", data: err});
                                     userTestModel.findOne({_id: req.body.userTestId})
                                         .exec(function (err, userTest) {
-                                            userTest.marksAvailable = subTest.marksAvailable;
-                                            if(!tempTest.handMarked) {
-                                                if(userTest.finalMark && subTest.obtainedMark >= userTest.finalMark) {
-                                                    userTest.finalMark = subTest.obtainedMark;
-                                                }else if(!userTest.finalMark) {
-                                                    userTest.finalMark = subTest.obtainedMark;
-                                                }
+                                            if(userTest.finalMark && subTest.obtainedMark >= userTest.finalMark) {
+                                                userTest.finalMark = subTest.obtainedMark;
+                                            }else if(!userTest.finalMark) {
+                                                userTest.finalMark = subTest.obtainedMark;
                                             }
                                             userTest.submittedTests.push(subTest.id);
                                             userTest.save(function (err, result) {

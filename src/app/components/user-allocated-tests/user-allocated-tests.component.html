@@ -2,7 +2,7 @@
     <nb-card-header>
         Tests allocated to you
     </nb-card-header>
-    <nb-card-body [@slideInOut]="animationState">
+    <nb-card-body [@slideInOut]="showTestSettingsState">
         <div *ngFor="let sub of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}"  class="allocatedTest cursor-click"><!--"-->
             <div fxLayout="row">
                 <h5>{{sub.test.title}} <span class="text-muted" style="font-size:small">{{sub.test._id}}</span></h5>

@@ -21,8 +21,10 @@ let submittedTestSchema  = new Schema({
     dateSubmitted: { type: Date, default: Date.now },
     //Result-related, mark saved if not manually marked by human
     obtainedMark: Number,
-    marksAvailable: Number,
-    gradedMarksAvailable: Number,
+
+    //Get these from test
+    //marksAvailable: Number,
+    //gradedMarksAvailable: Number,
     /**
      * Commented out for now, usage found in parent 'resultSchema'
      */

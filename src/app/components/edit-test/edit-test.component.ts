@@ -27,7 +27,8 @@ export class EditTestComponent implements OnInit {
     addQuestionsFormGroup: FormGroup;
     questions:newQuestion[]=[];
     authorList:string[] = [];
-    animationState = 'out';
+    showTestSettingsState = 'out';
+    showQuestionSettingsState = 'out';
 
     //drag
     public allChoices: Array<string> = [];
@@ -68,6 +69,7 @@ export class EditTestComponent implements OnInit {
             arrangement: [null],
             newArrange: [null],
             shortAnswer: [null],
+            handMarked: [false],
         });
         this.settingsFormGroup = this.formBuilder.group({
             title: [null, Validators.required],
@@ -139,7 +141,7 @@ export class EditTestComponent implements OnInit {
         this.addQuestionsFormGroup.controls['hint'].setValue(q.hint);
         this.addQuestionsFormGroup.controls['enableTimer'].setValue(q.enableTimer);
         this.addQuestionsFormGroup.controls['timer'].setValue(q.timer);
-        this.addQuestionsFormGroup.controls['mark'].setValue(q.possibleAllocatedMarks);
+        if(q.handMarked) { this.addQuestionsFormGroup.controls['handMarked'].setValue(q.handMarked); this.addQuestionsFormGroup.controls['mark'].setValue(q.possibleMarks); }
         if(q.type === 'keywords') {
             this.keywords =  q.keywordsAnswer;
         }else if(q.type === 'shortAnswer') {
@@ -209,7 +211,11 @@ export class EditTestComponent implements OnInit {
     insertQuestion(type:any) {
         let finalQuestion = new newQuestion();
         finalQuestion.type = type;
-        finalQuestion.possibleAllocatedMarks = this.addQuestionsFormGroup.controls['mark'].value;
+        if(this.addQuestionsFormGroup.controls['handMarked'].value && this.addQuestionsFormGroup.controls['mark'].value) {
+            console.log('correct!?');
+            finalQuestion.possibleMarks = this.addQuestionsFormGroup.controls['mark'].value;
+            finalQuestion.handMarked = this.addQuestionsFormGroup.controls['handMarked'].value;
+        }
         if(this.addQuestionsFormGroup.controls['question'].value) {
             finalQuestion.question = this.addQuestionsFormGroup.controls['question'].value;
         }else{
@@ -270,7 +276,7 @@ export class EditTestComponent implements OnInit {
                 this.resetForms();
                 break;
             default:
-                confirm("Select a question type and input the details!");
+                alert("Select a question type and input the details!");
         }
 
     }
@@ -284,6 +290,8 @@ export class EditTestComponent implements OnInit {
         this.addQuestionsFormGroup.controls['timer'].setValue('');
         this.addQuestionsFormGroup.controls['arrangement'].setValue('');
         this.addQuestionsFormGroup.controls['enableTimer'].setValue('');
+        this.addQuestionsFormGroup.controls['mark'].setValue('');
+        this.addQuestionsFormGroup.controls['handMarked'].setValue('');
         this.keywords = [];
         this.clearDragContainers();
     }
@@ -304,6 +312,7 @@ export class EditTestComponent implements OnInit {
     }
 
     confirmTest() {
+        console.log(this.test);
         this.submitted = true;
         this.test.title = this.settingsFormGroup.controls['title'].value;
         this.test.category = this.settingsFormGroup.controls['category'].value;

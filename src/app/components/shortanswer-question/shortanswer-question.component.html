@@ -40,10 +40,10 @@
                 <div class="col-sm-6">
                     <label>Result</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [disabled]="!test.handMarked">
+                        <input type="text" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [max]="test.questions[index].possibleMarks">
                         <span class="input-group-btn">
                             <button class="btn btn-danger">
-                              / {{test.handMarked? test.questions[index].possibleAllocatedMarks : test.questions[index].possibleMarks}}
+                              / {{test.questions[index].possibleMarks}}
                             </button>
                         </span>
                     </div>
