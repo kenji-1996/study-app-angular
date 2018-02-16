@@ -3,18 +3,23 @@
  * User schema, holds various details including most importantly 'permissions' which is a number from 0-5
  * that allows how much the user can do (Teacher, Mod, Admin, User, etc)
  */
-var mongoose     = require('mongoose');
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose');
+let bcrypt = require('bcrypt-nodejs');
+let Schema = mongoose.Schema;
+
 let mongoosePaginate = require('mongoose-paginate');
 
-var UserSchema  = new Schema({
+let UserSchema  = new Schema({
     //General information (collected from socials/submitted on registration)
     _id: Schema.Types.ObjectId,
+    username: {type: String, unique: true, required: true},
+    password: {type: String, required: true},
     unique_id: String,
-    email: String,
-    name: String,
+    token: {type:String},
+    email: [{type:String, required: true}],
+    name: {type:String, default: 'user'},
     source: String,
-    picture: String,
+    picture: {type:String, default: 'https://i.imgur.com/t2ioA6P.png'},
     permissions: { type: Number, default: 0 },
     lastLogin: { type: Date, default: Date.now },
     dateCreated: { type: Date, default: Date.now },
@@ -23,15 +28,38 @@ var UserSchema  = new Schema({
     organizations: [String],
 
 });
-UserSchema.plugin(mongoosePaginate);
 
-/*UserSchema.pre('remove', function(next) {
-    console.log('attempting to remove test');
-    testsModel.find({test: this.test}).exec(function (err,test)
-    {
-        for(let i = 0; i < test.length; i++) {test[i].remove();}
+UserSchema.methods.verifyPassword = function(password, cb) {
+    bcrypt.compare(password, this.password, function(err, isMatch) {
+        if (err) return cb(err);
+        cb(null, isMatch);
     });
-    next();
-});*/
+};
 
+UserSchema.pre('save', function(callback) {
+    let user = this;
+
+    // Break out if the password hasn't changed
+    if (!user.isModified('password')) return callback();
+
+    // Password changed so we need to hash it
+    bcrypt.genSalt(5, function(err, salt) {
+        if (err) return callback(err);
+
+        bcrypt.hash(user.password, salt, null, function(err, hash) {
+            if (err) return callback(err);
+            user.password = hash;
+            callback();
+        });
+    });
+});
+
+UserSchema.methods.verifyPassword = function(password, cb) {
+    bcrypt.compare(password, this.password, function(err, isMatch) {
+        if (err) return cb(err);
+        cb(null, isMatch);
+    });
+};
+
+UserSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model('users', UserSchema);

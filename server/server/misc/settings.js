@@ -9,6 +9,7 @@ let GoogleAuth = require('google-auth-library');
 let mongoose     = require('mongoose');
 let bodyParser = require('body-parser');
 let User = require('../models/userModel');
+var JwtStrategy = require('passport-jwt').Strategy;
 /**
  * We initialize the auth with our API link with Google
  * Then we connect to our mongodb hosted on my server, targeting the 'study' database.
@@ -117,6 +118,17 @@ module.exports.authenticate = function authenticate(token) {
             })
         );
     });
+};
+
+module.exports.passportJWT = function(passport) {
+    // JSON Web Token Strategy
+    passport.use(new JwtStrategy({ secretOrKey: 'secret' }, function(jwt_payload, done) {
+        User.findOne({id: jwt_payload.id}, function(err, user) {
+            if (err) return done(err, false);
+            if (user) done(null, user);
+            else done(null, false);
+        });
+    }));
 };
 
 
