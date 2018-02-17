@@ -17,9 +17,6 @@ app.use(cors());
 app.options('*', cors());
 app.use('/api', require('./server/misc/routemanager'));
 
-app.use(passport.initialize());
-app.use(passport.session());
-
 /**
  * Uncomment when going live
  */
