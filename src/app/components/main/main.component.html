@@ -1,0 +1,49 @@
+<nb-layout [center]="layout.id === 'center-column'" windowMode>
+  <nb-layout-header fixed>
+    <!--<ngx-header [position]="sidebar.id === 'left' ? 'normal': 'inverse'"></ngx-header>-->
+    <a (click)="toggleSidebar()" href="#" class="navigation" style="padding-right: 5px;"><i class="fa fa-bars"></i></a>
+    <div class="logo" routerLink="/home" style="margin-top:-5px;">DIGITAL<span>STUDY</span></div>
+    <span class="fill-remaining-space"></span>
+    <nb-actions size="small" class="header-container" *ngIf="logged">
+      <nb-action>
+        <nb-user *ngIf="logged && photo" [menu]="userMenu" [name]="user?.name" [picture]="photo"></nb-user>
+      </nb-action>
+      <nb-action class="control-item" icon="nb-notifications"></nb-action>
+      <nb-action class="control-item">
+        <nb-search type="rotate-layout"></nb-search>
+      </nb-action>
+    </nb-actions>
+  </nb-layout-header>
+
+  <nb-sidebar class="menu-sidebar" tag="menu-sidebar" responsive [right]="sidebar.id === 'right'">
+    <nb-sidebar-header style="margin-bottom: -25px;">
+      <a href="https://techgorilla.io/home" class="btn btn-hero-success main-btn">
+        <i class="fa fa-question-circle"></i> <span>F.A.Q</span>
+      </a>
+    </nb-sidebar-header>
+    <nb-menu [items]="menu"></nb-menu>
+  </nb-sidebar>
+
+  <nb-layout-column class="main-content">
+    <toaster-container [toasterconfig]="config"></toaster-container>
+    <router-outlet></router-outlet>
+  </nb-layout-column>
+
+  <nb-layout-column left class="small" *ngIf="layout.id === 'two-column' || layout.id === 'three-column'">
+    <nb-menu [items]="subMenu"></nb-menu>
+  </nb-layout-column>
+
+  <nb-layout-column right class="small" *ngIf="layout.id === 'three-column'">
+    <nb-menu [items]="subMenu"></nb-menu>
+  </nb-layout-column>
+
+  <!--<nb-layout-footer fixed>
+  </nb-layout-footer>-->
+
+  <nb-sidebar class="settings-sidebar"
+              tag="settings-sidebar"
+              state="collapsed"
+              fixed
+              [right]="sidebar.id !== 'right'">
+  </nb-sidebar>
+</nb-layout>

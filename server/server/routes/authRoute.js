@@ -6,13 +6,14 @@
  */
 const router = require('express').Router();
 let authController = require('../controllers/authController');
-let settings = require('../misc/settings');
+let auth = require('../misc/auth');
 
 router.route('/auth')
-    .get(authController.getUsers);
+    .get(auth.isAuthenticated,authController.getUsers)
+    .post(authController.postLogin);
 
 router.route('/auth/register')
-    .get(authController.isAuthenticated,authController.getUsers)
+    .get(auth.isAuthenticated,authController.getUsers)
     .post(authController.postRegister);
 
 router.route('/auth/login')

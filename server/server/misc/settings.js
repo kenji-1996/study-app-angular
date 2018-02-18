@@ -120,8 +120,6 @@ module.exports.authenticate = function authenticate(token) {
     });
 };
 
-
-
 module.exports.checkAuth = function checkAuth(req) {
     return new Promise((resolve) => {
         let bearerToken;

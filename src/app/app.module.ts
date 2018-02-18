@@ -29,6 +29,7 @@ import {DialogData} from "./dialogs/dialogData/dialog-data";
 import {ToasterModule} from "angular2-toaster";
 import { FormDisabledConditiionDirective } from './directives/form-disabled-conditiion.directive';
 import { StringFilterPipe } from './pipes/string-filter.pipe';
+import { MainComponent } from './components/main/main.component';
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import { StringFilterPipe } from './pipes/string-filter.pipe';
     StringtodatePipe,
     LogOutComponent,
     FormDisabledConditiionDirective,
+    MainComponent,
   ],
   imports: [
     BrowserModule,

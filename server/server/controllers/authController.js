@@ -3,11 +3,10 @@
  */
 let settings = require('../misc/settings');
 let mongoose = require('mongoose');
-var passport = require('passport');
+
 var jwt = require('jsonwebtoken');
 let config = require('../misc/config');
-var BasicStrategy = require('passport-http').BasicStrategy;
-var BearerStrategy = require('passport-http-bearer').Strategy;
+
 
 let userModel = require('../models/userModel');
 let tokenModel = require('../models/tokenModel');
@@ -45,6 +44,7 @@ exports.postRegister = function(req, res) {
         user.username = req.body.username;
         user.password = req.body.password;
         user.email = req.body.email;
+        if(req.body.name) user.name = req.body.name;
         user.save(function (err, result) {
             if (err) return res.status(500).json({message: "Saving user failed", data: err});
             return res.status(200).json({message: "User successfully registered", data: result});
@@ -55,37 +55,23 @@ exports.postRegister = function(req, res) {
 };
 
 exports.postLogin = function(req, res) {
-    userModel.findOne({username: req.body.username})
-        .exec(function (err, userResult) {
-            if(err) return res.status(500).json({message: "Server failed search users", data: err});
-            //if(!user) return res.status(500).json({message: "No valid user", data: err});
-            userResult.verifyPassword(req.body.password, function(err, isMatch) {
-                if (err) {  return res.status(500).json({message: "Server failed to process user login", data: err});}
+    if(req.body.password && req.body.username) {
+        userModel.findOne({username: req.body.username})
+            .exec(function (err, userResult) {
+                if(err) return res.status(500).json({message: "Server failed search users", data: err});
+                if(!userResult) return res.status(500).json({message: "Username invalid", data: err});
+                userResult.verifyPassword(req.body.password, function(err, isMatch) {
+                    if (err) {  return res.status(500).json({message: "Server failed to process user login", data: err});}
 
-                // Password did not match
-                if (!isMatch) {  return res.status(403).json({message: "Password incorrect", data: err}); }
+                    // Password did not match
+                    if (!isMatch) {  return res.status(403).json({message: "Password incorrect", data: err}); }
 
-                // Success
-                console.log(config.jwtSecret);
-                let token = jwt.sign(JSON.stringify(userResult),config.jwtSecret);
-                return res.status(200).json({message: "Successful login", data: token});
+                    // Success
+                    let token = jwt.sign(JSON.stringify(userResult),config.jwtSecret);
+                    return res.status(200).json({message: "Successful login", data: token});
+                });
             });
-        });
-
+    }else{
+        return res.status(400).json({message: "Username and password are required", data: req.body});
+    }
 };
-var JwtStrategy = require('passport-jwt').Strategy,
-    ExtractJwt = require('passport-jwt').ExtractJwt;
-var opts = {};
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = config.jwtSecret;
-
-
-passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    userModel.findOne({_id: jwt_payload._id}, function(err, user) {
-        if (err) return done(err, false);
-        if (user) done(null, user);
-        else done(null, false);
-    });
-}));
-
-exports.isAuthenticated = passport.authenticate('jwt', { session : false });
