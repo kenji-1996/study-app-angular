@@ -30,6 +30,9 @@ import {ToasterModule} from "angular2-toaster";
 import { FormDisabledConditiionDirective } from './directives/form-disabled-conditiion.directive';
 import { StringFilterPipe } from './pipes/string-filter.pipe';
 import { MainComponent } from './components/main/main.component';
+import { RouterOutletComponent } from './components/router-outlet/router-outlet.component';
+import { AuthComponent } from './components/auth/auth/auth.component';
+import { RegisterComponent } from './components/auth/register/register.component';
 
 
 @NgModule({
@@ -44,6 +47,9 @@ import { MainComponent } from './components/main/main.component';
     LogOutComponent,
     FormDisabledConditiionDirective,
     MainComponent,
+    RouterOutletComponent,
+    AuthComponent,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,

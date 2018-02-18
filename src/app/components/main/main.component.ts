@@ -1,4 +1,4 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {LocationStrategy, PathLocationStrategy} from "@angular/common";
 import {fadeAnimate} from "../../misc/animation";
 import {MENU_ITEMS} from "../menu";
@@ -7,12 +7,18 @@ import {BodyOutputType, Toast, ToasterConfig, ToasterService} from "angular2-toa
 import {DataEmitterService} from "../../services/data-emitter.service";
 import {AuthenticateService} from "../../services/authenticate.service";
 import {MatSnackBar} from "@angular/material";
-import {Router} from "@angular/router";
+import {Router, RouterModule, Routes} from "@angular/router";
 import {StateService} from "../../services/state.service";
 import {
     NbMediaBreakpoint, NbMediaBreakpointsService, NbMenuService, NbSidebarService,
     NbThemeService
 } from "@nebular/theme";
+import {FourOhFourPage} from "../404-page/404-page.component";
+import {AuthGuard} from "../../guards/auth.guard";
+import {LogOutComponent} from "../log-out/log-out.component";
+import {LoginGuard} from "../../guards/login.guard";
+import {LoginComponent} from "../login/login.component";
+import {ImportsModule} from "../../modules/imports.module";
 
 @Component({
     selector: 'app-main',
@@ -124,4 +130,18 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.sidebarState$.unsubscribe();
         this.menuClick$.unsubscribe();
     }
+}
+
+const routes: Routes = [
+
+];
+
+
+@NgModule({
+    declarations: [MainComponent],
+    imports: [
+    ]
+})
+export class MainComponentModule {
+
 }
