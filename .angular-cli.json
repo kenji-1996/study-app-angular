@@ -6,7 +6,7 @@
   "apps": [
     {
       "root": "src",
-      "outDir": "dist",
+      "outDir": "server/dist",
       "assets": [
         "assets",
         "favicon.ico"
@@ -66,6 +66,9 @@
     "styleExt": "scss",
     "component": {
       "spec": false
+    },
+    "build": {
+      "showCircularDependencies": false
     }
   }
 }

@@ -4,44 +4,15 @@
 //Question API
 const router = require('express').Router();
 let resultController = require('../controllers/resultController');
+let auth = require('../misc/auth');
 
 router.route('/results')
-    .get(function(req,res) {
-        try {
-            resultController.listResultsDepreciated(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong fetching all results", data: err});
-        }
-    })
-    .post(function(req,res) {
-        try {
-            resultController.submitUserResult(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong creating result", data: err});
-        }
-    });
+    .get(auth.isAuthenticated,resultController.listResultsDepreciated)
+    .post(auth.isAuthenticated,resultController.submitUserResult);
 
 router.route('/results/:resultId')
-    .get(function(req,res) {
-        try {
-            resultController.listResult(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong fetching the result", data: err});
-        }
-    })
-    .put(function(req,res) {
-        try {
-            resultController.updateResult(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong updating the result", data: err});
-        }
-    })
-    .delete(function(req,res) {
-        try {
-            resultController.deleteResult(req,res);
-        } catch (err) {
-            return res.status(500).json({message: "Something went wrong deleting the result", data: err});
-        }
-    });
+    .get(auth.isAuthenticated,resultController.listResult)
+    .put(auth.isAuthenticated,resultController.updateResult)
+    .delete(auth.isAuthenticated,resultController.deleteResult);
 
 module.exports = router;

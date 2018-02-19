@@ -4,34 +4,21 @@
 //Question API
 const router = require('express').Router();
 let testController = require('../controllers/testController');
+let auth = require('../misc/auth');
+
 
 router.route('/tests')
-    .get(function(req,res) {
-        testController.listTests(req,res);
-    })
-    .post(function(req,res) {
-        testController.createTest(req,res);
-    });
+    .get(auth.isAuthenticated,testController.listTests)
+    .post(auth.isAuthenticated,testController.createTest);
 
 router.route('/tests/:testId')
-    .get(function(req,res) {
-        testController.listUserTest(req,res);
-    })
-    .put(function(req,res) {
-        testController.updateTest(req,res);
-
-    })
-    .delete(function(req,res) {
-        testController.hardDeleteTest(req,res);
-    });
+    .get(auth.isAuthenticated,testController.listUserTest)
+    .put(auth.isAuthenticated,testController.updateTest)
+    .delete(auth.isAuthenticated,testController.hardDeleteTest);
 
 router.route('/tests/:testId/submitlist')
-    .get(function(req,res) {
-        testController.listSubmits(req,res);
-    })
-    .post(function(req,res) {
-        testController.reviewSubmits(req,res);
-    });
+    .get(auth.isAuthenticated,testController.listSubmits)
+    .post(auth.isAuthenticated,testController.reviewSubmits);
 
 //Self allocated (not allocated by author!)
 router.route('/tests/:testId/self/:allocatedId')
@@ -43,20 +30,12 @@ router.route('/tests/:testId/self/:allocatedId')
         //testController.updateTest(req,res);
         res.json({message:'work in progress ):',data:null});
     })
-    .delete(function(req,res) {
-        testController.removeSelfAllocatedTest(req,res);
-    });
+    .delete(auth.isAuthenticated,testController.removeSelfAllocatedTest);
 router.route('/tests/author/:testId')
-    .get(function(req,res) {
-        testController.listTest(req,res);
-    });
+    .get(auth.isAuthenticated,testController.listTest);
 
 router.route('/tests/:testId/questions')
-    .get(function(req,res) {
-        testController.listTestQuestions(req,res);
-    })
-    .post(function(req,res) {
-        testController.updateQuestions(req,res);
-    });
+    .get(auth.isAuthenticated,testController.listTestQuestions)
+    .get(auth.isAuthenticated,testController.updateQuestions);
 
 module.exports = router;

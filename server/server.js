@@ -20,10 +20,10 @@ app.use('/api', require('./server/misc/routemanager'));
 /**
  * Uncomment when going live
  */
-/*app.use(express.static(html));
+app.use(express.static(html));
 app.get('*', function(req, res) {
     res.sendFile(html + '/index.html')
-});*/
+});
 
 app.listen(4949, () => {
     console.log(`Node Express server listening on http://localhost:4949`);

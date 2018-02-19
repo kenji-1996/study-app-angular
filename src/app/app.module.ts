@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './components/app.component';
 import {AppRouterModule} from "./modules/app-router";
-import { LoginComponent } from './components/login/login.component';
 
 import {AuthenticateService} from "./services/authenticate.service";
 import {DataManagementService} from "./services/data-management.service";
@@ -12,7 +11,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ReactiveFormsModule} from "@angular/forms";
 import {DataEmitterService} from "./services/data-emitter.service";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {AddHeaderInterceptor, HttpErrorInterceptor} from "./modules/AddHeaderInterceptor";
+import { HttpErrorInterceptor, TokenInterceptor} from "./modules/AddHeaderInterceptor";
 import {EditTestNameDialog} from "./dialogs/editTestName/edit-test-name";
 import {EditQuestionDialog} from "./dialogs/editQuestion/edit-question";
 import {LoginGuard} from "./guards/login.guard";
@@ -33,53 +32,54 @@ import { MainComponent } from './components/main/main.component';
 import { RouterOutletComponent } from './components/router-outlet/router-outlet.component';
 import { AuthComponent } from './components/auth/auth/auth.component';
 import { RegisterComponent } from './components/auth/register/register.component';
+import {AuthLoginComponent} from "./components/auth/login/login.component";
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    DialogData,
-    EditTestNameDialog,
-    EditQuestionDialog,
-    FourOhFourPage,
-    StringtodatePipe,
-    LogOutComponent,
-    FormDisabledConditiionDirective,
-    MainComponent,
-    RouterOutletComponent,
-    AuthComponent,
-    RegisterComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRouterModule,
-    ToasterModule,
-    ImportsModule,
-    BrowserAnimationsModule,
-    NbThemeModule.forRoot({ name: 'default' }),
-    NgbModule.forRoot(),
-    DialogsModule,
-  ],
-  entryComponents: [
-    DialogData,
-    EditTestNameDialog,
-    EditQuestionDialog,
-  ],
-  providers: [
-    AuthenticateService,
-    DataManagementService,
-    LoginGuard,
-    AuthGuard,
-    NbSidebarService,
-    NbMenuService,
-    NbMenuInternalService,
-    StateService,
-    DataEmitterService,
-    {provide: HTTP_INTERCEPTORS, useClass: AddHeaderInterceptor, multi: true,},
-    {provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true,},
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        DialogData,
+        EditTestNameDialog,
+        EditQuestionDialog,
+        FourOhFourPage,
+        StringtodatePipe,
+        LogOutComponent,
+        FormDisabledConditiionDirective,
+        MainComponent,
+        RouterOutletComponent,
+        AuthComponent,
+        AuthLoginComponent,
+        RegisterComponent,
+    ],
+    imports: [
+        BrowserModule,
+        AppRouterModule,
+        ToasterModule,
+        ImportsModule,
+        BrowserAnimationsModule,
+        NbThemeModule.forRoot({ name: 'default' }),
+        NgbModule.forRoot(),
+        DialogsModule,
+    ],
+    entryComponents: [
+        DialogData,
+        EditTestNameDialog,
+        EditQuestionDialog,
+    ],
+    providers: [
+        AuthenticateService,
+        DataManagementService,
+        LoginGuard,
+        AuthGuard,
+        NbSidebarService,
+        NbMenuService,
+        NbMenuInternalService,
+        StateService,
+        DataEmitterService,
+        {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true,},
+        {provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true,},
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
 

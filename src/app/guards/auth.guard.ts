@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
             return true;
         }
         this.dataEmitter.pushUpdateArray('You need to be logged in to access this page.');
-        this.router.navigate(['/']);
+        this.router.navigate(['/auth/login']);
         return false;
     }
 }

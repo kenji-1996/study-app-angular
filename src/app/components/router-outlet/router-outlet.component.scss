@@ -1,0 +1,79 @@
+:host /deep/ {
+  $auth-layout-padding: 2.5rem;
+
+  nb-layout .layout .layout-container .content .columns nb-layout-column {
+    padding: $auth-layout-padding;
+  }
+
+  nb-card {
+    height: calc(100vh - 2 * #{$auth-layout-padding});
+  }
+
+  nb-card {
+    margin: 0;
+  }
+  .flex-centered {
+    margin: auto;
+  }
+  nb-card-body {
+    display: flex;
+  }
+
+  // TODO rewrite when develop responsive
+  @media (max-width: 550px) {
+    /deep/ nb-layout .layout .layout-container .content .columns nb-layout-column {
+      padding: 0;
+    }
+
+    nb-card {
+      border-radius: 0;
+      height: 100vh;
+    }
+  }
+
+}
+
+div.zoomed {
+  zoom: 3;
+  -moz-transform: scale(3);
+  -moz-transform-origin: 0 0;
+}
+.bg {
+  /* The image used */
+  background-image: url("https://i.imgur.com/nJbXMXM.jpg");
+
+  /* Full height */
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.caption {
+  margin: 30px;
+  text-align: center;
+  color: #000;
+}
+.buttons {
+  margin: 50px;
+  text-align: center;
+  color: #000;
+}
+
+.caption div.border {
+  background-color: #111;
+  color: rgba( #FFF, 1 );
+  padding: 18px;
+  font-size: 25px;
+  letter-spacing: 10px;
+}
+
+.buttons div.para {
+  background-color: #111;
+  color: rgba( #FFF, 1 );
+  padding: 11px;
+  font-size: 18px;
+  letter-spacing: 6px;
+}

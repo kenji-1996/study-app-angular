@@ -4,7 +4,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
     {
         title: 'Dashboard',
         icon: 'nb-home',
-        link: '/home',
+        link: '/app/home',
         home: true,
     },
     /*{ //Title of navlist
@@ -17,11 +17,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
         children: [
             {
                 title: 'Profile',
-                link: '/user/profile',
+                link: '/app/user/profile',
             },
             {
                 title: 'Sign out',
-                link: '/user/sign-out',
+                link: '/app/user/sign-out',
             },
         ],
     },
@@ -31,34 +31,34 @@ export const MENU_ITEMS: NbMenuItem[] = [
         children: [
             {
                 title: 'My tests',
-                link: '/user/tests',
+                link: '/app/user/tests',
             },
             {
                 title: 'Allocated tests',
-                link: '/user/allocated-tests',
+                link: '/app/user/allocated-tests',
             },
             {
                 title: 'Browser',
-                link: '/user/browse',
+                link: '/app/user/browse',
             },
             {
                 title: 'Test',
-                link: '/user/test/selected',
+                link: '/app/user/test/selected',
                 hidden: true,
             },
             {
                 title: 'Test',
-                link: '/user/test/live',
+                link: '/app/user/test/live',
                 hidden: true,
             },
             {
                 title: 'Test',
-                link: '/user/test/edit',
+                link: '/app/user/test/edit',
                 hidden: true,
             },
             {
                 title: 'Test',
-                link: '/user/test/result',
+                link: '/app/user/test/result',
                 hidden: true,
             },
         ],
@@ -69,24 +69,24 @@ export const MENU_ITEMS: NbMenuItem[] = [
         children: [
             {
                 title: 'Tests',
-                link: '/author/tests',
+                link: '/app/author/tests',
             },
             {
                 title: 'Create',
-                link: '/author/create',
+                link: '/app/author/create',
             },
             {
                 title: 'Mark',
-                link: '/author/review',
+                link: '/app/author/review',
             },
             {
                 title: 'Review',
-                link: '/author/review',
+                link: '/app/author/review',
                 hidden: true,
             },
             {
                 title: 'Review',
-                link: '/author/edit',
+                link: '/app/author/edit',
                 hidden: true,
             },
             /*{

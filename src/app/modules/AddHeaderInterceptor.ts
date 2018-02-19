@@ -8,7 +8,24 @@ import 'rxjs/add/observable/empty';
 import 'rxjs/add/operator/retry';
 import {DataEmitterService} from "../services/data-emitter.service"; // don't forget the imports
 
-export class AddHeaderInterceptor implements HttpInterceptor {
+@Injectable()
+export class TokenInterceptor implements HttpInterceptor {
+
+    constructor() {}
+
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+        let autHeader = localStorage.getItem('token')? { Authorization: `Bearer ${localStorage.getItem('token')}` } : {};
+
+        request = request.clone({
+            setHeaders: autHeader
+        });
+
+        return next.handle(request);
+    }
+}
+
+/*export class AddHeaderInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // Clone the request to add the new header
         if(localStorage.getItem('idtoken')) {
@@ -17,7 +34,7 @@ export class AddHeaderInterceptor implements HttpInterceptor {
             return next.handle(clonedRequest);
         }
     }
-}
+}*/
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {

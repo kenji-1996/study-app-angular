@@ -18,8 +18,7 @@ export class LoginGuard implements CanActivate {
         if(!this.authService.localLoggedIn()) {
             return true;
         }
-        this.dataEmitter.pushUpdateArray('Welcome ' + JSON.parse(localStorage.getItem('userObject')).name);
-        this.router.navigate(['/home']);
+        this.router.navigate(['/app']);
         return false;
     }
 }

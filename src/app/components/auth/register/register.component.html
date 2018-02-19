@@ -1,3 +1,102 @@
-<p>
-  register works!
-</p>
+<nb-layout>
+    <nb-layout-column>
+        <nb-card>
+            <nb-card-body>
+                <div class="flex-centered col-xl-4 col-lg-6 col-md-8 col-sm-12">
+                    <h2 class="title">Sign Up</h2>
+                    <form (ngSubmit)="form.form.valid && register()" #form="ngForm">
+                        <div class="form-group">
+                            <label class="sr-only">Username</label>
+                            <input name="username" [(ngModel)]="model.username" #username="ngModel"
+                                   class="form-control" placeholder="Username"
+                                   [class.form-control-danger]="username.invalid && username.touched"
+                                   [required]="true" [minlength]="3" [maxlength]="40" autofocus>
+                            <small class="form-text error" *ngIf="username.invalid && username.touched">Username invalid</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-email" class="sr-only">Email address</label>
+                            <input name="email" [(ngModel)]="model.email" id="input-email" #email="ngModel"
+                                   class="form-control" placeholder="Email address" pattern=".+@.+..+"
+                                   [class.form-control-danger]="email.invalid && email.touched"
+                                   [required]="true">
+                            <small class="form-text error" *ngIf="email.invalid && email.touched">
+                                Email is required and needs to be valid</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-password" class="sr-only">Password</label>
+                            <input name="password" [(ngModel)]="model.password" type="password" id="input-password"
+                                   class="form-control" placeholder="Password" #password="ngModel"
+                                   [class.form-control-danger]="password.invalid && password.touched"
+                                   [required]="true"
+                                   [minlength]="6"
+                                   [maxlength]="100">
+                            <small class="form-text error" *ngIf="password.invalid && password.touched">
+                                Password is required
+                                !          </small>
+                            <small class="form-text error"
+                                    *ngIf="password.invalid && password.touched && (password.errors?.minlength || password.errors?.maxlength)">
+                                Password should contains
+                                characters
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-re-password" class="sr-only">Repeat password</label>
+                            <input
+                                    name="rePass" [(ngModel)]="model.confirmpassword" type="password" id="input-re-password"
+                                    class="form-control" placeholder="Confirm Password" #confirmpassword="ngModel"
+                                    [class.form-control-danger]="(confirmpassword.invalid || password.value != confirmpassword.value) && confirmpassword.touched"
+                                    [required]="true">
+                            <small class="form-text error"
+                                   *ngIf="confirmpassword.invalid && confirmpassword.touched && confirmpassword.errors?.required">
+                                Password confirmation is required
+                                !          </small>
+                            <small
+                                    class="form-text error"
+                                    *ngIf="confirmpassword.touched && password.value != confirmpassword.value && !confirmpassword.errors?.required">
+                                Password does not match the confirm password.
+                            </small>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="button" class="btn btn-hero-info btn-tn" (click)="showSettingsState = showSettingsState === 'out' ? 'in' : 'out'" [innerText]="'Optional details'"></button>
+                            <div [@slideInOut]="showSettingsState">
+                                <p style="height: 5px;"></p>
+                                <div class="form-group">
+                                    <label for="name" class="sr-only">Full name</label>
+                                    <input name="name" [(ngModel)]="model.name" id="name" #name="ngModel" class="form-control" placeholder="Full name"
+                                           [class.form-control-danger]="name.invalid && name.touched" [minlength]="2" [maxlength]="30">
+                                    <small class="form-text error" *ngIf="name.invalid && name.touched">Name length required to be between 2 and 30 characters</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="picture" class="sr-only">picture URL</label>
+                                    <input name="picture" [(ngModel)]="model.picture" id="picture" #picture="ngModel" class="form-control" placeholder="picture URL"
+                                           [class.form-control-danger]="picture.invalid && picture.touched" [minlength]="15" pattern="https?://.+" >
+                                    <small class="form-text error" *ngIf="picture.invalid && picture.touched">Must be a valid URL</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group accept-group col-sm-12" *ngIf="true">
+                            <nb-checkbox name="terms" [(ngModel)]="model.terms" [required]="true">
+                                Agree to <a href="#" target="_blank"><strong>Terms & Conditions</strong></a>
+                            </nb-checkbox>
+                        </div>
+
+                        <button [disabled]="submitted || !form.valid" class="btn btn-block btn-hero-success"
+                                [class.btn-pulse]="submitted">
+                            Register
+                        </button>
+                    </form>
+
+                    <div class="links">
+                        <small class="form-text">
+                            Already have an account? <a routerLink="../login"><strong>Sign in</strong></a>
+                        </small>
+                    </div>
+                </div>
+            </nb-card-body>
+        </nb-card>
+    </nb-layout-column>
+</nb-layout>

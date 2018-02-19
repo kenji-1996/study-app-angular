@@ -33,21 +33,18 @@ exports.listAllNews = function(req, res) {
  * @return JSON {message,data}
  */
 exports.createNews = function(req, res) {
-    settings.ensureAuthorized(req,res).then(function (user) {
-        if(!user) { return null; }
-        usersModel.findOne({unique_id: user['sub']}, function (err, user) {
-            if(!(user.permissions >= 3)) { return res.status(403).json({message: "Not permitted to create news", data: err}); }
-            if (err) return res.status(500).json({message: "Find home query failed", data: err});
-            let result = new newsModel(req.body);
-            result._id = new mongoose.Types.ObjectId();
-            result.save(function (err, result) {
-                if (err) return res.status(500).json({message: "News post query failed", data: err});
-                /*user.results.push(result.id);
-                user.save(function (err) {
-                    if (err) return res.status(500).json({message: "Save home query failed", data: err});
-                });*/
-                return res.status(200).json({message: "News post successfully created.", data: result});
-            });
+    usersModel.findOne({_id: req.user._id}, function (err, user) {
+        if(!(user.permissions >= 3)) { return res.status(403).json({message: "Not permitted to create news", data: err}); }
+        if (err) return res.status(500).json({message: "Find home query failed", data: err});
+        let result = new newsModel(req.body);
+        result._id = new mongoose.Types.ObjectId();
+        result.save(function (err, result) {
+            if (err) return res.status(500).json({message: "News post query failed", data: err});
+            /*user.results.push(result.id);
+             user.save(function (err) {
+             if (err) return res.status(500).json({message: "Save home query failed", data: err});
+             });*/
+            return res.status(200).json({message: "News post successfully created.", data: result});
         });
     });
 };
@@ -73,16 +70,13 @@ exports.listNews = function(req, res) {
  * @param res
  */
 exports.updateNews = function(req, res) {
-    settings.ensureAuthorized(req,res).then(function (user) {
-        if(!user) { return null; }
-        usersModel.findOne({unique_id: user['sub']}, function (err, user) {
+        usersModel.findOne({_id: req.user._id}, function (err, user) {
             if (!(user.permissions >= 3)) { return res.status(403).json({message: "Not permitted to update news", data: err}); }
             newsModel.findOneAndUpdate({_id: req.params.newsId}, req.body, {new: true}, function (err, news) {
                 if (err) return res.status(500).json({message: "Save test query failed", data: err});
                 return res.status(200).json({message: ('News ' + news._id + ' updated'), data: news});
             });
         });
-    });
 };
 
 /**
@@ -92,22 +86,18 @@ exports.updateNews = function(req, res) {
  * @param res
  */
 exports.deleteNews = function(req, res) {
-     settings.ensureAuthorized(req,res).then(function (authUser) {
-         if(!authUser) { return null; }
-         usersModel.findOne({unique_id: authUser['sub']})
-             .exec(function (err,userQ1) {
-                 if (!(userQ1.permissions >= 3)) { return res.status(403).json({message: "Not permitted to delete news", data: err}); }
-
-                 newsModel.findById(req.params.newsId)
-                     .exec( function(err, result) {
-                         if (err) return res.status(500).json({message:"Delete news query failed", data: err});
-                         result.remove();
-                         /*userQ1.update({ $pull: { "results": req.params.resultId } }, { safe: true, upsert: true }, function(err) {
-                             try { if (err) { return res.status(500).json({message: "Couldnt find a result to remove", data: err}); }
-                             } catch (err) { console.log(err); }
-                         });*/
-                         return res.status(200).json({message: ('News deleted'), data: result});
-                 });
-             });
-    });
+    usersModel.findOne({_id: req.user._id})
+        .exec(function (err,userQ1) {
+            if (!(userQ1.permissions >= 3)) { return res.status(403).json({message: "Not permitted to delete news", data: err}); }
+            newsModel.findById(req.params.newsId)
+                .exec( function(err, result) {
+                    if (err) return res.status(500).json({message:"Delete news query failed", data: err});
+                    result.remove();
+                    /*userQ1.update({ $pull: { "results": req.params.resultId } }, { safe: true, upsert: true }, function(err) {
+                     try { if (err) { return res.status(500).json({message: "Couldnt find a result to remove", data: err}); }
+                     } catch (err) { console.log(err); }
+                     });*/
+                    return res.status(200).json({message: ('News deleted'), data: result});
+                });
+        });
 };

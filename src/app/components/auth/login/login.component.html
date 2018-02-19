@@ -1,3 +1,57 @@
-<p>
-  login works!
-</p>
+<nb-layout>
+    <nb-layout-column>
+        <nb-card>
+            <nb-card-body>
+                <div class="flex-centered col-xl-4 col-lg-6 col-md-8 col-sm-12">
+
+                    <h2 class="title">Sign In</h2>
+
+                    <form (ngSubmit)="form.form.valid && login()" #form="ngForm">
+
+                        <div class="form-group">
+                            <label class="sr-only">Username</label>
+                            <input name="username" [(ngModel)]="model.username" #username="ngModel"
+                                   class="form-control" placeholder="Username"
+                                   [class.form-control-danger]="username.invalid && username.touched"
+                                   [required]="true" [minlength]="3" [maxlength]="40" autofocus>
+                            <small class="form-text error" *ngIf="username.invalid && username.touched">Username is required</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-password" class="sr-only">Password</label>
+                            <input name="password" type="password" id="input-password"
+                                   [class.form-control-danger]="password.invalid && password.touched"
+                                   class="form-control" placeholder="Password" [(ngModel)]="model.password" #password="ngModel" required>
+                            <small class="form-text error" *ngIf="password.invalid && password.touched">Password is required!</small>
+                        </div>
+
+                        <div class="form-group accept-group col-sm-12">
+                            <nb-checkbox name="rememberMe" [(ngModel)]="model.rememberMe" matTooltip="Creates a longer session">Remember me</nb-checkbox>
+                            <!--<a class="forgot-password" routerLink="../request-password">Forgot Password?</a> TODO -->
+                        </div>
+
+                        <button class="btn btn-block btn-hero-success">
+                            Sign In
+                        </button>
+                    </form>
+
+                    <div class="links">
+                        <!--
+                        <small class="form-text">Or connect with:</small>
+                        <div class="socials">
+                            <a href="https://github.com/akveo" target="_blank" class="socicon-github"></a>
+                            <a href="https://www.facebook.com/akveo/" target="_blank" class="socicon-facebook"></a>
+                            <a href="https://twitter.com/akveo_inc" target="_blank" class="socicon-twitter"></a>
+                        </div>
+                        TODO add social media ways to log in
+                        -->
+
+                        <small class="form-text">
+                            Don't have an account? <a routerLink="../register"><strong>Sign Up</strong></a>
+                        </small>
+                    </div>
+                </div>
+            </nb-card-body>
+        </nb-card>
+    </nb-layout-column>
+</nb-layout>

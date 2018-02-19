@@ -3,70 +3,38 @@
  */
 const router = require('express').Router();
 let userController = require('../controllers/userController');
-
-router.route('/users')
-    .get(function(req,res) {
-        userController.listUsers(req,res);
-    })
-    .post(function(req,res) {
-        userController.authenticateUser(req,res);
-    });
-
+let auth = require('../misc/auth');
 
 router.route('/users/:userId')
-    .get(function(req,res) {
-        userController.listUser(req,res);
-    })
-    .put(function(req,res) {
-        userController.updateUser(req,res);
-    })
-    .delete(function(req,res) {
-        userController.deleteUser(req,res);
-    });
+    .get(auth.isAuthenticated,userController.listUser)
+    .put(auth.isAuthenticated,userController.updateUser)
+    .delete(auth.isAuthenticated,userController.deleteUser)
 
 /**
  * No authored test listing here
  * @param tests[] in userModel (allocated non-editable)
  */
 router.route('/users/:userId/tests')//Get all allocated tests, not authored!
-    .get(function(req,res) {
-        userController.listAllocatedTests(req, res);
-    });
+    .get(auth.isAuthenticated,userController.listAllocatedTests);
 
 //Get self allocated tests
 router.route('/users/:userId/self')
-    .get(function(req,res) {
-        userController.listSelfAllocatedTests(req, res);
-    })
-    .post(function(req,res) {
-        userController.selfAllocateTest(req,res);
-    });
+    .get(auth.isAuthenticated,userController.listSelfAllocatedTests)
+    .post(auth.isAuthenticated,userController.selfAllocateTest);
 
 router.route('/users/:userId/results')
-    .get(function(req,res) {
-        userController.listAllUserTests(req,res);
-    })
-    .post(function (req,res) {
-        userController.submitTest(req, res);
-    });
+    .get(auth.isAuthenticated,userController.listAllUserTests)
+    .put(auth.isAuthenticated,userController.submitTest);
 
 router.route('/users/:userId/results/:testId')
-    .get(function(req,res){
-        userController.listTestResults(req,res);
-    });
+    .get(auth.isAuthenticated,userController.listTestResults);
 
 router.route('/users/:userId/authored')
-    .get(function(req,res) {
-        userController.listAllAuthoredTests(req,res);
-    })
-    .post(function(req,res) {
-        userController.authorAssigned(req,res);
-    })
+    .get(auth.isAuthenticated,userController.listAllAuthoredTests)
+    .post(auth.isAuthenticated,userController.authorAssigned);
 
 //Remove allocated test from test
 router.route('/users/:userId/authored/:testId/:targetUserId')
-    .delete(function (req,res) {
-        userController.removeAssignedTest(req,res);
-    });
+    .delete(auth.isAuthenticated,userController.removeAssignedTest)
 
 module.exports = router;

@@ -23,8 +23,9 @@ export class UserProfileComponent implements OnInit {
     ) {  }
 
     ngOnInit() {
-        this.dataManagement.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject')).idtoken).subscribe(httpUser => {
+        this.dataManagement.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id).subscribe(httpUser => {
             this.user = httpUser.data;
+            console.log(httpUser);
             console.log(this.user);
         });
     }

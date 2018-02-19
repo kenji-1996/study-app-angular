@@ -3,22 +3,19 @@ import {LocationStrategy, PathLocationStrategy} from "@angular/common";
 import {fadeAnimate} from "../../misc/animation";
 import {MENU_ITEMS} from "../menu";
 import {Subscription} from "rxjs/Subscription";
-import {BodyOutputType, Toast, ToasterConfig, ToasterService} from "angular2-toaster";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import 'rxjs/add/operator/withLatestFrom';
+import 'rxjs/add/operator/delay';
+import { ToasterConfig, ToasterService} from "angular2-toaster";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import {AuthenticateService} from "../../services/authenticate.service";
 import {MatSnackBar} from "@angular/material";
-import {Router, RouterModule, Routes} from "@angular/router";
+import {Router,  Routes} from "@angular/router";
 import {StateService} from "../../services/state.service";
 import {
     NbMediaBreakpoint, NbMediaBreakpointsService, NbMenuService, NbSidebarService,
     NbThemeService
 } from "@nebular/theme";
-import {FourOhFourPage} from "../404-page/404-page.component";
-import {AuthGuard} from "../../guards/auth.guard";
-import {LogOutComponent} from "../log-out/log-out.component";
-import {LoginGuard} from "../../guards/login.guard";
-import {LoginComponent} from "../login/login.component";
-import {ImportsModule} from "../../modules/imports.module";
 
 @Component({
     selector: 'app-main',
@@ -43,7 +40,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewChecked {
     name;
     config: ToasterConfig;
     title = 'DIGITALSTUDY';
-    userMenu = [{ title: 'Profile' }, { title: 'Log out', link: '/user/sign-out' }];
+    userMenu = [{ title: 'Profile' }, { title: 'Log out', link: '/app/user/sign-out' }];
     logged = false;
     width;
     height;
@@ -85,28 +82,14 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewChecked {
                     this.sidebarService.collapse('menu-sidebar');
                 }
             });
-        this.auth.initAuth();
         this.logged = this.auth.localLoggedIn();
         this.dataEmit.$loggedIn.subscribe(data => { this.logged = data;});
-        dataEmit.$updateArray.subscribe(data =>
-        {
-            let [content, title, type, timeout] = data;
-            const toast: Toast = {
-                type: type? type : 'info',
-                title: title? title : 'Notification',
-                body: content,
-                timeout: timeout? timeout : 5000,
-                showCloseButton: true,
-                bodyOutputType: BodyOutputType.TrustedHtml,
-            };
-            this.toasterService.pop(toast);
-        });
         this.$photo.subscribe(value => { this.photo = value; });
         this.$name.subscribe(value => { this.name = value; });
     }
 
     ngAfterViewChecked() {
-        if(this.logged) {
+        if(this.auth.localLoggedIn()) {
             this.$photo.emit(JSON.parse(localStorage.getItem('userObject')).picture);
             this.$name.emit(JSON.parse(localStorage.getItem('userObject')).name);
         }
@@ -114,6 +97,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     ngOnInit() {
+        console.log(JSON.parse(localStorage.getItem('userObject')));
         this.config = new ToasterConfig({
             positionClass: 'toast-top-left',
             timeout: 5000,
@@ -139,8 +123,7 @@ const routes: Routes = [
 
 @NgModule({
     declarations: [MainComponent],
-    imports: [
-    ]
+    imports: []
 })
 export class MainComponentModule {
 

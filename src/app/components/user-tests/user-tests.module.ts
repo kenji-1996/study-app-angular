@@ -90,7 +90,6 @@ export class UserTestsComponent implements OnInit {
             this.config.currentPage = page;
             this.page = page;
             this.animationState = 'in';
-            console.log(this.tests);
         });
     }
 

@@ -4,25 +4,20 @@ import {Router} from "@angular/router";
 import {DataEmitterService} from "../../services/data-emitter.service";
 
 @Component({
-  selector: 'app-log-out',
-  templateUrl: './log-out.component.html',
-  styleUrls: ['./log-out.component.scss']
+    selector: 'app-log-out',
+    templateUrl: './log-out.component.html',
+    styleUrls: ['./log-out.component.scss']
 })
 export class LogOutComponent implements OnInit {
 
-  constructor(
-      private auth: AuthenticateService,
-      private router: Router,
-      private dataEmit: DataEmitterService,
-  ) { }
+    constructor(
+        private auth: AuthenticateService,
+        private router: Router,
+        private dataEmit: DataEmitterService,
+    ) { }
 
-  ngOnInit() {
-    this.auth.revoke().then(loggedOut => {
-      if(loggedOut) {
-        this.dataEmit.pushUpdateArray('User signed out','User session','info');
-        this.router.navigate(['/']);
-      }
-    });
-  }
+    ngOnInit() {
+        this.auth.revoke();
+    }
 
 }

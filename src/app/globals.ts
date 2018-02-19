@@ -3,6 +3,6 @@
  */
 'use strict';
 
-export const url='http://localhost:4949';
-//export const url='https://study.techgorilla.io';
+//export const url='http://localhost:4949';
+export const url='https://study.techgorilla.io';
 //export const version: string="22.2.2";

@@ -16,7 +16,7 @@ let UserSchema  = new Schema({
     password: {type: String, required: true},
     unique_id: String,
     token: {type:String},
-    email: [{type:String, required: true}],
+    email: [{type:String, required: true, unique: true}],
     name: {type:String, default: 'user'},
     source: String,
     picture: {type:String, default: 'https://i.imgur.com/t2ioA6P.png'},
