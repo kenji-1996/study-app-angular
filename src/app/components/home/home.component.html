@@ -1,24 +1,23 @@
-<div class="row">
-    <div class="col-md-12">
-        <h3 class="display-3 text-center">Hi {{name}}</h3>
-        <div *ngIf="news" [@fadeInOut]>
-            <nb-card>
-                <nb-tabset>
-                    <nb-tab tabTitle="News">
-                        <nb-card-body style="max-height: 400px;">
-                            <div dense *ngFor="let n of news" style=" margin: 20px;">
-                                <span><h4>{{ n.headline | uppercase}}</h4> </span>
-                                <p class="text-muted" style="font-size:small">By {{n.authorName}} on {{n.date | date:'fullDate'}}</p>
-                                <p mat-line [innerHtml]="sanitizer.bypassSecurityTrustHtml(n.content)"></p>
-                                <hr>
-                            </div>
-                        </nb-card-body>
-                    </nb-tab>
-                    <nb-tab tabTitle="Staff panel" *ngIf="staff">
-                        <app-add-news></app-add-news>
-                    </nb-tab>
-                </nb-tabset>
-            </nb-card>
-        </div>
+<div *ngIf="news" [@fadeInOut]>
+    <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showAddNews = showAddNews === 'out' ? 'in' : 'out'" [innerText]="showAddNews === 'out' ? 'Add news': 'Hide'"></button>
+    <div *ngIf="staff" [@slideInOut]="showAddNews">
+        <br/>
+        <app-add-news></app-add-news>
     </div>
+
+    <nb-card  *ngFor="let n of news" style=" margin: 20px; overflow-y: hidden;">
+        <nb-card-header>
+            <h4>{{ n.headline | uppercase}}</h4>
+        </nb-card-header>
+
+        <nb-card-body>
+                <p mat-line [innerHtml]="sanitizer.bypassSecurityTrustHtml(n.content)"></p>
+        </nb-card-body>
+
+        <nb-card-footer>
+            <p class="text-muted" style="font-size:small">By {{n.authorName}} on {{n.date | date:'fullDate'}}</p>
+        </nb-card-footer>
+
+    </nb-card>
 </div>
+

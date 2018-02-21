@@ -338,7 +338,7 @@ export class EditTestComponent implements OnInit {
                 if(dataResult) {
                     this.submitted = false;
                     this.dataEmit.pushUpdateArray(dataResult.message);
-                    this.router.navigate(['author/tests']);
+                    this.router.navigate(['app/author/tests']);
                 }
             });
         }else{
@@ -346,7 +346,7 @@ export class EditTestComponent implements OnInit {
                 if(dataResult) {
                     this.submitted = false;
                     this.dataEmit.pushUpdateArray(dataResult.message);
-                    this.router.navigate(['author/tests']);
+                    this.router.navigate(['app/author/tests']);
                 }
             });
         }

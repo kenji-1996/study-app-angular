@@ -40,7 +40,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewChecked {
     name;
     config: ToasterConfig;
     title = 'DIGITALSTUDY';
-    userMenu = [{ title: 'Profile' }, { title: 'Log out', link: '/app/user/sign-out' }];
+    userMenu = [{ title: 'Profile', link: '/app/user/profile' }, { title: 'Log out', link: '/app/user/sign-out' }];
     logged = false;
     width;
     height;

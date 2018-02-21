@@ -70,7 +70,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
                 this.allocatedTest = allocatedTestResult.data;
                 if(this.allocatedTest.test.locked) {
                     this.dataEmitter.pushUpdateArray('Cannot retrieve questions on locked test','Test locked','warning');
-                    this.route.navigate(['/user/tests']);
+                    this.route.navigate(['/app/user/tests']);
                 }
                 console.log(this.allocatedTest);
                 this.titleService.setTitle(this.allocatedTest.test.title + ' test - DigitalStudy');
@@ -156,7 +156,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
         this.dataManagement.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/results', body).subscribe(dataResult=> {
                 if(dataResult) {
                     this.dataEmitter.pushUpdateArray(dataResult.message,'Test submitted','success');
-                    this.route.navigate(['/user/allocated-tests']);
+                    this.route.navigate(['/app/user/allocated-tests']);
                 }
             }
         );

@@ -9,7 +9,7 @@
                 <span class="fill-remaining-space"></span>
                 <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
                     <div>
-                        <i matTooltip="Attempt test" matTooltipPosition="above" [routerLink]="['/user/test/selected/', sub._id]" class="fa fa-play cursor-click"></i>
+                        <i matTooltip="Attempt test" matTooltipPosition="above" [routerLink]="['/app/user/test/selected/', sub._id]" class="fa fa-play cursor-click"></i>
                         <i *ngIf="canRemove(sub)" matTooltip="Author has allowed the user to remove this test" matTooltipPosition="above" (click)="removeTest(sub)" class="fa fa-trash cursor-click"></i>
                     </div>
                 </div>
