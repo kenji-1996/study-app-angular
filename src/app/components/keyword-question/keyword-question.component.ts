@@ -27,7 +27,7 @@ export class KeywordQuestionComponent implements OnInit, OnChanges {
 
     ngOnInit() {
         if(this.mark) {
-            this.answer = this.test.questions[this.index].keywordsAnswer.join('');
+            this.answer = this.test.questions[this.index].keywordsAnswer.join(' ');
             this.feedback = this.test.questions[this.index].feedback;
             this.finalMark = this.test.questions[this.index].mark;
         }

@@ -35,7 +35,7 @@ export class RegisterComponent implements OnInit {
                 name: this.model.name,
                 picture: this.model.picture,
             };
-        this.dataManagement.postDATA(global.url + '/api/auth/register', body).subscribe(
+        this.dataManagement.postDATA(global.url + '/api/users', body).subscribe(
             dataResult => {
                 if(dataResult) {
                     this.dataEmit.pushUpdateArray(dataResult.message);

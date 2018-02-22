@@ -1,8 +1,8 @@
 import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Params, Router, RouterModule} from "@angular/router";
+import {ActivatedRoute, Params, RouterModule} from "@angular/router";
 import {ImportsModule} from "../../modules/imports.module";
 import {DataManagementService} from "../../services/data-management.service";
-import {allocatedTest, newQuestion, submittedTest, submittedQuestion, newTest} from "../../objects/objects";
+import {allocatedTest, newTest} from "../../objects/objects";
 import * as global from '../../globals';
 import {Observable} from "rxjs/Observable";
 import 'rxjs/add/observable/of';
@@ -10,12 +10,8 @@ import 'rxjs/add/observable/timer';
 import {Title} from "@angular/platform-browser";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import {fadeAnimate} from "../../misc/animation";
-import {KeywordQuestionComponent} from "../keyword-question/keyword-question.component";
-import {ChoiceQuestionComponent} from "../choice-question/choice-question.component";
-import {ArrangementComponent} from "../arrangement-question/arrangement-question.component";
-import {ShortanswerQuestionComponent} from "../shortanswer-question/shortanswer-question.component";
 import {SharedModule} from "../../modules/shared.module";
-import {isNullOrUndefined} from "util";
+import {isNull, isNullOrUndefined} from "util";
 
 @Component({
     selector: 'app-author-test-review',
@@ -61,7 +57,8 @@ export class AuthorTestReview implements OnInit, OnDestroy {
             let valid = true;
             for(let i = 0; i < this.questionResults.length; i++) {
                 loop++;
-                if(!this.questionResults[i].mark) {
+                if(this.questionResults[i].mark === isNullOrUndefined) {
+                    console.log(this.questionResults[i].mark);
                     valid = false;
                 }
             }
@@ -85,6 +82,7 @@ export class AuthorTestReview implements OnInit, OnDestroy {
         this.activeRoute.params.subscribe((params: Params) => {
             let testId = params['testId'];//usertest
             this.dataManagement.getDATA(global.url + '/api/tests/' + testId + '/submitlist').subscribe(allocatedTestResult => {
+                console.log(allocatedTestResult.data);
                 this.allocatedTest = allocatedTestResult.data;
                 this.test = allocatedTestResult.data.test;
                 this.overallTestFeedback = this.allocatedTest.feedback;
@@ -95,18 +93,18 @@ export class AuthorTestReview implements OnInit, OnDestroy {
                         this.test.questions[i].mark = subTest.submittedQuestions[i].mark;
                         switch (this.test.questions[i].type) {
                             case "keywords":
-                                this.test.questions[i].keywordsAnswer = subTest.submittedQuestions[i].keywordsAnswer;
+                                this.test.questions[i]['submittedAnswer'] = subTest.submittedQuestions[i].keywordsAnswer;
                                 break;
                             case "choices":
-                                this.test.questions[i].choicesAnswer = subTest.submittedQuestions[i].choicesAnswer;
+                                this.test.questions[i]['submittedAnswer'] = subTest.submittedQuestions[i].choicesAnswer;
                                 break;
                             case "arrangement":
-                                this.test.questions[i].arrangement = subTest.submittedQuestions[i].arrangement;
+                                this.test.questions[i]['submittedAnswer'] = subTest.submittedQuestions[i].arrangement;
                                 //this.test.questions[i].possibleMarks = this.test.questions[i].arrangement.length;
                                 break;
                             case "shortAnswer":
                                 //this.test.questions[i].possibleMarks = 1;
-                                this.test.questions[i].shortAnswer = subTest.submittedQuestions[i].shortAnswer;
+                                this.test.questions[i]['submittedAnswer'] = subTest.submittedQuestions[i].shortAnswer;
                                 break;
                             default://If no type is set, break
                             //return res.status(400).json({message: "Must provide type, 'keywords','choices','arrangement' and 'shortAnswer' are currently only accepted", data: req.body.questions});

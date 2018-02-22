@@ -9,7 +9,7 @@
                 <span class="fill-remaining-space"></span>
                 <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
                     <div>
-                        <i matTooltip="Attempt test" matTooltipPosition="above" [routerLink]="['/app/user/test/selected/', sub._id]" class="fa fa-play cursor-click"></i>
+                        <i matTooltip="Attempt test" matTooltipPosition="above" [routerLink]="['/app/user/test/selected/', sub._id]" [queryParams]="{ self: 'true' }" class="fa fa-play cursor-click"></i>
                         <i matTooltip="Remove this test from your personal test library" matTooltipPosition="above" (click)="unallocateTest(sub)" class="fa fa-trash cursor-click"></i>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
         </div>
         <div *ngIf="tests?.length < 1" >
             <div class="alert alert-info" role="alert">
-                <strong>Heads up!</strong> looks like you currently dont have any tests assigned or chosen, <a [routerLink]="['/user/browse']" class="alert-link">our public test library</a> can provide some!
+                <strong>Heads up!</strong> looks like you currently dont have any tests assigned or chosen, <a [routerLink]="['/app/user/browse']" class="alert-link">our public test library</a> can provide some!
             </div>
         </div>
     </nb-card-body>

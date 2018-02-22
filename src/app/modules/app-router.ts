@@ -12,7 +12,7 @@ import {RegisterComponent} from "../components/auth/register/register.component"
 
 const routes: Routes = [
     //General
-    { path: '', component: RouterOutletComponent,  canActivate:[LoginGuard] },
+    { path: '', component: RouterOutletComponent },
     {
         path: 'auth',
         component: AuthComponent,
@@ -26,7 +26,7 @@ const routes: Routes = [
     },
     { path: 'app',
         component: MainComponent,
-        canActivate:[AuthGuard],
+        //canActivate:[AuthGuard],
         children:[
 
             { path: 'home', loadChildren: '../components/home/home.module#HomeModule'/**/ },

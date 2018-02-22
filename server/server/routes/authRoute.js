@@ -14,9 +14,9 @@ let auth = require('../misc/auth');
     //.post(authController.postLogin);
 
 router.route('/auth/register')
-    .post(authController.postRegister);
+    //.post(authController.postRegister);
 
 router.route('/auth/login')
-    .post(authController.postLogin);
+    //.post(authController.postLogin);
 
 module.exports = router;

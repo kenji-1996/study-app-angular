@@ -153,7 +153,7 @@ export class LiveTestComponent implements OnInit, OnDestroy {
 
     testFinished() {
         let body = { submittedTest: this.submitTest, userTestId: this.allocatedTest._id };
-        this.dataManagement.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/results', body).subscribe(dataResult=> {
+        this.dataManagement.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests/allocated', body).subscribe(dataResult=> {
                 if(dataResult) {
                     this.dataEmitter.pushUpdateArray(dataResult.message,'Test submitted','success');
                     this.route.navigate(['/app/user/allocated-tests']);

@@ -32,11 +32,11 @@ export class HomeComponent implements OnInit {
 
     ngOnInit() {
         this.titleService.setTitle('Home - DigitalStudy');
-        this.name = JSON.parse(localStorage.getItem('userObject')).name;
+        this.name = ''//JSON.parse(localStorage.getItem('userObject')).name;
         this.idtoken = localStorage.getItem('idtoken');
-        if(JSON.parse(localStorage.getItem('userObject')).permissions >= 3) {
+        /*if(JSON.parse(localStorage.getItem('userObject')).permissions >= 3) {
             this.staff = true;
-        }
+        }*/
         this.data.getDATA(global.url + '/api/news').subscribe(dataResult=> {
             this.news = dataResult.data;
         });

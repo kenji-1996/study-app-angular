@@ -83,7 +83,7 @@ export class ChoiceQuestionComponent implements OnInit,OnChanges {
     removeClassDivs(allChoicesNode:any,item:any) {
         for ( let i = 0, len = allChoicesNode.children.length; i < len; i++ ) {
             if(allChoicesNode.children[i].id == item.id) {
-                allChoicesNode.children[i].className = 'alert alert-danger';
+                allChoicesNode.children[i].className = 'alert alert-info';
             }
         }
     }
@@ -91,12 +91,12 @@ export class ChoiceQuestionComponent implements OnInit,OnChanges {
     classDivs(allChoicesNode:any,correctChoicesNode:any,correctItem:any) {
         for ( let i = 0, len = correctChoicesNode.children.length; i < len; i++ ) {
             if(correctChoicesNode.children[i].id == correctItem.id) {
-                correctChoicesNode.children[i].className = 'alert alert-success';
+                correctChoicesNode.children[i].className = 'alert alert-info';
             }
         }
         for ( let i = 0, len = allChoicesNode.children.length; i < len; i++ ) {
             if(allChoicesNode.children[i].id == correctItem.id) {
-                allChoicesNode.children[i].className = 'alert alert-success';
+                allChoicesNode.children[i].className = 'alert alert-info';
             }
         }
     }

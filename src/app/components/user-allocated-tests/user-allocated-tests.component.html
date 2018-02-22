@@ -3,7 +3,7 @@
         Tests allocated to you
     </nb-card-header>
     <nb-card-body [@slideInOut]="showTestSettingsState">
-        <div *ngFor="let sub of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}"  class="allocatedTest cursor-click"><!--"-->
+        <div [@fadeInOut] *ngFor="let sub of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}"  class="allocatedTest cursor-click"><!--"-->
             <div fxLayout="row">
                 <h5>{{sub.test.title}} <span class="text-muted" style="font-size:small">{{sub.test._id}}</span></h5>
                 <span class="fill-remaining-space"></span>
@@ -28,28 +28,22 @@
                 </div>
                 <div class="row text-center">
                     <div class="col-sm-4">
-                        <strong>Mark:</strong> <span [innerText]="sub.finalMark? (sub.finalMark+'/'+sub.marksAvailable ) : 'Seeing mark currently disabled'"></span>
+                        <strong>Mark:</strong> <span [innerText]="sub.finalMark? (sub.finalMark+'/'+sub.test.marksAvailable ) : 'Seeing mark currently disabled'"></span>
                     </div>
                     <div class="col-sm-4">
-                        <strong>Feedback:</strong>
-                        <ng-container *ngIf="sub.feedback">{{sub.feedback}}</ng-container>
-                        <ng-container *ngIf="!sub.feedback">N/A</ng-container>
+                        <strong>Feedback:</strong> {{sub.feedback? (sub.feedback.length>20)? (sub.feedback | slice:0:20)+'..':(sub.feedback) : 'N/A'}}
                     </div>
                     <div class="col-sm-4">
-                        <ng-container *ngIf="sub.test.expire">
-                            <strong>Expires:</strong> {{sub.test.expireDate | date:'fullDate' }}
-                        </ng-container>
-                        <ng-container *ngIf="!sub.test.expire">
-                            <strong>Expires:</strong> never
-                        </ng-container>
+                        <strong>Expires:</strong> {{sub.test.expire? (sub.test.expireDate | date:'fullDate') : 'never'}}
+
                     </div>
                 </div>
             </div>
             <div class="dotted-hr"></div>
         </div>
-        <div *ngIf="tests?.length < 1" >
-            <div class="alert alert-info" role="alert">
-                <strong>Heads up!</strong> Allocated tests are usually from an employer, teacher or similar. Try the <a [routerLink]="['/user/browse']" class="alert-link">test browser</a> for personal knowledge growth!
+        <div *ngIf="tests && tests.length < 1" >
+            <div class="alert alert-info" role="alert" [@fadeInOut]>
+                <strong>Heads up!</strong> Allocated tests are usually from an employer, teacher or similar. Try the <a [routerLink]="['/app/user/browse']" class="alert-link">test browser</a> for personal knowledge growth!
             </div>
         </div>
     </nb-card-body>

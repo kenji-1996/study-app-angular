@@ -14,7 +14,7 @@
                             <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
                                 <div>
                                     <i matTooltip="Removes test from user and deletes their results" matTooltipPosition="above" (click)="removeAllocatedTest(t,sub)" class="fa fa-trash cursor-click"></i>
-                                    <i *ngIf="sub.submittedTests.length > 0" matTooltip="Mark this user and/or provide feedback" matTooltipPosition="above" [routerLink]="['/author/review/', sub._id]" class="fa fa-pencil cursor-click"></i>
+                                    <i *ngIf="sub.submittedTests.length > 0" matTooltip="Mark this user and/or provide feedback" matTooltipPosition="above" [routerLink]="['/app/author/review/', sub._id]" class="fa fa-pencil cursor-click"></i>
                                     <i matTooltip="Change settings for this users allocated test" matTooltipPosition="above"(click)="settingsAllocatedTest(t)" class="fa fa-cog cursor-click"></i>
                                 </div>
                             </div>
@@ -45,7 +45,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <strong>Feedback:</strong>
-                                    <ng-container *ngIf="sub.feedback">{{sub.feedback}}</ng-container>
+                                    <ng-container *ngIf="sub.feedback">{{sub.feedback? (sub.feedback.length>20)? (sub.feedback | slice:0:20)+'..':(sub.feedback) : 'N/A'}}</ng-container>
                                     <ng-container *ngIf="!sub.feedback">Provide feedback</ng-container>
                                 </div>
                             </div>

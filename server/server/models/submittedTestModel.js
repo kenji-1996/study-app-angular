@@ -20,7 +20,7 @@ let submittedTestSchema  = new Schema({
     //Date submitted
     dateSubmitted: { type: Date, default: Date.now },
     //Result-related, mark saved if not manually marked by human
-    obtainedMark: Number,
+    obtainedMark: {type:Number, default: 0 }
 
     //Get these from test
     //marksAvailable: Number,

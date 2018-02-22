@@ -31,7 +31,13 @@ export class AuthLoginComponent implements OnInit {
                 password: this.model.password,
                 rememberMe: this.model.rememberMe,
             };
-        this.dataManagement.postDATA(global.url + '/api/auth/login', body).subscribe(
+        let encryptedAuth = btoa(this.model.username + ":" + this.model.password + ":" + this.model.rememberMe);
+        this.dataManagement.getDATA(global.url + '/api/users', {
+            'Authorization' : 'Basic ' + encryptedAuth,
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': 'Sat, 01 Jan 2000 00:00:00 GMT',
+        }).subscribe(
             dataResult => {
                 if(dataResult) {
                     this.dataEmit.pushUpdateArray(dataResult.message,'Welcome ' + dataResult.data.profile.name,'success');

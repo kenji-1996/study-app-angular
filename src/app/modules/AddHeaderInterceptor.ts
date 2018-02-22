@@ -8,6 +8,7 @@ import 'rxjs/add/observable/empty';
 import 'rxjs/add/operator/retry';
 import {DataEmitterService} from "../services/data-emitter.service"; // don't forget the imports
 
+
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
@@ -25,30 +26,21 @@ export class TokenInterceptor implements HttpInterceptor {
     }
 }
 
-/*export class AddHeaderInterceptor implements HttpInterceptor {
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        // Clone the request to add the new header
-        if(localStorage.getItem('idtoken')) {
-            const clonedRequest = req.clone({headers: req.headers.set('Authorization', 'Bearer ' + localStorage.getItem('idtoken'))});
-            // Pass the cloned request instead of the original request to the next handle
-            return next.handle(clonedRequest);
-        }
-    }
-}*/
-
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
 
-    constructor(private dataEmitter: DataEmitterService) {
-
-    }
+    constructor(private dataEmitter: DataEmitterService) {  }
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request)
             .catch((err: HttpErrorResponse) => {
-                if (err.error instanceof Error) {
-                    console.error('An error occurred:', err.error.message);
-                } else {
-                    this.dataEmitter.pushUpdateArray(err.error.message,err.statusText + `[${err.status}]`,'error');
+                if(err.error == 'Unauthorized') {
+                    this.dataEmitter.pushUpdateArray('Failed to validate your session, try logging back in','Authentication failed','error');
+                }else{
+                    if (err.error instanceof Error) {
+                        console.error('An error occurred:', err.error.message);
+                    } else {
+                        this.dataEmitter.pushUpdateArray(err.error.message,err.statusText + ` ${err.status}`,'error');
+                    }
                 }
                 return Observable.empty<HttpEvent<any>>();
             });

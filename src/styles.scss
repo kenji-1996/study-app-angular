@@ -5,6 +5,11 @@
 //Misc
 button:focus {outline:0 !important; }
 
+textarea:disabled {
+  background: #dddddd !important;
+  color: gray !important;
+}
+
 .cursor-click {
   cursor: pointer;
 }

@@ -1,87 +1,74 @@
 <div *ngIf="allocatedTest" [@fadeInOut]>
-  <nb-card style="max-height: 800px;">
-    <nb-card-header>
-      {{allocatedTest.test.title | uppercase}}
-    </nb-card-header>
-
-    <nb-card-body *ngIf="submittedTests" [@fadeInOut]>
-      <h6 class="display-6">Information</h6>
-      <div class="row" style="font-size: small">
-        <div class="col-sm-4">
-          Category: {{allocatedTest.test.category}}
-        </div>
-        <div class="col-sm-4">
-          Allocated: {{allocatedTest.allocatedDate | date:'fullDate'}}
-        </div>
-        <div class="col-sm-4">
-          Attempts: {{allocatedTest.submittedTests.length}}
-        </div>
-      </div>
-      <div class="row" style="font-size: small">
-        <div class="col-sm-4">
-          Expires:
-          <ng-container *ngIf="allocatedTest.test.expire">{{allocatedTest.test.expireDate | date:'shortDate' }} <span class="text-muted" style="font-size: small">({{daysBetween(today,allocatedTest.test.expireDate)}} hours)</span> </ng-container>
-          <ng-container *ngIf="!allocatedTest.test.expire">Test doesnt expire</ng-container>
-        </div>
-        <div class="col-sm-4">
-          Feedback:
-          <ng-container *ngIf="allocatedTest.feedback">{{allocatedTest.feedback}}</ng-container>
-          <ng-container *ngIf="!allocatedTest.feedback">N/A</ng-container>
-        </div>
-        <div class="col-sm-4">
-          Mark:
-          <ng-container *ngIf="allocatedTest.finalMark">{{allocatedTest.finalMark}}</ng-container>
-          <ng-container *ngIf="!allocatedTest.finalMark">N/A</ng-container>
-        </div>
-      </div>
-      <hr>
-      <h6 class="display-6">Submitted attempts</h6>
-      <ng-container *ngIf="submittedTests">
-        <div *ngFor="let sub of submittedTests" style="font-size: small">
-          <div class="row text-center">
-            <div class="col-sm-4">
-              ID: {{sub._id}}
+    <nb-card style="max-height: 800px;">
+        <nb-card-header>
+            {{allocatedTest.test.title | uppercase}}
+        </nb-card-header>
+        <nb-card-body *ngIf="submittedTests" [@fadeInOut]>
+            <h6 class="display-6">Information</h6>
+            <div class="row" style="font-size: small">
+                <div class="col-sm-4">
+                    Category: {{allocatedTest.test.category}}
+                </div>
+                <div class="col-sm-4">
+                    Allocated: {{allocatedTest.allocatedDate | date:'fullDate'}}
+                </div>
+                <div class="col-sm-4">
+                    Attempts: {{allocatedTest.submittedTests.length}}
+                </div>
             </div>
-            <div class="col-sm-4">
-              Date submitted: {{sub.dateSubmitted | date:'fullDate'}}
+            <div class="row" style="font-size: small">
+                <div class="col-sm-4">
+                    Expires:
+                    <ng-container *ngIf="allocatedTest.test.expire">{{allocatedTest.test.expireDate | date:'shortDate' }} <span class="text-muted" style="font-size: small">({{daysBetween(today,allocatedTest.test.expireDate)}} hours)</span> </ng-container>
+                    <ng-container *ngIf="!allocatedTest.test.expire">Test doesnt expire</ng-container>
+                </div>
+                <div class="col-sm-4">
+                    Feedback:
+                    <ng-container *ngIf="allocatedTest.feedback">{{allocatedTest.feedback}}</ng-container>
+                    <ng-container *ngIf="!allocatedTest.feedback">N/A</ng-container>
+                </div>
+                <div class="col-sm-4">
+                    Mark:
+                    <ng-container *ngIf="allocatedTest.finalMark">{{allocatedTest.finalMark}}/{{allocatedTest.test.marksAvailable}}</ng-container>
+                    <ng-container *ngIf="!allocatedTest.finalMark">N/A</ng-container>
+                </div>
             </div>
-            <div class="col-sm-4">
-              Mark:
-              {{sub.obtainedMark}} / {{sub.marksAvailable}}
-            </div>
-          </div>
+            <hr>
+            <h6 class="display-6">Submitted attempts</h6>
+            <ng-container *ngIf="submittedTests">
+                <div *ngFor="let sub of submittedTests" style="font-size: small">
+                    <div class="row text-center">
+                        <div class="col-sm-4">
+                            ID: {{sub._id}}
+                        </div>
+                        <div class="col-sm-4">
+                            Date submitted: {{sub.dateSubmitted | date:'fullDate'}}
+                        </div>
+                        <div class="col-sm-4">
+                            Mark:
+                            {{sub.obtainedMark}}
+                        </div>
+                    </div>
 
-          <div class="dotted-hr"></div>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="submittedTests.length === 0">
-        <p style="font-size: small">No attempts made</p>
-      </ng-container>
-    </nb-card-body>
+                    <div class="dotted-hr"></div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="submittedTests.length === 0">
+                <p style="font-size: small">No attempts made</p>
+            </ng-container>
+        </nb-card-body>
 
-    <nb-card-footer>
-      <nb-actions size="medium" fullWidth>
-        <nb-action>
-          <div class="text-center">
-            <button  class="btn btn-hero-success main-btn" (click)="testStarted()" [disabled]="allocatedTest.test.locked">
-              <i class="fa fa-pencil"></i> <span>Start {{allocatedTest.test.title}}</span>
-            </button>
-          </div>
-        </nb-action>
-      </nb-actions>
-    </nb-card-footer>
+        <nb-card-footer>
+            <nb-actions size="medium" fullWidth>
+                <nb-action>
+                    <div class="text-center">
+                        <button  class="btn btn-hero-success main-btn" (click)="testStarted()" [disabled]="allocatedTest.test.locked">
+                            <i class="fa fa-pencil"></i> <span>Start {{allocatedTest.test.title}}</span>
+                        </button>
+                    </div>
+                </nb-action>
+            </nb-actions>
+        </nb-card-footer>
 
-  </nb-card>
+    </nb-card>
 </div>
-
-
-<!--
-<span style="display:inline-block;">
-<nb-checkbox [(ngModel)]="giveHint">Give Hint</nb-checkbox>
-
-    <mat-checkbox style="margin: 10px;" color="primary" [(ngModel)]="giveHint">Give hint</mat-checkbox>
-    <mat-checkbox style="margin: 100px;" color="primary" [(ngModel)]="timeLimit">Time limit</mat-checkbox>
-    <mat-form-field color="primary" *ngIf="timeLimit"><input matInput placeholder="Time limit (In seconds)" value="30" [(ngModel)]="timerMax"><br /></mat-form-field>
-    <mat-checkbox style="margin: 100px;" [(ngModel)]="instantResult">Instant result</mat-checkbox>
-    </span>
--->

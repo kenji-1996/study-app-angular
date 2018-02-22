@@ -10,33 +10,40 @@
     </nb-card-header>
     <nb-card-body>
         <div class="row" (keyup.enter)="fullPage? null : (index === (test.questions.length -1)? null : (onNext.emit(true)))">
+            <div class="form-group col-sm-12">
+                <div *ngIf="mark">
+                    <nb-card >
+                        <nb-card-header>
+                            Provided answer
+                        </nb-card-header>
+                        <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" style="touch-action: none">
+                            <div *ngFor="let c of test.questions[index].submittedAnswer" [innerText]="c" [id]="c" class="alert alert-info"></div>
+                        </nb-card-body>
+                    </nb-card>
+                </div>
+            </div>
             <div class="form-group col-sm-6">
                 <nb-card >
                     <nb-card-header>
                         All choices
                     </nb-card-header>
                     <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="allChoices" style="touch-action: none">
-                        <div *ngFor="let c of test.questions[index].choicesAll" [innerText]="c" [id]="c" class="alert alert-danger"></div>
+                        <div *ngFor="let c of test.questions[index].choicesAll" [innerText]="c" [id]="c" class="alert alert-info"></div>
                     </nb-card-body>
                 </nb-card>
             </div>
             <div class="form-group col-sm-6">
                 <nb-card>
                     <nb-card-header>
-                        Correct choices
+                        <span [innerHTML]="mark? 'Author answer' : 'Correct choices'"></span>
                     </nb-card-header>
                     <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="correctChoices" style="touch-action: none" >
                         <ng-container *ngIf="mark">
-                            <div *ngFor="let c of test.questions[index].choicesAnswer" [innerText]="c" [id]="c" class="alert alert-success"></div>
+                            <div *ngFor="let c of test.questions[index].choicesAnswer" [innerText]="c" [id]="c" class="alert alert-info"></div>
                         </ng-container>
                     </nb-card-body>
                 </nb-card>
             </div>
-            <!--<div class="col-sm-12">
-              <div class="alert alert-info" role="alert">
-                <strong>Heads up!</strong> Not sure how to create a multi-choice test.questions[index]? <a href="#" class="alert-link">our guide</a> should be a good reference!
-              </div>
-            </div>-->
         </div>
         <div fxLayout="row" *ngIf="!fullPage">
             <button  [disabled]="index === 0" class="btn btn-hero-warning btn-tn" (click)="onBack.emit(true)">Back</button>
@@ -62,7 +69,7 @@
                 <div class="col-sm-6">
                     <label>Result</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [max]="test.questions[index].possibleMarks">
+                        <input type="number" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [max]="test.questions[index].possibleMarks">
                         <span class="input-group-btn">
                             <button class="btn btn-danger">
                               / {{test.questions[index].possibleMarks}}

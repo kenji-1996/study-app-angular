@@ -86,18 +86,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.dataEmit.$loggedIn.subscribe(data => { this.logged = data;});
         this.$photo.subscribe(value => { this.photo = value; });
         this.$name.subscribe(value => { this.name = value; });
-    }
 
-    ngAfterViewChecked() {
-        if(this.auth.localLoggedIn()) {
-            this.$photo.emit(JSON.parse(localStorage.getItem('userObject')).picture);
-            this.$name.emit(JSON.parse(localStorage.getItem('userObject')).name);
-        }
-        this.cdRef.detectChanges();
-    }
-
-    ngOnInit() {
-        console.log(JSON.parse(localStorage.getItem('userObject')));
         this.config = new ToasterConfig({
             positionClass: 'toast-top-left',
             timeout: 5000,
@@ -109,17 +98,24 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewChecked {
         });
     }
 
+    ngAfterViewChecked() {
+        if(this.auth.localLoggedIn()) {
+            this.$photo.emit(JSON.parse(localStorage.getItem('userObject')).picture);
+            this.$name.emit(JSON.parse(localStorage.getItem('userObject')).name);
+        }
+        this.cdRef.detectChanges();
+    }
+
+    ngOnInit() {
+
+    }
+
     ngOnDestroy() {
         this.layoutState$.unsubscribe();
         this.sidebarState$.unsubscribe();
         this.menuClick$.unsubscribe();
     }
 }
-
-const routes: Routes = [
-
-];
-
 
 @NgModule({
     declarations: [MainComponent],

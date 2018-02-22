@@ -11,7 +11,12 @@
     <nb-card-body>
         <div class="form-group row" (keyup.enter)="fullPage? null : (index === (test.questions.length -1)? null : (onNext.emit(true)))">
             <div class="col-sm-12">
-                <textarea rows="10" placeholder="Answer" class="form-control" [(ngModel)]="answer" [disabled]="mark"></textarea>
+                <div *ngIf="mark">
+                    <h3>Provided answer</h3>
+                    <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [disabled]="mark">{{(test.questions[index].submittedAnswer.join(''))}}</textarea>
+                    <h3>Author answer</h3>
+                </div>
+                <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [(ngModel)]="answer" [disabled]="mark"></textarea>
             </div>
         </div>
         <div fxLayout="row" *ngIf="!fullPage">
@@ -38,7 +43,7 @@
                 <div class="col-sm-6">
                     <label>Result</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [max]="test.questions[index].possibleMarks">
+                        <input type="number" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [max]="test.questions[index].possibleMarks">
                         <span class="input-group-btn">
                             <button class="btn btn-danger">
                                  / {{test.questions[index].possibleMarks}}

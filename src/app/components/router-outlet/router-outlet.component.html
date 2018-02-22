@@ -4,9 +4,14 @@
             <div class="caption">
                 <div class="border">DIGITAL STUDY</div><br>
             </div>
-            <div class="buttons" fxLayout="column">
-                <div class="para cursor-click" routerLink="/auth/register">Register</div> <br/>
-                <div class="para cursor-click" routerLink="/auth/login">Login</div>
+            <div class="buttons" fxLayout="column" >
+                <ng-container *ngIf="!auth.localLoggedIn()">
+                    <div class="para cursor-click" routerLink="/auth/register">Register</div> <br/>
+                    <div class="para cursor-click" routerLink="/auth/login">Login</div>
+                </ng-container>
+                <ng-container *ngIf="auth.localLoggedIn()">
+                    <div class="para cursor-click" routerLink="/app/home">Launch</div>
+                </ng-container>
             </div>
         </div>
     </nb-layout-column>

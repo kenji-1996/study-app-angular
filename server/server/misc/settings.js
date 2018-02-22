@@ -236,7 +236,6 @@ module.exports.correctChoices = function(answer, input, possibleAnswers) {
         }
         return (result - penalty);
     }catch (ex) {
-        console.log(ex);
         return 0;
     }
 };
@@ -248,8 +247,6 @@ module.exports.arrangeOrderCount = function(correctArrangement,submittedArrangem
             answerCount++;
         }
     }
-    console.log(answerCount);
-    console.log(correctArrangement.length);
     return answerCount;
 };
 

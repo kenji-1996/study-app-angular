@@ -78,9 +78,11 @@ exports.reviewSubmits = function(req,res) {
                         let loop = 0;
                         for (let i = 0; i < req.body.questionResults.length; i++) {
                             loop++;
-                            if(req.body.questionResults[i].mark === null) {updateMark = false;}else{newMark+=req.body.questionResults[i].mark;}
-                            submittedQuestionModel.findByIdAndUpdate(req.body.questionResults[i].id, {"$set": {feedback: req.body.questionResults[i].feedback, mark: req.body.questionResults[i].mark}
-                            }).exec(function (err) {if (err) return res.status(500).json({message: "Failed to update submitted question", data: err});});
+                            if(req.body.questionResults[i].mark !== null) {
+                                newMark+=req.body.questionResults[i].mark;
+                            }
+                            submittedQuestionModel.findByIdAndUpdate(req.body.questionResults[i].id, {"$set": {feedback: req.body.questionResults[i].feedback, mark: req.body.questionResults[i].mark}})
+                                .exec(function (err) {if (err) return res.status(500).json({message: "Failed to update submitted question", data: err});});
                         }
                         if(loop >= req.body.questionResults.length && updateMark) {
                             console.log('arrived');

@@ -84,7 +84,7 @@ export class UserAllocatedTestsComponent implements OnInit {
     getPage(page: number) {
         this.animationState = 'out';
         this.tests = null;
-        this.data.getDATA(global.url + '/api/users/'  + JSON.parse(localStorage.getItem('userObject'))._id +  '/tests?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
+        this.data.getDATA(global.url + '/api/users/'  + JSON.parse(localStorage.getItem('userObject'))._id +  '/tests/allocated?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
             this.total = res.data.total;
             //Hacky client side filtering, can be done server side but moved to save processing, could be moved back
             let index;

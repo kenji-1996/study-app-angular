@@ -3,6 +3,9 @@
  */
 let settings = require('../misc/settings');
 let mongoose = require('mongoose');
+var jwt = require('jsonwebtoken');
+let config = require('../misc/config');
+global.atob = require("atob");
 
 let testsModel = require('../models/testModel');
 let usersModel = require('../models/userModel');
@@ -12,56 +15,71 @@ let submittedQuestionModel = require('../models/submittedQuestionModel');
 let selfAllocatedTestModel = require('../models/selfAllocatedTest');
 
 /**
- * /api/users [GET]
- * List ALL users in DB.
+ * /api/auth/register [POST]
+ * A new user registers
  *
- * Currently public, needs to be modified/filters by count (100 per query)!
+ * Ensure validation
  * @param req
  * @param res
- * @return JSON {message,data}
+ * @return {message,data}
  */
-exports.listUsers = function(req, res) {
-    let pageInput = req.query.page? Number.parseInt(req.query.page) : 1;
-    let limitInput = req.query.limit? Number.parseInt(req.query.limit) : 2;
-    let sortInput = req.query.sort? req.query.sort : "-date";
-    usersModel.paginate(
-        req.query.search? { "name": { $regex: req.query.search,$options: 'i' } } : {}, { page: pageInput, limit: limitInput, sort: sortInput},
-        function(err, result) {
-            if (err) return res.status(500).json({message: "Find tests query failed", data: err});
-            return res.status(200).json({message: "Tests retrieved", data: result});
+exports.postRegister = function(req, res) {
+    if(req.body.username && req.body.password && req.body.email) {
+        let user = new usersModel();
+        user._id = new mongoose.Types.ObjectId();
+        user.username = req.body.username;
+        user.password = req.body.password;
+        user.email = req.body.email;
+        if(req.body.name) user.name = req.body.name;
+        if(req.body.picture) user.picture = req.body.picture;
+        user.save(function (err, result) {
+            if (err && err.code && err.code === 11000) return res.status(400).json({message: "A user with that username or email already exists", data: err});
+            if (err) return res.status(500).json({message: "Saving user failed", data: err});
+            return res.status(200).json({message: "User successfully registered", data: result});
         });
+    }else{
+        return res.status(400).json({message: "Username, password and email are all required", data: req.body});
+    }
 };
+
 /**
- * /api/users [POST]
- * Add/Authenticate users (Currently uses only google oauth)
+ * /api/users [GET]
+ * Posts a basic auth header encrypted with btoa, and decrypted with atob and verified
+ *
  * @param req
  * @param res
- * @return JSON {message,data}
+ * @return {token}
  */
-exports.authenticateUser = function(req, res) {
-    var query = {_id: req.user._id }, update = {lastLogin: new Date(),}, options = { upsert: true, new: true, setDefaultsOnInsert: true };
+exports.getLogin = function(req, res) {
+    const btoaAuth = (req.headers.authorization || '').split(' ')[1] || '';
+    const [username, password, rememberMe] = atob(btoaAuth).toString().split(':');
+    if(username && password) {
+        usersModel.findOneAndUpdate({username: username},{lastLogin: new Date(),})
+            .exec(function (err, userResult) {
+                if(err) return res.status(500).json({message: "Server failed search users", data: err});
+                if(!userResult) return res.status(500).json({message: "Username invalid", data: err});
+                userResult.verifyPassword(password, function(err, isMatch) {
+                    if (err) {  return res.status(500).json({message: "Server failed to process user login", data: err});}
 
-    usersModel.findOneAndUpdate(query, update, options, function(err, result) {
-        if (err) return res.status(500).json({message: "Couldnt create or update home", data: err});
-        if(!result.email) {
-            result.email = user['email'];
-            result.name = user['name'];
-            result.source = user['iss'];
-            result.picture = user['picture'];
-            result.userGroups.push('user');
-            result.save(function (err,newUser) {
-                if (err) return res.status(500).json({message: "Couldnt save user", data: err});
-                return res.status(200).json({message: "User created and retrieved", data: newUser});
+                    // Password did not match
+                    if (!isMatch) {  return res.status(403).json({message: "Password incorrect", data: err}); }
+                    // Success
+                    let token = jwt.sign({_id: userResult._id, exp: rememberMe === 'true'? Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365 * 100) : Math.floor(Date.now() / 1000) + (60 * 60) }, config.jwtSecret);
+                    let obj = {};
+                    obj['profile'] = userResult;
+                    obj['profile']['password'] = undefined;
+                    obj['token'] = token;
+                    return res.status(200).json({message: "Successful login", data: obj});
+                });
             });
-        }else{
-            return res.status(200).json({message: "User retrieved", data: result});
-        }
-    });
+    }else{
+        return res.status(400).json({message: "Username and password are required", data: req.body});
+    }
 };
 
 /**
  * /api/users/:userId [GET]
- * Gets limited information about a specific user
+ * Gets limited information about a specific user, only gets self
  *
  * @param req
  * @param res
@@ -75,50 +93,68 @@ exports.listUser = function(req, res) {
 };
 /**
  * /api/users/:userId [PUT]
- * Update a USER by ID, if they have elevated perms modify any otherwise modify self.
+ * Update the user with whatever is supplied in req.body
+ *
+ * TODO: update so only specific fields can be updated (I.E. not auth)
  * @param req
  * @param res
  */
 exports.updateUser = function(req, res) {
     usersModel.find({_id: req.user._id})
         .exec(function (err,userRes){
-            if(userRes.permissions >= 3) { //Admin can update any user
-                usersModel.findOneAndUpdate({_id: req.params.testId}, req.body, {new: true}, function (err, userQ1) {
-                    if (err) return res.status(500).json({message: "Save user query failed", data: err});
-                    return res.status(200).json({message: ('Admin updated user ' + userQ1.id), data: userQ1});
-                });
-            }else{//standard users can only update themselves
-                usersModel.findOneAndUpdate({unique_id: user['sub']}, req.body, {new: true}, function (err, userQ2) {
-                    if (err) return res.status(500).json({message: "Save user query failed", data: err});
-                    return res.status(200).json({message: ('Updated self ' + userQ2.id), data: userQ2});
-                });
-            }
+            usersModel.findOneAndUpdate({unique_id: req.user._id}, req.body, {new: true}, function (err, userQ2) {
+                if (err) return res.status(500).json({message: "Save user query failed", data: err});
+                return res.status(200).json({message: ('Updated self ' + userQ2.id), data: userQ2});
+            });
         });
 };
 /**
  * /api/users/:userId [DELETE]
  * Deletes an inputted if elevated permissions
- * May allow users to delete themselves (what would happen to their questions?)
+ *
+ * TODO: Figure out best way to manage their assets if they wish to delete (soft delete?)
  * @param req
  * @param res
  */
 exports.deleteUser = function(req, res) {
     usersModel.findOne({_id: req.user._id})
         .exec(function (err, userRes) {
-            if (userRes.permissions >= 3) {
-                usersModel.findOneAndUpdate({_id: req.params.userId},{$pullAll: [{tests: userRes.authoredTests},{results: userRes.authoredTests}]}, function (err, userQ1) {
-                    if (err) return res.status(500).json({message: "Update user query failed", data: err});
-                    userQ1.remove();
-                    return res.status(200).json({message: ('Admin updated user ' + userQ1.id), data: userQ1});
-                });
-            } else {
-                return res.status(401).json({message: 'No permission to delete user', data: null});
-            }
+            usersModel.findOneAndUpdate({_id: req.user._id}, function (err, userQ1) {
+                if (err) return res.status(500).json({message: "Update user query failed", data: err});
+                userQ1.remove();
+                return res.status(200).json({message: ('Admin updated user ' + userQ1.id), data: userQ1});
+            });
         });
 };
 
+
 /**
- * /api/users/:userId/selftests [POST]
+ * /api/users/:userId/self [GET]
+ * Lists allocated tests for userId
+ * @param req
+ * @param res
+ * @return JSON {message,data}
+ */
+exports.listSelfAllocatedTests = function(req, res) {
+    let pageInput = req.query.page? Number.parseInt(req.query.page) : 1;
+    let limitInput = req.query.limit? Number.parseInt(req.query.limit) : 2;
+    let sortInput = req.query.sort? req.query.sort : "-date";
+    selfAllocatedTestModel.paginate({user: req.params.userId},
+        {
+            page: pageInput,
+            limit: limitInput,
+            sort: sortInput,
+            populate: [
+                {path:'test', match: req.query.search? { "title" : { $regex: req.query.search,$options: 'i' } } : {}},
+            ],
+        },
+        function(err, result) {
+            if (err) return res.status(500).json({message: "Find allocated tests query failed", data: err});
+            return res.status(200).json({message: "Tests retrieved", data: result});
+        });
+};
+/**
+ * /api/users/:userId/self [POST]
  * Allocates user to new ID
  *
  * body { testid: '123' }
@@ -226,24 +262,24 @@ exports.submitTest = function(req, res) {
                                 switch (req.body.submittedTest.submittedQuestions[i].type) {
                                     case "keywords":
                                         calculatedMark = settings.keywordContains(tempTest.questions[i].keywordsAnswer, req.body.submittedTest.submittedQuestions[i].keywordsAnswer);
-                                        subQuestion.mark = tempTest.questions[i].handMarked? null : tempTest.questions[i].handMarked? null : calculatedMark;
+                                        subQuestion.mark = tempTest.questions[i].handMarked? 0 : calculatedMark;
                                         subTest.obtainedMark += calculatedMark;
                                         subQuestion.keywordsAnswer = req.body.submittedTest.submittedQuestions[i].keywordsAnswer;
                                         break;
                                     case "choices":
                                         calculatedMark = settings.correctChoices(tempTest.questions[i].choicesAnswer, req.body.submittedTest.submittedQuestions[i].choicesAnswer, tempTest.questions[i].choicesAnswer.length);
-                                        subQuestion.mark = tempTest.questions[i].handMarked? null : calculatedMark;
+                                        subQuestion.mark = tempTest.questions[i].handMarked? 0 : calculatedMark;
                                         subTest.obtainedMark += calculatedMark;
                                         subQuestion.choicesAnswer = req.body.submittedTest.submittedQuestions[i].choicesAnswer;
                                         break;
                                     case "arrangement":
                                         calculatedMark = settings.arrangeOrderCount(tempTest.questions[i].arrangement,req.body.submittedTest.submittedQuestions[i].arrangement);
-                                        subQuestion.mark = tempTest.questions[i].handMarked? null : calculatedMark;
+                                        subQuestion.mark = tempTest.questions[i].handMarked? 0 : calculatedMark;
                                         subTest.obtainedMark += calculatedMark;
                                         subQuestion.arrangement = req.body.submittedTest.submittedQuestions[i].arrangement;
                                         break;
                                     case "shortAnswer":
-                                        subQuestion.mark = tempTest.questions[i].handMarked? null : calculatedMark;
+                                        subQuestion.mark = tempTest.questions[i].handMarked? 0 : calculatedMark;
                                         subQuestion.shortAnswer = req.body.submittedTest.submittedQuestions[i].shortAnswer;
                                         break;
                                     default:
@@ -254,7 +290,8 @@ exports.submitTest = function(req, res) {
                                 subTest.submittedQuestions.push(subQuestion._id);
                             }
                             if(handMarked) {
-                                subTest.obtainedMark = null;
+                                //TODO: Notify to author that this overrides individual settings
+                                subTest.obtainedMark = 0;
                             }
                             subTest.save(function (err) {
                                 if (err) return res.status(500).json({message: "Submitted test saving failed", data: err});
@@ -294,7 +331,7 @@ exports.submitTest = function(req, res) {
  * @return JSON {message,data}
  */
 exports.listAllUserTests = function(req, res) {
-    userTestModel.find({'user': req.params.userId})
+    userTestModel.find({'user' : req.params.userId})
         .populate({path:'test', model: 'tests'})
         .sort({date: -1})
         .exec(function (err,resultsArray) {
@@ -444,31 +481,3 @@ exports.removeAssignedTest = function(req,res) {
 };
 
 //--------------------------------- Self Assigned ------------------------ /api/users/userId/tests/self
-/**
- * /api/users/:userId/tests [GET]
- * Lists allocated tests for userId
- * @param req
- * @param res
- * @return JSON {message,data}
- */
-exports.listSelfAllocatedTests = function(req, res) {
-    let pageInput = req.query.page? Number.parseInt(req.query.page) : 1;
-    let limitInput = req.query.limit? Number.parseInt(req.query.limit) : 2;
-    let sortInput = req.query.sort? req.query.sort : "-date";
-    selfAllocatedTestModel.paginate({user: req.params.userId},
-        {
-            page: pageInput,
-            limit: limitInput,
-            sort: sortInput,
-            populate: [
-                {path:'test', match: req.query.search? { "title" : { $regex: req.query.search,$options: 'i' } } : {}},
-            ],
-        },
-        function(err, result) {
-            if (err) return res.status(500).json({message: "Find allocated tests query failed", data: err});
-            var index;
-            //Hacky way to remove query results from pop search
-
-            return res.status(200).json({message: "Tests retrieved", data: result});
-        });
-};

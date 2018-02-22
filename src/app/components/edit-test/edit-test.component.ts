@@ -101,26 +101,26 @@ export class EditTestComponent implements OnInit {
             this.dataManagement.getDATA(global.url + '/api/tests/author/' + this.testId).subscribe(httpTest => {
                 this.test = httpTest.data;
                 console.log(this.test);
-                this.settingsFormGroup.controls.title.setValue(this.test.title);
-                this.settingsFormGroup.controls.category.setValue(this.test.category);
-                this.settingsFormGroup.controls.allowHint.setValue(this.test.hintAllowed);
-                this.settingsFormGroup.controls.fullPage.setValue(this.test.fullPage);
-                this.settingsFormGroup.controls.expire.setValue(this.test.expire);
-                if(this.test.expire) { this.settingsFormGroup.controls.expireDate.setValue(this.test.expireDate); }
-                this.settingsFormGroup.controls.handMarked.setValue(this.test.handMarked);
-                this.settingsFormGroup.controls.editable.setValue(this.test.userEditable);
-                this.settingsFormGroup.controls.shareable.setValue(this.test.shareable);
-                this.settingsFormGroup.controls.timerEnabled.setValue(this.test.timer >= 1);
-                if(this.test.timerEnabled) {this.settingsFormGroup.controls.timerLength.setValue(this.test.timer);}
-                this.settingsFormGroup.controls.showMarks.setValue(this.test.showMarks);
-                this.settingsFormGroup.controls.limitAttempts.setValue(this.test.attemptsAllowed >= 1);
-                this.settingsFormGroup.controls.limitAmount.setValue(this.test.attemptsAllowed === 0? null : this.test.attemptsAllowed);
-                this.settingsFormGroup.controls.locked.setValue(this.test.locked);
-                this.settingsFormGroup.controls.selfRemovable.setValue(this.test.canSelfRemove);
-                this.settingsFormGroup.controls.mark.setValue(this.test.markDate);
-                this.settingsFormGroup.controls.markDate.setValue(this.test.markDate);
-                this.settingsFormGroup.controls.private.setValue(this.test.private);
-                this.settingsFormGroup.controls.showMarker.setValue(this.test.showMarker);
+                this.settingsFormGroup.controls['title'].setValue(this.test.title);
+                this.settingsFormGroup.controls['category'].setValue(this.test.category);
+                this.settingsFormGroup.controls['allowHint'].setValue(this.test.hintAllowed);
+                this.settingsFormGroup.controls['fullPage'].setValue(this.test.fullPage);
+                this.settingsFormGroup.controls['expire'].setValue(this.test.expire);
+                if(this.test.expire) { this.settingsFormGroup.controls['expireDate'].setValue(this.test.expireDate); }
+                this.settingsFormGroup.controls['handMarked'].setValue(this.test.handMarked);
+                this.settingsFormGroup.controls['editable'].setValue(this.test.userEditable);
+                this.settingsFormGroup.controls['shareable'].setValue(this.test.shareable);
+                this.settingsFormGroup.controls['timerEnabled'].setValue(this.test.timer >= 1);
+                if(this.test.timerEnabled) {this.settingsFormGroup.controls['timerLength'].setValue(this.test.timer);}
+                this.settingsFormGroup.controls['showMarks'].setValue(this.test.showMarks);
+                this.settingsFormGroup.controls['limitAttempts'].setValue(this.test.attemptsAllowed >= 1);
+                this.settingsFormGroup.controls['limitAmount'].setValue(this.test.attemptsAllowed === 0? null : this.test.attemptsAllowed);
+                this.settingsFormGroup.controls['locked'].setValue(this.test.locked);
+                this.settingsFormGroup.controls['selfRemovable'].setValue(this.test.canSelfRemove);
+                this.settingsFormGroup.controls['mark'].setValue(this.test.markDate);
+                this.settingsFormGroup.controls['markDate'].setValue(this.test.markDate);
+                this.settingsFormGroup.controls['private'].setValue(this.test.private);
+                this.settingsFormGroup.controls['showMarker'].setValue(this.test.showMarker);
             });
         }
     }
@@ -155,7 +155,7 @@ export class EditTestComponent implements OnInit {
                     let div = document.createElement("DIV");
                     div.setAttribute("id", q.choicesAll[i]);
                     div.innerHTML = q.choicesAll[i];
-                    div.className = this.arrayContains(q.choicesAll[i],q.choicesAnswer)? 'alert alert-success' : 'alert alert-danger';
+                    div.className = this.arrayContains(q.choicesAll[i],q.choicesAnswer)? 'alert alert-success' : 'alert alert-info';
                     allChoicesNode.appendChild(div);
                 }
             }
@@ -392,7 +392,6 @@ export class EditTestComponent implements OnInit {
         if(target && target.id == 'correctChoices') {
             //Remove duplicate ID's
             this.removeDuplicates('correctChoices');
-            this.classDivs(allChoicesNode,correctChoicesNode,item);
         }
         if (target && target.id !== "correctChoices" && target.id !== source.id) { //dragged to a container that should not add the element
             item.remove();
@@ -414,20 +413,6 @@ export class EditTestComponent implements OnInit {
                 if(correctChoicesNode.children[i].id == item.id) {
                     correctChoicesNode.children[i].remove();
                 }
-                document.getElementById(item.id).className = 'alert alert-danger';
-            }
-        }
-    }
-
-    classDivs(allChoicesNode:any,correctChoicesNode:any,correctItem:any) {
-        for ( let i = 0, len = correctChoicesNode.children.length; i < len; i++ ) {
-            if(correctChoicesNode.children[i].id == correctItem.id) {
-                correctChoicesNode.children[i].className = 'alert alert-success';
-            }
-        }
-        for ( let i = 0, len = allChoicesNode.children.length; i < len; i++ ) {
-            if(allChoicesNode.children[i].id === correctItem.id) {
-                allChoicesNode.children[i].className = 'alert alert-success';
             }
         }
     }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {AuthenticateService} from "../../services/authenticate.service";
 
 @Component({
   selector: 'app-router-outlet',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RouterOutletComponent implements OnInit {
 
-  constructor() { }
+  constructor(private auth: AuthenticateService) { }
 
   ngOnInit() {
   }

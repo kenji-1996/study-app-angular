@@ -11,9 +11,19 @@
     <nb-card-body>
         <div class="row" (keyup.enter)="fullPage? null : (index === (test.questions.length -1)? null : (onNext.emit(true)))">
             <div class="form-group col-sm-12">
+                <div *ngIf="mark">
+                    <nb-card>
+                        <nb-card-header>
+                            Provided Answer
+                        </nb-card-header>
+                        <nb-card-body [dragula]='"arrange"' [dragulaOptions]="arrangementOptions" style="touch-action: none">
+                            <div *ngFor="let c of test.questions[index].submittedAnswer" [innerText]="c" [id]="c" class="alert alert-info"></div>
+                        </nb-card-body>
+                    </nb-card>
+                </div>
                 <nb-card >
                     <nb-card-header>
-                        Correct arrangement order
+                        <span [innerHTML]="mark? 'Author answer' : 'Correct arrangement order'"></span>
                     </nb-card-header>
                     <nb-card-body [dragula]='"arrange"' [dragulaOptions]="arrangementOptions" id="arrangeOptions" style="touch-action: none">
                         <div *ngFor="let c of test.questions[index].arrangement" [innerText]="c" [id]="c" class="alert alert-info"></div>
@@ -45,7 +55,7 @@
                 <div class="col-sm-6">
                     <label>Result</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [max]="test.questions[index].possibleMarks">
+                        <input type="number" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [max]="test.questions[index].possibleMarks">
                         <span class="input-group-btn">
                             <button class="btn btn-danger">
                               / {{test.questions[index].possibleMarks}}

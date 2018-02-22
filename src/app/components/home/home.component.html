@@ -1,10 +1,4 @@
 <div *ngIf="news" [@fadeInOut]>
-    <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showAddNews = showAddNews === 'out' ? 'in' : 'out'" [innerText]="showAddNews === 'out' ? 'Add news': 'Hide'"></button>
-    <div *ngIf="staff" [@slideInOut]="showAddNews">
-        <br/>
-        <app-add-news></app-add-news>
-    </div>
-
     <nb-card  *ngFor="let n of news" style=" margin: 20px; overflow-y: hidden;">
         <nb-card-header>
             <h4>{{ n.headline | uppercase}}</h4>
@@ -19,5 +13,10 @@
         </nb-card-footer>
 
     </nb-card>
+    <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showAddNews = showAddNews === 'out' ? 'in' : 'out'" [innerText]="showAddNews === 'out' ? 'Add news': 'Hide'"></button>
+    <div *ngIf="staff" [@slideInOut]="showAddNews">
+        <br/>
+        <app-add-news></app-add-news>
+    </div>
 </div>
 
