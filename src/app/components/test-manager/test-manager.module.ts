@@ -91,10 +91,13 @@ export class TestManagerComponent implements OnInit {
     assignUserID(test:newTest,data:any): void{
         let dialogRef = this.dialog.open(DialogData, {data: data });
         dialogRef.afterClosed().subscribe((result:any) => {
-            if(result && result.UserID) {
-                let userID = result.UserID;
-                let body = { testid: test._id };
-                this.data.postDATA(global.url + '/api/users/' + userID + '/authored',body).subscribe(dataResult=> {
+            if(result && result.Username) {
+                let username = result.Username;
+                let body = {
+                    testid: test._id,
+                    username: username,
+                };
+                this.data.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/authored',body).subscribe(dataResult=> {
                     if(dataResult) {
                         console.log(dataResult);
                         this.dataEmit.pushUpdateArray(dataResult.data.name + ' was assigned to ' + test.title,'New user assigned','success');

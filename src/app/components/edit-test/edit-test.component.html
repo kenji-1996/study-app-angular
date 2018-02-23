@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showTestSettingsState = showTestSettingsState === 'out' ? 'in' : 'out'" [innerText]="animationState === 'out' ? 'Show settings': 'Hide settings'"></button>
+            <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showTestSettingsState = showTestSettingsState === 'out' ? 'in' : 'out'" [innerText]="showTestSettingsState === 'out' ? 'Show settings': 'Hide settings'"></button>
             <div [@slideInOut]="showTestSettingsState">
                 <div class="row">
                     <div class="col-sm-6">

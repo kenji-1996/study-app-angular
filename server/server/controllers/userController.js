@@ -380,7 +380,7 @@ exports.listAllAuthoredTests = function(req, res) {
             populate: [
                 {
                     path:'userTestList', model: 'usertests',
-                    populate: { path: 'user', model: 'users', select: 'name' },
+                    populate: { path: 'user', model: 'users', select: 'name username' },
                 }]
         },
         function(err, result) {
@@ -414,7 +414,7 @@ exports.authorAssigned = function(req, res) {
     usersModel.findOne({_id: req.user._id})
         .exec(function (err, user) {
             if (err) return res.status(401).json({message: "Not a registered user", data: err});
-            usersModel.findOne({_id: req.params.userId})
+            usersModel.findOne({username: req.body.username})
                 .exec(function (err,targetUser) {
                     if (err) return res.status(401).json({message: "Not a valid user", data: err});
                     testsModel.findOne({_id: req.body.testid, authors: user._id})

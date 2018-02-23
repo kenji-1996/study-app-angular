@@ -3,13 +3,14 @@
         Test browser
     </nb-card-header>
     <nb-card-body style="max-height: 600px;">
+        <p *ngIf="tests && tests.length < 1">No tests created</p> 
         <div *ngFor="let t of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}" class="allocatedTest cursor-click"><!--[routerLink]="['/user/test/selected/', sub._id]"-->
             <nb-card [@fadeInOut]>
                 <nb-card-header>{{t.title | uppercase}}</nb-card-header>
                 <nb-card-body *ngIf="t.userTestList.length > 0">
                     <div *ngFor="let sub of t.userTestList"  class="allocatedTest">
                         <div fxLayout="row">
-                            <h5>{{sub.user.name}} <span class="text-muted" style="font-size:small">{{sub.user._id}}</span></h5>
+                            <h5>{{sub.user.name}} <span class="text-muted" style="font-size:small">{{sub.user.username}}</span></h5>
                             <span class="fill-remaining-space"></span>
                             <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
                                 <div>
@@ -62,7 +63,7 @@
                     <div class="row text-center">
                         <div class="col-6">
                             <div class="row">
-                                <div class="col-md-6 cursor-click" (click)="assignUserID(t,{'UserID': ''})" style="padding: 5px;" matTooltip="Allocate new user to this test" matTooltipPosition="below">
+                                <div class="col-md-6 cursor-click" (click)="assignUserID(t,{'Username': ''})" style="padding: 5px;" matTooltip="Allocate new user to this test" matTooltipPosition="below">
                                     <i class="nb-paper-plane"></i><span>Assign</span>
                                 </div>
                                 <div class="col-md-6 cursor-click" (click)="lockTest(t)" style="padding: 5px;" matTooltip="Locks test, users cannot view questions or submit an attempt" matTooltipPosition="below">
@@ -140,7 +141,6 @@
                              (pageChange)="getPage($event)"></pagination-controls>
     </nb-card-footer>
 </nb-card>
-<p *ngIf="tests && tests.length < 1">No tests created</p>
 
 <!--<div class="row" *ngIf="tests" >
     <div *ngFor="let t of tests" class="col-lg-12" [@fadeInOut]>

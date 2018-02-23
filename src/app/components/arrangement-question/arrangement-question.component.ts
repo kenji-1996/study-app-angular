@@ -27,6 +27,7 @@ export class ArrangementComponent implements OnInit,OnChanges {
         private dataEmit: DataEmitterService,
         private dragulaService: DragulaService,
     ) {
+
         const bag: any = this.dragulaService.find('arrange');
         if (bag !== undefined ) this.dragulaService.destroy('arrange');
         this.arrangementOptions = {

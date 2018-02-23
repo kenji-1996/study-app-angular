@@ -38,17 +38,6 @@
 <div [@fadeInOut] *ngIf="test && test.questions.length > 0 && pickedId !== null">
 
     <div *ngFor="let question of test.questions; let i = index">
-        <ng-container *ngIf="question.type === 'keywords'">
-            <app-keyword-question [mark]="true" [subQuestion]="subTest.submittedQuestions[i]" (broadcastResult)="onBroadcastAnswer($event)" [test]="test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-keyword-question>
-        </ng-container>
-        <ng-container *ngIf="question.type === 'choices'">
-            <app-choice-question [mark]="true" [subQuestion]="subTest.submittedQuestions[i]" (broadcastResult)="onBroadcastAnswer($event)" [test]="test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-choice-question>
-        </ng-container>
-        <ng-container *ngIf="question.type === 'arrangement'">
-            <app-arrangement-question [mark]="true" [subQuestion]="subTest.submittedQuestions[i]" (broadcastResult)="onBroadcastAnswer($event)" [test]="test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-arrangement-question>
-        </ng-container>
-        <ng-container *ngIf="question.type === 'shortAnswer'">
-            <app-shortanswer-question [mark]="true" [subQuestion]="subTest.submittedQuestions[i]" (broadcastResult)="onBroadcastAnswer($event)" [test]="test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-shortanswer-question>
-        </ng-container>
+        <app-question [mark]="true" [subQuestion]="subTest.submittedQuestions[i]" (broadcastResult)="onBroadcastAnswer($event)" [test]="test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-question>
     </div>
 </div>
