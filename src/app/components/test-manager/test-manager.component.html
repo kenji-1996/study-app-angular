@@ -3,7 +3,7 @@
         Test browser
     </nb-card-header>
     <nb-card-body style="max-height: 600px;">
-        <p *ngIf="tests && tests.length < 1">No tests created</p> 
+        <p *ngIf="tests && tests.length < 1">No tests created</p>
         <div *ngFor="let t of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}" class="allocatedTest cursor-click"><!--[routerLink]="['/user/test/selected/', sub._id]"-->
             <nb-card [@fadeInOut]>
                 <nb-card-header>{{t.title | uppercase}}</nb-card-header>

@@ -3,9 +3,6 @@
  */
 let express = require('express');
 let passport = require('passport');
-let session = require('express-session');
-const config  = require('./server/auth/config');
-let oauth2orize = require('oauth2orize');
 const app = express();
 const cors = require('cors');
 const html = __dirname + '/dist';

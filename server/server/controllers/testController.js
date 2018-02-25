@@ -3,13 +3,13 @@
  */
 let settings = require('../misc/settings');
 let mongoose = require('mongoose');
-let testsModel = require('../models/testModel');
+let testsModel = require('../models/test/testModel');
 let usersModel = require('../models/userModel');
-let userTestModel = require('../models/userTestModel');
-let questionsModel = require('../models/questionModel');
-let submittedTestModel = require('../models/submittedTestModel');
-let submittedQuestionModel = require('../models/submittedQuestionModel');
-let selfAllocatedTestModel = require('../models/selfAllocatedTest');
+let userTestModel = require('../models/test/userTestModel');
+let questionsModel = require('../models/test/questionModel');
+let submittedTestModel = require('../models/test/submittedTestModel');
+let submittedQuestionModel = require('../models/test/submittedQuestionModel');
+let selfAllocatedTestModel = require('../models/test/selfAllocatedTest');
 
 /**
  * /api/tests [GET]
@@ -113,7 +113,7 @@ exports.createTest = function(req, res) {
             let test = new testsModel({
                 _id: new mongoose.Types.ObjectId(),
                 title: req.body.test.title,
-                category: req.body.test.category,
+                tags: req.body.test.tags,
                 authors: req.body.test.authors,
                 //In future accept array of userIds, displayed as friends on UI
             });

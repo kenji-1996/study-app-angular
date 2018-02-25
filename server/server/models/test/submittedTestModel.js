@@ -7,7 +7,7 @@
  */
 let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
-let submittedQuestionModel = require('../models/submittedQuestionModel');
+let submittedQuestionModel = require('./submittedQuestionModel');
 let mongoosePaginate = require('mongoose-paginate');
 
 let submittedTestSchema  = new Schema({

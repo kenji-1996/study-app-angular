@@ -11,8 +11,11 @@ let organizationSchema  = new Schema({
     //General information (collected from socials/submitted on registration)
     _id: Schema.Types.ObjectId,
     name: {type: String, unique: true, required: true},
-    type: {type: String, required: true},
+    tags: [{type: String, required: true}],
     icon: {type: String},
+    private: {type:Boolean, default: true },
+    approved: {type:Boolean, default: false},
+    creator: {type: Schema.Types.ObjectId, ref: 'users'},
     staff: [{type: Schema.Types.ObjectId, ref: 'users'}],//Can edit the whole org
     groups: [{type: Schema.Types.ObjectId, ref: 'groups'}],
 });

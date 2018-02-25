@@ -74,7 +74,7 @@ export class TestManagerComponent implements OnInit {
     getPage(page: number) {
         this.animationState = 'out';
         this.tests = null;
-        this.data.getDATA(global.url + '/api/users/' +  JSON.parse(localStorage.getItem('userObject'))._id +  '/authored?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
+        this.data.getDATA(global.url + global.authoredTests(JSON.parse(localStorage.getItem('userObject'))._id) + '?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
             this.total = res.data.total;
             this.tests = res.data.docs;
             this.config.currentPage = page;
@@ -97,7 +97,7 @@ export class TestManagerComponent implements OnInit {
                     testid: test._id,
                     username: username,
                 };
-                this.data.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/authored',body).subscribe(dataResult=> {
+                this.data.postDATA(global.url + global.authoredTests(JSON.parse(localStorage.getItem('userObject'))._id) + '/users',body).subscribe(dataResult=> {
                     if(dataResult) {
                         console.log(dataResult);
                         this.dataEmit.pushUpdateArray(dataResult.data.name + ' was assigned to ' + test.title,'New user assigned','success');
@@ -109,8 +109,7 @@ export class TestManagerComponent implements OnInit {
     }
 
     removeAllocatedTest(test:any,usertest:any) {
-        let body = { testid: test._id, usertestid: usertest._id };
-        this.data.deleteDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/authored/' + test._id + '/' + usertest._id, body).subscribe(dataResult=> {
+        this.data.deleteDATA(global.url + global.authoredTests(JSON.parse(localStorage.getItem('userObject'))._id) + '/users/' + usertest._id + '/' + test._id, {}).subscribe(dataResult=> {
             if(dataResult) {
                 this.dataEmit.pushUpdateArray(dataResult.message,'Allocated user removed','info');
                 this.getPage(this.page);

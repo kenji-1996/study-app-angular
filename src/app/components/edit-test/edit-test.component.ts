@@ -29,6 +29,7 @@ export class EditTestComponent implements OnInit {
     authorList:string[] = [];
     showTestSettingsState = 'out';
     showQuestionSettingsState = 'out';
+    subscription;
 
     //drag
     public allChoices: Array<string> = [];
@@ -37,13 +38,14 @@ export class EditTestComponent implements OnInit {
     choicesOptions;
     submitted = false;
 
-    //Keywords
+    //Tag system
     separatorKeysCodes = [ENTER, COMMA];
     visible: boolean = true;
     selectable: boolean = true;
     removable: boolean = true;
     addOnBlur: boolean = true;
     keywords = [];
+    tags = [];
 
     constructor(
         private formBuilder: FormBuilder,
@@ -58,6 +60,29 @@ export class EditTestComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.settingsFormGroup = this.formBuilder.group({
+            title: [null, Validators.required],
+            tags: [null, Validators.required],
+            authors: [null],
+            allowHint: false,
+            fullPage: false,
+            expire: false,
+            expireDate: null,
+            handMarked: false,
+            editable: false,
+            shareable: true,
+            timerEnabled: false,
+            timerLength: [null, Validators.pattern(/^\d+$/)],
+            showMarks: true,
+            limitAttempts: false,
+            limitAmount: null,
+            locked: false,
+            selfRemovable: false,
+            mark: false,
+            markDate: null,
+            private: false,
+            showMarker: false,
+        });
         this.addQuestionsFormGroup = this.formBuilder.group({
             type: [null],
             question: [null],
@@ -71,29 +96,6 @@ export class EditTestComponent implements OnInit {
             shortAnswer: [null],
             handMarked: [false],
         });
-        this.settingsFormGroup = this.formBuilder.group({
-            title: [null, Validators.required],
-            category: [null, Validators.required],
-            authors: [null],
-            allowHint: false,
-            fullPage: false,
-            expire: false,
-            expireDate: null,
-            handMarked: false,
-            editable: false,
-            shareable: false,
-            timerEnabled: false,
-            timerLength: [null, Validators.pattern(/^\d+$/)],
-            showMarks: false,
-            limitAttempts: false,
-            limitAmount: null,
-            locked: false,
-            selfRemovable: false,
-            mark: false,
-            markDate: null,
-            private: false,
-            showMarker: false,
-        });
         if(this.testId == null) {
             this.authorList.push(JSON.parse(localStorage.getItem('userObject'))._id);
             this.test = new newTest('','',this.questions,this.authorList);
@@ -102,7 +104,6 @@ export class EditTestComponent implements OnInit {
                 this.test = httpTest.data;
                 console.log(this.test);
                 this.settingsFormGroup.controls['title'].setValue(this.test.title);
-                this.settingsFormGroup.controls['category'].setValue(this.test.category);
                 this.settingsFormGroup.controls['allowHint'].setValue(this.test.hintAllowed);
                 this.settingsFormGroup.controls['fullPage'].setValue(this.test.fullPage);
                 this.settingsFormGroup.controls['expire'].setValue(this.test.expire);
@@ -121,6 +122,8 @@ export class EditTestComponent implements OnInit {
                 this.settingsFormGroup.controls['markDate'].setValue(this.test.markDate);
                 this.settingsFormGroup.controls['private'].setValue(this.test.private);
                 this.settingsFormGroup.controls['showMarker'].setValue(this.test.showMarker);
+                this.settingsFormGroup.controls['tags'].setValue('set');
+                this.tags = this.test.tags;
             });
         }
     }
@@ -186,20 +189,43 @@ export class EditTestComponent implements OnInit {
         }
     }
 
-    removeTag(word:any) {
-        const index: number = this.keywords.indexOf(word);
-        if (index !== -1) {
-            this.keywords.splice(index, 1);
+    removeTag(word:any, type?) {
+        if(type === 'keywords') {
+            const index: number = this.keywords.indexOf(word);
+            if (index !== -1) {
+                this.keywords.splice(index, 1);
+            }
+        }
+        if(type === 'tags') {
+            const index: number = this.tags.indexOf(word);
+            if (index !== -1) {
+                this.tags.splice(index, 1);
+                if(this.tags.length > 0) {
+                    this.settingsFormGroup.controls['tags'].setValue('value');
+                }else{
+                    this.settingsFormGroup.controls['tags'].setValue(null);
+                }
+            }
         }
     }
 
-    addTag(event: MatChipInputEvent): void {
+    addTag(event: MatChipInputEvent, type?): void {
         let input = event.input;
         let value = event.value;
 
         // Add our fruit
         if ((value || '').trim()) {
-            this.keywords.push(value.trim());
+            if(type === 'tags') {
+                this.tags.push(value.trim());
+                if(this.tags.length > 0) {
+                    this.settingsFormGroup.controls['tags'].setValue('value');
+                }else{
+                    this.settingsFormGroup.controls['tags'].setValue(null);
+                }
+            }
+            if(type === 'keywords') {
+                this.keywords.push(value.trim());
+            }
         }
 
         // Reset the input value
@@ -315,7 +341,7 @@ export class EditTestComponent implements OnInit {
         console.log(this.test);
         this.submitted = true;
         this.test.title = this.settingsFormGroup.controls['title'].value;
-        this.test.category = this.settingsFormGroup.controls['category'].value;
+        this.test.tags = this.tags;
         this.test.hintAllowed = this.settingsFormGroup.controls['allowHint'].value;
         this.test.fullPage = this.settingsFormGroup.controls['fullPage'].value;
         this.test.handMarked = this.settingsFormGroup.controls['handMarked'].value;

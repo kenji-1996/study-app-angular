@@ -5,4 +5,12 @@
 
 export const url='http://localhost:4949';
 //export const url='https://study.techgorilla.io';
-//export const version: string="22.2.2";
+export function authoredTests(userId) {
+    return '/api/users/' + userId + '/tests/authored';
+}
+export function selfTests(userId) {
+    return '/api/users/' + userId + '/tests/self';
+}
+export function allocatedTests(userId) {
+    return '/api/users/' + userId + '/tests/allocated';
+}

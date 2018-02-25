@@ -97,7 +97,7 @@ export class TestBrowserComponent implements OnInit {
 
     allocateTest(test:any) {
         let body = { testid: test._id };
-        this.data.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/self',body).subscribe(dataResult=> {
+        this.data.postDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests/self',body).subscribe(dataResult=> {
             if(dataResult) {
                 this.dataEmit.pushUpdateArray(dataResult.data.name + ' was assigned to ' + test.title,'New user assigned','success');
                 this.getPage(this.page);
@@ -105,7 +105,7 @@ export class TestBrowserComponent implements OnInit {
         });
     }
     unallocateTest(test:any) {
-        this.data.deleteDATA(global.url + '/api/tests/' +test._id + '/self/' + this.isAllocated(test),{}).subscribe(dataResult=> {
+        this.data.deleteDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests/self/' + test._id,{}).subscribe(dataResult=> {
             if(dataResult) {
                 this.dataEmit.pushUpdateArray(dataResult.message);
                 this.getPage(this.page);

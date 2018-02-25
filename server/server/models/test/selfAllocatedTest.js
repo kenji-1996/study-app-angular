@@ -7,8 +7,7 @@
  */
 let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
-let submittedTestModel = require('../models/submittedTestModel');
-let usersModel = require('../models/userModel');
+let submittedTestModel = require('./submittedTestModel');
 let mongoosePaginate = require('mongoose-paginate');
 
 //One user only has 1 result object per 1 test
@@ -58,6 +57,7 @@ selfAllocatedTest.plugin(mongoosePaginate);
 
 selfAllocatedTest.pre('remove', function(next) {
     submittedTestModel.findOneAndRemove({test: this.test}).exec(function (err,subTest) { if(subTest) { subTest.remove(); } });
+    mongoose.models['tests'].update({'_id' : this.test},{ $pull: { 'selfAllocatedTestList': this._id } }).exec(function (){});
     next();
 });
 

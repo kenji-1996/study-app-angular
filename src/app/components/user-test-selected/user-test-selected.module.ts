@@ -92,7 +92,7 @@ export class UserTestSelectedComponent implements OnInit {
     }
 
     populateSubmitted() {///users/:userId/tests/allocated/attempts/:testId
-        this.dataManagement.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/tests/allocated/attempts/' + this.allocatedTest.test._id).subscribe(dataResult=> {
+        this.dataManagement.getDATA(global.url + global.allocatedTests(JSON.parse(localStorage.getItem('userObject'))._id) + '/results/' + this.allocatedTest.test._id).subscribe(dataResult=> {
             if(!this.isEmptyObject(dataResult.data)) {
                 this.submittedTests = dataResult.data.submittedTests;
             }

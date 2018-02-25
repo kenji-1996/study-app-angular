@@ -1,8 +1,6 @@
 /**
  * Created by Kenji on 1/8/2018.
  */
-let settings = require('../misc/settings');
-
 let mongoose = require('mongoose');
 let newsModel = require('../models/newsModel');
 let usersModel = require('../models/userModel');

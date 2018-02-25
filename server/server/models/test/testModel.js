@@ -10,16 +10,16 @@
 let mongoose     = require('mongoose');
 let mongoosePaginate = require('mongoose-paginate');
 let Schema = mongoose.Schema;
-let questionsModel = require('../models/questionModel');
-let usersModel = require('../models/userModel');
-let userTestModel = require('../models/userTestModel');
+let questionsModel = require('./questionModel');
+let usersModel = require('../userModel');
+let userTestModel = require('./userTestModel');
 
 let testSchema  = new Schema({
     //General test information
     _id: Schema.Types.ObjectId,
     title: {type:String, required: true},
     questions: [{type: Schema.Types.ObjectId, ref: 'questions'}],
-    category: String,
+    tags: [String],
     date: { type: Date, default: Date.now },
     //Query all user tests from user?
     //[{ type : ObjectId, ref: 'User' }],

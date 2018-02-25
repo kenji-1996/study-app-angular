@@ -15,11 +15,20 @@
                     </div>
                 </div>
                 <div class="col-sm-6">
-                    <div class="form-group">
-                        <label for="inputCategory">Category</label>
-                        <input type="text" class="form-control" [ngClass]="{'form-control-danger': settingsFormGroup.controls.category.invalid && (settingsFormGroup.controls.category.dirty || settingsFormGroup.controls.category.touched),'form-control-success': settingsFormGroup.controls.category.valid && (settingsFormGroup.controls.category.dirty || settingsFormGroup.controls.category.touched)}" id="inputCategory" placeholder="Category" formControlName="category" required>
-                        <small class="form-text text-danger" *ngIf="settingsFormGroup.controls.category.errors && (settingsFormGroup.controls.category.dirty || settingsFormGroup.controls.category.touched)">Category required</small>
+                    <div class="form-group" >
+                        <input type="hidden" formControlName="tags" required>
+                        <label>Tags</label>
+                        <input class="form-control" style="width: 100%;" type="text" placeholder="New tag..."
+                               [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                               [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addTag($event,'tags')" />
                     </div>
+                    <mat-chip-list #tagList>
+                        <mat-chip *ngFor="let key of tags" [selectable]="selectable" [removable]="removable" (remove)="removeTag(key,'tags')">
+                            {{key}}<mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                    </mat-chip-list>
+                    <div style="height: 10px"></div>
+                    <small class="form-text text-danger" *ngIf="tags.length < 1">Atleast 1 tag required</small>
                 </div>
             </div>
             <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showTestSettingsState = showTestSettingsState === 'out' ? 'in' : 'out'" [innerText]="showTestSettingsState === 'out' ? 'Show settings': 'Hide settings'"></button>
@@ -56,14 +65,14 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <nb-checkbox formControlName="shareable">Shareable</nb-checkbox>
-                            <small class="form-text">The test can be self-allocated by any user with the ID</small>
+                            <nb-checkbox formControlName="showMarks">Show marks</nb-checkbox>
+                            <small class="form-text">Whether the user can see the results for an attempt submitted</small>
                         </div>
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <nb-checkbox formControlName="showMarks">Show marks</nb-checkbox>
-                            <small class="form-text">Whether the user can see the results for an attempt submitted</small>
+                            <nb-checkbox formControlName="showMarker">Show marker</nb-checkbox>
+                            <small class="form-text">Show the user who marked them</small>
                         </div>
                     </div>
                 </div>
@@ -86,12 +95,6 @@
                         <div class="form-group">
                             <nb-checkbox formControlName="private">Private</nb-checkbox>
                             <small class="form-text">If private, the test will not show in the test browser</small>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <nb-checkbox formControlName="showMarker">Show marker</nb-checkbox>
-                            <small class="form-text">Show the user who marked them</small>
                         </div>
                     </div>
                 </div>
@@ -196,6 +199,7 @@
     <mat-step>
         <div [formGroup]="addQuestionsFormGroup">
             <ng-template matStepLabel>Questions</ng-template>
+
             <!-- type select -->
             <div class="row">
                 <div class="col-sm-12">
@@ -229,12 +233,12 @@
                     <div class="form-group" >
                         <label>Keywords</label>
                         <input class="form-control" style="width: 100%;" type="text" placeholder="New keyword..."
-                               [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                               [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addTag($event)" />
+                               [matChipInputFor]="keywordsList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                               [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addTag($event,'keywords')" />
                     </div>
-                    <mat-chip-list #chipList>
-                        <mat-chip *ngFor="let key of keywords" [selectable]="selectable" [removable]="removable" (remove)="removeTag(key)">
-                            {{key}}<mat-icon matChipRemove>cancel</mat-icon>
+                    <mat-chip-list #keywordsList>
+                        <mat-chip *ngFor="let k of keywords" [selectable]="selectable" [removable]="removable" (remove)="removeTag(k,'keywords')">
+                            {{k}}<mat-icon matChipRemove>cancel</mat-icon>
                         </mat-chip>
                     </mat-chip-list>
                     <div style="height: 10px"></div>

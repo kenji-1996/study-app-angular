@@ -10,6 +10,9 @@ let mongoosePaginate = require('mongoose-paginate');
 let groupsSchema  = new Schema({//Aka a class, staff are usually the classes teacher, who can review results, allocate tests, send group messages, etc
     _id: Schema.Types.ObjectId,
     name: {type: String, unique: true, required: true},
+    private: {type:Boolean, default: true },
+    approved: {type:Boolean, default: false},
+    capacity: {type: Number, default: 30},
     staff: [{type: Schema.Types.ObjectId, ref: 'users'}],
     users: [{type: Schema.Types.ObjectId, ref: 'users'}],
 });

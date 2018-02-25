@@ -11,8 +11,8 @@
  */
 let mongoose     = require('mongoose');
 let Schema = mongoose.Schema;
-let submittedTestModel = require('../models/submittedTestModel');
-let usersModel = require('../models/userModel');
+let submittedTestModel = require('./submittedTestModel');
+let testsModel = require('./testModel');
 let mongoosePaginate = require('mongoose-paginate');
 
 //One user only has 1 result object per 1 test
@@ -52,8 +52,10 @@ userTestSchema.pre('remove', function(next) {
             subTest[i].remove();
         }
     });
+    mongoose.models['tests'].update({'_id' : this.test},{ $pull: { 'userTestList': this._id } }).exec(function (){});
     next();
 });
+
 
 
 

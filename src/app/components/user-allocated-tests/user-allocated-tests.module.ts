@@ -75,16 +75,13 @@ export class UserAllocatedTestsComponent implements OnInit {
     }
 
     removeTest(allocatedTest:any) {
-        alert('should check settings to see if removable/usable');
-        //test.test.canSelfRemove?
-        /*console.log('attempting to remove ' + JSON.stringify(test));
-         this.data.deleteDATA(global.url + '/api/tests/' + test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });*/
+         this.data.deleteDATA(global.url + global.allocatedTests(JSON.parse(localStorage.getItem('userObject'))._id) + '/' + allocatedTest.test._id, {}).subscribe(dataResult=> { this.dataEmit.pushUpdateArray(dataResult.message) });
     }
 
     getPage(page: number) {
         this.animationState = 'out';
         this.tests = null;
-        this.data.getDATA(global.url + '/api/users/'  + JSON.parse(localStorage.getItem('userObject'))._id +  '/tests/allocated?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
+        this.data.getDATA(global.url + global.allocatedTests(JSON.parse(localStorage.getItem('userObject'))._id) + '?page=' + page + '&limit=' + this.itemLimit + (this.filter? ('&search=' + this.filter) : '') + (this.sort? ('&sort=' + this.sort) : '')).subscribe(res => {
             this.total = res.data.total;
             //Hacky client side filtering, can be done server side but moved to save processing, could be moved back
             let index;

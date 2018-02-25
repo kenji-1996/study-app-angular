@@ -31,6 +31,8 @@ router.route('/tests/:testId/self/:allocatedId')
         res.json({message:'work in progress ):',data:null});
     })
     .delete(auth.isAuthenticated,testController.removeSelfAllocatedTest);
+
+
 router.route('/tests/author/:testId')
     .get(auth.isAuthenticated,testController.listTest);
 
