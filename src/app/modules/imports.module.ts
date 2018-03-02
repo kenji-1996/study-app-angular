@@ -19,7 +19,8 @@ import {
 import {NgHttpLoaderModule} from "ng-http-loader/ng-http-loader.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {
-    NbActionsModule, NbCardModule, NbCheckboxModule, NbLayoutModule, NbMenuModule, NbRouteTabsetModule, NbSearchModule,
+    NbActionsModule, NbCardModule, NbCheckboxModule, NbContextMenuModule, NbLayoutModule, NbMenuModule,
+    NbRouteTabsetModule, NbSearchModule,
     NbSidebarModule, NbTabsetModule, NbThemeModule, NbUserModule
 } from "@nebular/theme";
 import {NgbCollapseModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
@@ -68,6 +69,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
         NbMenuModule,
         NbUserModule,
         NbCheckboxModule,
+        NbContextMenuModule,
 
         NgbModule,
         NgbCollapseModule,
@@ -116,6 +118,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
         NbMenuModule,
         NbUserModule,
         NbCheckboxModule,
+        NbContextMenuModule,
 
         NgbModule,
         NgbCollapseModule,

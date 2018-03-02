@@ -1,3 +1,4 @@
+let mongoose = require('mongoose');
 let usersModel = require('../../../models/userModel');
 let testsModel = require('../../../models/test/testModel');
 let selfAllocatedTestModel = require('../../../models/test/selfAllocatedTest');

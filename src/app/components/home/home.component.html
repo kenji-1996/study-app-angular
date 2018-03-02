@@ -1,19 +1,13 @@
 <div *ngIf="news" [@fadeInOut]>
-    <nb-card  *ngFor="let n of news" style=" margin: 20px; overflow-y: hidden;">
-        <nb-card-header>
+    <div  *ngFor="let n of news" style=" margin: 20px; overflow-y: hidden;">
+        <strong>
             <h4>{{ n.headline | uppercase}}</h4>
-        </nb-card-header>
-
-        <nb-card-body>
-                <p mat-line [innerHtml]="sanitizer.bypassSecurityTrustHtml(n.content)"></p>
-        </nb-card-body>
-
-        <nb-card-footer>
-            <p class="text-muted" style="font-size:small">By {{n.authorName}} on {{n.date | date:'fullDate'}}</p>
-        </nb-card-footer>
-
-    </nb-card>
-    <button type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showAddNews = showAddNews === 'out' ? 'in' : 'out'" [innerText]="showAddNews === 'out' ? 'Add news': 'Hide'"></button>
+        </strong>
+        <p mat-line [innerHtml]="sanitizer.bypassSecurityTrustHtml(n.content)"></p>
+        <hr>
+        <p class="text-muted" style="font-size:small">By {{n.authorName}} on {{n.date | date:'fullDate'}}</p>
+    </div>
+    <button *ngIf="staff" type="button" class="btn btn-hero-info main-btn btn-tn" (click)="showAddNews = showAddNews === 'out' ? 'in' : 'out'" [innerText]="showAddNews === 'out' ? 'Add news': 'Hide'"></button>
     <div *ngIf="staff" [@slideInOut]="showAddNews">
         <br/>
         <app-add-news></app-add-news>

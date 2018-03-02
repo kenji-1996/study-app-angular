@@ -19,9 +19,9 @@ router.use(settings.bodyParser.urlencoded({ extended: true }));
 router.use(settings.bodyParser.json());
 
 //Implement the routes in the router.
-router.use(admin);
 router.use(user);
 router.use(test);
 router.use(news);
+router.use(admin);
 
 module.exports = router;

@@ -1,8 +1,4 @@
-<nb-card style="max-height: 800px;" [@fadeInOut]>
-    <nb-card-header>
-        Your tests
-    </nb-card-header>
-    <nb-card-body [@slideInOut]="showTestSettingsState">
+
         <div *ngFor="let sub of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}"  class="allocatedTest"><!--"-->
             <div fxLayout="row">
                 <h5>{{sub.test.title}} <span class="text-muted" style="font-size:small">{{sub.test._id}}</span></h5>
@@ -53,8 +49,6 @@
                 <strong>Heads up!</strong> looks like you currently dont have any tests assigned or chosen, <a [routerLink]="['/app/user/browse']" class="alert-link">our public test library</a> can provide some!
             </div>
         </div>
-    </nb-card-body>
-    <nb-card-footer>
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
@@ -107,5 +101,3 @@
                              [screenReaderPageLabel]="labels.screenReaderPageLabel"
                              [screenReaderCurrentLabel]="labels.screenReaderCurrentLabel"
                              (pageChange)="getPage($event)"></pagination-controls>
-    </nb-card-footer>
-</nb-card>

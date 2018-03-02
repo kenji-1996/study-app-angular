@@ -76,10 +76,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
                 link: '/app/author/create',
             },
             {
-                title: 'Mark',
-                link: '/app/author/review',
-            },
-            {
                 title: 'Review',
                 link: '/app/author/review',
                 hidden: true,

@@ -15,6 +15,7 @@
     "atob": "^2.0.3",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
+    "chance": "^1.0.13",
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "express-recaptcha": "^3.0.1",
@@ -40,6 +41,7 @@
     "@types/jasmine": "~2.5.53",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^6.0.99",
+    "nodemon": "^1.15.1",
     "ts-node": "~3.2.0"
   }
 }

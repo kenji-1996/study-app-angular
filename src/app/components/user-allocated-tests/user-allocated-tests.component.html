@@ -1,8 +1,4 @@
-<nb-card style="max-height: 800px;" [@fadeInOut]>
-    <nb-card-header>
-        Tests allocated to you
-    </nb-card-header>
-    <nb-card-body [@slideInOut]="showTestSettingsState">
+
         <div [@fadeInOut] *ngFor="let sub of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}"  class="allocatedTest cursor-click"><!--"-->
             <div fxLayout="row">
                 <h5>{{sub.test.title}} <span class="text-muted" style="font-size:small">{{sub.test._id}}</span></h5>
@@ -46,8 +42,6 @@
                 <strong>Heads up!</strong> Allocated tests are usually from an employer, teacher or similar. Try the <a [routerLink]="['/app/user/browse']" class="alert-link">test browser</a> for personal knowledge growth!
             </div>
         </div>
-    </nb-card-body>
-    <nb-card-footer>
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
@@ -100,5 +94,3 @@
                              [screenReaderPageLabel]="labels.screenReaderPageLabel"
                              [screenReaderCurrentLabel]="labels.screenReaderCurrentLabel"
                              (pageChange)="getPage($event)"></pagination-controls>
-    </nb-card-footer>
-</nb-card>

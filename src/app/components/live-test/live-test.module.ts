@@ -64,21 +64,27 @@ export class LiveTestComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.activeRoute.params.subscribe((params: Params) => {
-            let testId = params['testId'];
-            this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(allocatedTestResult => {
-                this.allocatedTest = allocatedTestResult.data;
-                if(this.allocatedTest.test.locked) {
-                    this.dataEmitter.pushUpdateArray('Cannot retrieve questions on locked test','Test locked','warning');
-                    this.route.navigate(['/app/user/tests']);
-                }
-                console.log(this.allocatedTest);
-                this.titleService.setTitle(this.allocatedTest.test.title + ' test - DigitalStudy');
-                this.submitTest.user = JSON.parse(localStorage.getItem('userObject'))._id;
-                this.submitTest.test = this.allocatedTest.test._id;
-                this.startTest();
+        this.activeRoute.queryParams.subscribe(query => {
+            console.log(query);
+            var self = query['self'];
+            var q = '?self=true';
+            this.activeRoute.params.subscribe((params: Params) => {
+                let testId = params['testId'];
+                this.dataManagement.getDATA(global.url + '/api/tests/' + testId + self? q : '').subscribe(allocatedTestResult => {
+                    this.allocatedTest = allocatedTestResult.data;
+                    if(this.allocatedTest.test.locked) {
+                        this.dataEmitter.pushUpdateArray('Cannot retrieve questions on locked test','Test locked','warning');
+                        this.route.navigate(['/app/user/tests']);
+                    }
+                    console.log(this.allocatedTest);
+                    this.titleService.setTitle(this.allocatedTest.test.title + ' test - DigitalStudy');
+                    this.submitTest.user = JSON.parse(localStorage.getItem('userObject'))._id;
+                    this.submitTest.test = this.allocatedTest.test._id;
+                    this.startTest();
+                });
             });
         });
+
     }
 
     private startTest() {

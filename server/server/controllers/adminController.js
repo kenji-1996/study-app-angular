@@ -4,7 +4,6 @@
 let mongoose = require('mongoose');
 let newsModel = require('../models/newsModel');
 let usersModel = require('../models/userModel');
-let settings = require('../misc/settings');
 
 /**
  * todo
@@ -23,6 +22,8 @@ exports.listUsers = function(req, res) {
  * todo
  */
 exports.addUser = function(req, res) {
+    let Chance = require('chance');
+    let chance = new Chance();
     let generate = req.body.generate;
     let amount = req.body.amount? Number.parseInt(req.body.amount) : 1;
     let emailGen = req.body.emailGen? {domain: req.body.emailGen} : {};
@@ -31,11 +32,11 @@ exports.addUser = function(req, res) {
         let newUser = new usersModel();//username, email, password, name, picture
         newUser._id = new mongoose.Types.ObjectId();
         if(generate) {
-            newUser.email = settings.chance.email(emailGen);
-            newUser.username = settings.chance.string(usernameGen);
-            newUser.password = settings.chance.string({length: 5});
-            newUser.name = settings.chance.name();
-            newUser.picture = settings.chance.avatar();
+            newUser.email = chance.email(emailGen);
+            newUser.username = chance.string(usernameGen);
+            newUser.password = chance.string({length: 5});
+            newUser.name = chance.name();
+            newUser.picture = chance.avatar();
         }else{
             newUser = req.body.user;
         }
@@ -50,11 +51,11 @@ exports.addUser = function(req, res) {
         for(let i = 0; i < req.body.amount; i++){
             let newUser = new usersModel();//username, email, password, name, picture
             newUser._id = new mongoose.Types.ObjectId();
-            newUser.email = settings.chance.email(emailGen);
-            newUser.username = settings.chance.string(usernameGen);
-            newUser.password = settings.chance.string({length: 5});
-            newUser.name = settings.chance.name();
-            newUser.picture = settings.chance.avatar();
+            newUser.email = chance.email(emailGen);
+            newUser.username = chance.string(usernameGen);
+            newUser.password = chance.string({length: 5});
+            newUser.name = chance.name();
+            newUser.picture = chance.avatar();
             newUser.generatedAccount = true;
             generatedUsers.push(newUser);
             newUser.save(function (err, result) {

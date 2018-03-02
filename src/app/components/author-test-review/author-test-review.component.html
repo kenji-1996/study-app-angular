@@ -1,9 +1,8 @@
 <div [@fadeInOut] *ngIf="test && test.questions.length > 0">
-    <nb-card style="max-height: 800px;">
-        <nb-card-header>
+        <h4>
             Select a submitted test
-        </nb-card-header>
-        <nb-card-body *ngIf="allocatedTest.submittedTests" [@fadeInOut]>
+        </h4>
+        <div *ngIf="allocatedTest.submittedTests" [@fadeInOut]>
             <div *ngFor="let sub of allocatedTest.submittedTests;let i = index" style="font-size: small;" (click)="setSubTest(i)" class="cursor-click">
                 <div class="row text-center">
                     <div class="col-sm-4">
@@ -30,9 +29,7 @@
                     <button class="btn btn-hero-success" [disabled]="submitted" (click)="onSubmit()">Submit test review</button>
                 </div>
             </div>
-        </nb-card-body>
-
-    </nb-card>
+        </div>
 
 </div>
 <div [@fadeInOut] *ngIf="test && test.questions.length > 0 && pickedId !== null">

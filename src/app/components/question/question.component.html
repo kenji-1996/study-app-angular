@@ -1,143 +1,135 @@
-<nb-card>
-    <nb-card-header>
-        <div fxLayout="row">
-            <div>{{test.questions[index].question}}</div>
-            <span class="fill-remaining-space"></span>
-            <div fxLayout="row" fxFlexAlign="end">
-                <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="test.questions[index]"></h4>
-            </div>
-        </div>
-    </nb-card-header>
-    <nb-card-body style="margin-bottom: -15px;">
-        <div class="row" (keyup.enter)="fullPage? null : (index === (test.questions.length -1)? null : (onNext.emit(true)))">
-            <!-- Keyword question -->
-            <div class="col-sm-12" *ngIf="test.questions[index].type ==='keywords'" >
-                <div *ngIf="mark">
-                    <h3>Provided answer</h3>
-                    <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [disabled]="mark">{{(test.questions[index].submittedAnswer.join(''))}}</textarea>
-                    <p style="font-weight: bold; margin-top: 10px;" class="-external-link cursor-click" (click)="model.keywords = model.keywords === 'out' ? 'in' : 'out'" [innerHTML]="model.keywords === 'out'? 'Show Author answer' : 'Hide Author answer'"></p>
-                </div>
-                <div [@slideInOut]="mark? model.keywords : 'in'">
-                    <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [(ngModel)]="answer" [disabled]="mark"></textarea>
-                </div>
-            </div>
 
-            <!-- Arrangement question -->
-            <div class="col-sm-12" *ngIf="test.questions[index].type ==='arrangement'">
-                <div *ngIf="mark">
-                    <nb-card>
-                        <nb-card-header>
-                            Provided Answer
-                        </nb-card-header>
-                        <nb-card-body [dragula]='"arrange"' [dragulaOptions]="arrangementOptions" style="touch-action: none">
-                            <div *ngFor="let c of test.questions[index].submittedAnswer" [innerText]="c" [id]="c" class="alert alert-info"></div>
-                        </nb-card-body>
-                    </nb-card>
-                    <span style="font-weight: bold; margin-top: 10px;" class="-external-link cursor-click" (click)="model.arrangement = model.arrangement === 'out' ? 'in' : 'out'" [innerHTML]="model.arrangement === 'out'? 'Show Author answer' : 'Hide Author answer'"></span>
-                </div>
-                <nb-card [@slideInOut]="mark? model.arrangement : 'in'">
-                    <nb-card-header>
-                        <span [innerHTML]="mark? 'Author answer' : 'Correct arrangement order'"></span>
-                    </nb-card-header>
-                    <nb-card-body [dragula]='"arrange"' [dragulaOptions]="arrangementOptions" id="arrangeOptions" style="touch-action: none">
-                        <div *ngFor="let c of test.questions[index].arrangement" [innerText]="c" [id]="c" class="alert alert-info"></div>
-                    </nb-card-body>
-                </nb-card>
-            </div>
-
-            <!-- Choices question -->
-            <ng-container *ngIf="test.questions[index].type ==='choices'">
-                <div class="form-group col-sm-12" *ngIf="mark">
-                    <nb-card >
-                        <nb-card-header>
-                            Provided answer
-                        </nb-card-header>
-                        <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" style="touch-action: none">
-                            <div *ngFor="let c of test.questions[index].submittedAnswer" [innerText]="c" [id]="c" class="alert alert-info"></div>
-                        </nb-card-body>
-                    </nb-card>
-                    <p style="font-weight: bold; margin-top: 10px;" class="-external-link cursor-click" (click)="model.choices = model.choices === 'out' ? 'in' : 'out'" [innerHTML]="model.choices === 'out'? 'Show Author answer' : 'Hide Author answer'"></p>
-                </div>
-                    <div class="form-group col-sm-6" [@slideInOut]="mark? model.choices : 'in'">
-                        <nb-card >
-                            <nb-card-header>
-                                All choices
-                            </nb-card-header>
-                            <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="allChoices" style="touch-action: none">
-                                <div *ngFor="let c of test.questions[index].choicesAll" [innerText]="c" [id]="c" class="alert alert-info"></div>
-                            </nb-card-body>
-                        </nb-card>
-                    </div>
-                    <div class="form-group col-sm-6" [@slideInOut]="mark? model.choices : 'in'">
-                        <nb-card>
-                            <nb-card-header>
-                                <span [innerHTML]="mark? 'Author answer' : 'Correct choices'"></span>
-                            </nb-card-header>
-                            <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="correctChoices" style="touch-action: none" >
-                                <ng-container *ngIf="mark">
-                                    <div *ngFor="let c of test.questions[index].choicesAnswer" [innerText]="c" [id]="c" class="alert alert-info"></div>
-                                </ng-container>
-                            </nb-card-body>
-                        </nb-card>
-                    </div>
-
-            </ng-container>
-
-            <!-- Short answer -->
-            <div class="col-sm-12" *ngIf="test.questions[index].type ==='shortAnswer'">
-                <div *ngIf="mark">
-                    <h3>Provided answer</h3>
-                    <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [disabled]="mark">{{(test.questions[index].submittedAnswer)}}</textarea>
-                    <p style="font-weight: bold; margin-top: 10px;" class="-external-link cursor-click" (click)="model.shortAnswer = model.shortAnswer === 'out' ? 'in' : 'out'" [innerHTML]="model.shortAnswer === 'out'? 'Show Author answer' : 'Hide Author answer'"></p>
-                </div>
-                <div [@slideInOut]="mark? model.shortAnswer : 'in'">
-                    <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [(ngModel)]="answer" [disabled]="mark"></textarea>
-                </div>
-            </div>
-
-        </div>
-
-        <div fxLayout="row" *ngIf="!fullPage">
-            <button  [disabled]="index === 0" class="btn btn-hero-warning btn-tn" (click)="onBack.emit(true)">Back</button>
-            <span class="fill-remaining-space"></span>
-            <div fxLayout="row" fxFlexAlign="end">
-                <button [disabled]="index === (test.questions.length -1)" class="btn btn-hero-success btn-tn" (click)="onNext.emit(true)">Next</button>
-            </div>
-        </div>
-        <ng-container *ngIf="test.questions[index].hint && !mark">
-            <div class="alert alert-hint" role="alert" style="margin-top: 5px;">
-                <strong>Hint</strong> <span style="font-style: italic">{{test.questions[index].hint}}</span>
-            </div>
-        </ng-container>
-
-    </nb-card-body>
-    <nb-card-footer>
+<div fxLayout="row">
+    <h4>{{test.questions[index].question}}</h4>
+    <span class="fill-remaining-space"></span>
+    <div fxLayout="row" fxFlexAlign="end">
+        <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="test.questions[index]"></h4>
+    </div>
+</div>
+<div class="row" (keyup.enter)="fullPage? null : (index === (test.questions.length -1)? null : (onNext.emit(true)))">
+    <!-- Keyword question -->
+    <div class="col-sm-12" *ngIf="test.questions[index].type ==='keywords'" >
         <div *ngIf="mark">
-            <div class="row form-group">
-                <div class="col-sm-6">
-                    <label>Feedback</label>
-                    <textarea rows="1" placeholder="Feedback" class="form-control" [(ngModel)]="feedback"></textarea>
-                </div>
-                <div class="col-sm-6">
-                    <label>Result</label>
-                    <div class="input-group">
-                        <input type="number" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [max]="test.questions[index].possibleMarks">
-                        <span class="input-group-btn">
+            <h5>Provided answer</h5>
+            <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [disabled]="mark">{{(test.questions[index].submittedAnswer.join(''))}}</textarea>
+            <h5 style=" margin-top: 10px;" class="-external-link cursor-click" (click)="model.keywords = model.keywords === 'out' ? 'in' : 'out'" [innerHTML]="model.keywords === 'out'? 'Show Author answer' : 'Hide Author answer'"></h5>
+        </div>
+        <div [@slideInOut]="mark? model.keywords : 'in'">
+            <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [(ngModel)]="answer" [disabled]="mark"></textarea>
+        </div>
+    </div>
+
+    <!-- Arrangement question -->
+    <div class="col-sm-12" *ngIf="test.questions[index].type ==='arrangement'">
+        <div *ngIf="mark">
+            <h5>Provided answer</h5>
+            <nb-card>
+                <nb-card-body [dragula]='"arrange"' [dragulaOptions]="arrangementOptions" style="touch-action: none">
+                    <div *ngFor="let c of test.questions[index].submittedAnswer" [innerText]="c" [id]="c" class="alert alert-info"></div>
+                </nb-card-body>
+            </nb-card>
+            <h5 style=" margin-top: 10px;" class="-external-link cursor-click" (click)="model.arrangement = model.arrangement === 'out' ? 'in' : 'out'" [innerHTML]="model.arrangement === 'out'? 'Show Author answer' : 'Hide Author answer'"></h5>
+        </div>
+        <nb-card [@slideInOut]="mark? model.arrangement : 'in'">
+            <nb-card-header>
+                <span [innerHTML]="mark? 'Author answer' : 'Correct arrangement order'"></span>
+            </nb-card-header>
+            <nb-card-body [dragula]='"arrange"' [dragulaOptions]="arrangementOptions" id="arrangeOptions" style="touch-action: none">
+                <div *ngFor="let c of test.questions[index].arrangement" [innerText]="c" [id]="c" class="alert alert-info"></div>
+            </nb-card-body>
+        </nb-card>
+    </div>
+
+    <!-- Choices question -->
+    <ng-container *ngIf="test.questions[index].type ==='choices'">
+        <div class="form-group col-sm-12" *ngIf="mark">
+            <h5>Provided answer</h5>
+            <nb-card >
+                <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" style="touch-action: none">
+                    <div *ngFor="let c of test.questions[index].submittedAnswer" [innerText]="c" [id]="c" class="alert alert-info"></div>
+                </nb-card-body>
+            </nb-card>
+            <h5 style=" margin-top: 10px;" class="-external-link cursor-click" (click)="model.choices = model.choices === 'out' ? 'in' : 'out'" [innerHTML]="model.choices === 'out'? 'Show Author answer' : 'Hide Author answer'"></h5>
+        </div>
+        <div class="form-group col-sm-6" [@slideInOut]="mark? model.choices : 'in'" *ngIf="!mark">
+            <nb-card >
+                <nb-card-header>
+                    All choices
+                </nb-card-header>
+                <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="allChoices" style="touch-action: none">
+                    <div *ngFor="let c of test.questions[index].choicesAll" [innerText]="c" [id]="c" class="alert alert-info"></div>
+                </nb-card-body>
+            </nb-card>
+        </div>
+        <div class="form-group col-sm-6" [ngClass]="{'col-sm-6':!mark, 'col-sm-12': mark}" [@slideInOut]="mark? model.choices : 'in'">
+            <nb-card>
+                <nb-card-header *ngIf="!mark">
+                    Correct choices
+                </nb-card-header>
+
+                <nb-card-body [dragula]='"choices"' [dragulaOptions]="choicesOptions" id="correctChoices" style="touch-action: none" >
+                    <ng-container *ngIf="mark">
+                        <div *ngFor="let c of test.questions[index].choicesAnswer" [innerText]="c" [id]="c" class="alert alert-info"></div>
+                    </ng-container>
+                </nb-card-body>
+            </nb-card>
+        </div>
+
+    </ng-container>
+
+    <!-- Short answer -->
+    <div class="col-sm-12" *ngIf="test.questions[index].type ==='shortAnswer'">
+        <div *ngIf="mark">
+            <h5>Provided answer</h5>
+            <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [disabled]="mark">{{(test.questions[index].submittedAnswer)}}</textarea>
+            <h5 style=" margin-top: 10px;" class="-external-link cursor-click" (click)="model.shortAnswer = model.shortAnswer === 'out' ? 'in' : 'out'" [innerHTML]="model.shortAnswer === 'out'? 'Show Author answer' : 'Hide Author answer'"></h5>
+        </div>
+        <div [@slideInOut]="mark? model.shortAnswer : 'in'">
+            <textarea [rows]="mark? 5 : 10" placeholder="Answer" class="form-control" [(ngModel)]="answer" [disabled]="mark"></textarea>
+        </div>
+    </div>
+
+</div>
+
+<div fxLayout="row" *ngIf="!fullPage">
+    <button  [disabled]="index === 0" class="btn btn-hero-warning btn-tn" (click)="onBack.emit(true)">Back</button>
+    <span class="fill-remaining-space"></span>
+    <div fxLayout="row" fxFlexAlign="end">
+        <button [disabled]="index === (test.questions.length -1)" class="btn btn-hero-success btn-tn" (click)="onNext.emit(true)">Next</button>
+    </div>
+</div>
+<ng-container *ngIf="test.questions[index].hint && !mark">
+    <div class="alert alert-hint" role="alert" style="margin-top: 5px;">
+        <strong>Hint</strong> <span style="font-style: italic">{{test.questions[index].hint}}</span>
+    </div>
+</ng-container>
+
+<hr *ngIf="!mark">
+<div *ngIf="mark">
+    <div class="row form-group">
+        <div class="col-sm-6">
+            <label>Feedback</label>
+            <textarea rows="1" placeholder="Feedback" class="form-control" [(ngModel)]="feedback"></textarea>
+        </div>
+        <div class="col-sm-6">
+            <label>Result</label>
+            <div class="input-group">
+                <input type="number" class="form-control" placeholder="Result." [(ngModel)]="finalMark" [max]="test.questions[index].possibleMarks">
+                <span class="input-group-btn">
                             <button class="btn btn-danger">
                                  / {{test.questions[index].possibleMarks}}
                             </button>
                         </span>
-                    </div>
-                </div>
             </div>
         </div>
-        <div fxLayout="row" *ngIf="!mark">
-            <h4  class="text-center text-muted lead" style="font-size: small;" *ngIf="test.questions[index]">Available marks: {{test.questions[index].possibleMarks}}</h4>
-            <span class="fill-remaining-space"></span>
-            <div fxLayout="row" fxFlexAlign="end">
-                <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="test.questions[index]">{{index + 1}}</h4>
-            </div>
-        </div>
-    </nb-card-footer>
-</nb-card>
+    </div>
+    <hr>
+</div>
+<div fxLayout="row" *ngIf="!mark">
+    <h4  class="text-center text-muted lead" style="font-size: small;" *ngIf="test.questions[index]">Available marks: {{test.questions[index].possibleMarks}}</h4>
+    <span class="fill-remaining-space"></span>
+    <div fxLayout="row" fxFlexAlign="end">
+        <h4 class="text-center text-muted lead" style="font-size: small;" *ngIf="test.questions[index]">{{index + 1}}</h4>
+    </div>
+</div>
 

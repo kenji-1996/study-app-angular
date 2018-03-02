@@ -56,6 +56,8 @@ export class QuestionComponent implements OnInit, OnChanges {
             this.answer = [];
         }
         if(this.test.questions[this.index].type === 'choices') {
+            const bag: any = this.dragulaService.find('choices');
+            if (bag !== undefined ) this.dragulaService.destroy('choices');
             this.dragulaService.setOptions('choices', {
                 moves: (el, source, handle, sibling) => !this.mark
             });

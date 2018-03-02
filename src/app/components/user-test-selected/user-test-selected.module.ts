@@ -27,25 +27,12 @@ export class UserTestSelectedComponent implements OnInit {
     //Test variables
     allocatedTest: allocatedTest;
     submittedTests: submittedTest[];
-    started = false;
-    progress = '0';
-    timerMax = '30';
-    selectedQuestion;
     selectedId = 0;
     answer;
-    timeLeft = 0;
     query;
-
-    //Test options
-    giveHint = false;
-    timeLimit = false;
-    instantResult = false;
     fullPage = false;
-    randomOrder = false;//To-do1
-
-    //Format
-    isCollapsed = true;
     today: Date = new Date(Date.now());
+    self = false;
 
     //Recent results
     private subscription: Subscription;
@@ -61,13 +48,11 @@ export class UserTestSelectedComponent implements OnInit {
 
     ngOnInit() {
         this.activeRoute.params.subscribe((params: Params) => {
+            var self = this.activeRoute.snapshot.queryParams['self'];
+            if(self) this.self = true;
+            var q = '?self=true';
             let testId = params['testId'];
-            this.activeRoute.queryParams.subscribe(qparams=> {
-                if(qparams['self']) {
-                    console.log('self allocated');
-                }
-            });
-            this.dataManagement.getDATA(global.url + '/api/tests/' + testId).subscribe(allocatedTestResult => {
+            this.dataManagement.getDATA(global.url + '/api/tests/' + testId + ( self? q : '')).subscribe(allocatedTestResult => {
                 this.allocatedTest = allocatedTestResult.data;
                 //Check here if expired/attempts past due etc
                 if(this.allocatedTest.test.expire && Date.now() > new Date(this.allocatedTest.test.expireDate).getTime()) { alert('test expired'); }// TODO: do something with expired test
@@ -88,7 +73,10 @@ export class UserTestSelectedComponent implements OnInit {
     }
 
     testStarted() {
-        this.route.navigate( ['app/user/test/live', this.allocatedTest._id]);//, {queryParams: { giveHint:this.giveHint,timeLimit: this.timeLimit? this.timerMax : 0,instantResult: this.instantResult,questionId:this.selectedId }});
+        let navigationExtras = {
+            queryParams: { testId: this.allocatedTest._id, self: 'true' }
+        };
+        this.route.navigate( ['app/user/test/live', navigationExtras ]);//, {queryParams: { giveHint:this.giveHint,timeLimit: this.timeLimit? this.timerMax : 0,instantResult: this.instantResult,questionId:this.selectedId }});
     }
 
     populateSubmitted() {///users/:userId/tests/allocated/attempts/:testId

@@ -10,8 +10,7 @@ let mongoose     = require('mongoose');
 let bodyParser = require('body-parser');
 let User = require('../models/userModel');
 let config = require('./config');
-let Chance = require('chance');
-let chance = new Chance();
+
 /**
  * We initialize the auth with our API link with Google
  * Then we connect to our mongodb hosted on my server, targeting the 'study' database.

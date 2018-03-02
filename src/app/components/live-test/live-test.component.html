@@ -1,25 +1,12 @@
 <div [@fadeInOut] *ngIf="allocatedTest && allocatedTest.test.fullPage">
 
     <div *ngFor="let question of allocatedTest.test.questions; let i = index">
-        <ng-container *ngIf="question.type === 'keywords'">
-            <app-keyword-question (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-keyword-question>
-        </ng-container>
-        <ng-container *ngIf="question.type === 'choices'">
-            <app-choice-question (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-choice-question>
-        </ng-container>
-
-        <ng-container *ngIf="question.type === 'arrangement'">
-            <app-arrangement-question (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-arrangement-question>
-        </ng-container>
-
-        <ng-container *ngIf="question.type === 'shortAnswer'">
-            <app-shortanswer-question (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="true" [index]="i"></app-shortanswer-question>
-        </ng-container>
+        <app-question (onBack)="onBack($event)" (onNext)="onNext($event)" [mark]="false" (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="false" [index]="i"></app-question>
+    </div>
 
         <!--<ng-container *ngIf="question.enableTimer">
             <mat-progress-bar  mode="determinate" [value]="progress" color="accent"></mat-progress-bar>
         </ng-container>-->
-    </div>
 
     <div class="text-center">
         <button class="btn btn-hero-success" [disabled]="submitted" (click)="submitAll = true">Submit</button>
@@ -28,20 +15,7 @@
 
 <div [@fadeInOut] *ngIf="allocatedTest && !allocatedTest.test.fullPage">
     <div *ngFor="let question of allocatedTest.test.questions; let i = index">
-        <ng-container *ngIf="question.type === 'keywords'">
-            <app-keyword-question [hidden]="i !== selectedId" (onBack)="onBack($event)" (onNext)="onNext($event)" (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="false" [index]="i"></app-keyword-question>
-        </ng-container>
-        <ng-container *ngIf="question.type === 'choices'">
-            <app-choice-question [hidden]="i !== selectedId" (onBack)="onBack($event)" (onNext)="onNext($event)" (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="false" [index]="i"></app-choice-question>
-        </ng-container>
-
-        <ng-container *ngIf="question.type === 'arrangement'">
-            <app-arrangement-question [hidden]="i !== selectedId" (onBack)="onBack($event)" (onNext)="onNext($event)" (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="false" [index]="i"></app-arrangement-question>
-        </ng-container>
-
-        <ng-container *ngIf="question.type === 'shortAnswer'">
-            <app-shortanswer-question [hidden]="i !== selectedId" (onBack)="onBack($event)" (onNext)="onNext($event)" (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="false" [index]="i"></app-shortanswer-question>
-        </ng-container>
+        <app-question (onBack)="onBack($event)" (onNext)="onNext($event)" [mark]="false" [hidden]="i !== selectedId" (broadcastResult)="onBroadcastAnswer($event)" [test]="allocatedTest.test" [submit]="submitAll" [fullpage]="false" [index]="i"></app-question>
     </div>
 
     <nb-card>
@@ -59,19 +33,3 @@
     </nb-card>
 
 </div>
-<!--
-<div [@fadeInOut] *ngIf="allocatedTest && !allocatedTest.test.fullPage && selectedQuestion">
-    <ng-container *ngIf="selectedQuestion.type ===broadcastResultastResultesultywordbroadcastResultdcastAnswer)="onBroadcastAnswer($event)" (onBack)="onBack($event)" [question]="selectedQuestion" [fullpage]="false" [index]="i"></app-keyword-question>
-    </ng-container>
-    <ng-container *ngIf="selectedQuestion.type === 'choices'">
-        <app-choice-question (broadcastAnswer)="onBroadcastAnswer($event)" [question]="selectedQuestion" [fullpage]="false" [index]="i"></app-choice-question>
-    </ng-container>
-
-    <ng-container *ngIf="selectedQuestion.type === 'arrangement'">
-        <app-arrangement-question (broadcastAnswer)="onBroadcastAnswer($event)" [question]="selectedQuestion" [fullpage]="false" [index]="i"></app-arrangement-question>
-    </ng-container>
-
-    <ng-container *ngIf="selectedQuestion.type === 'shortAnswer'">
-        <app-shortanswer-question (broadcastAnswer)="onBroadcastAnswer($event)" [question]="selectedQuestion" [fullpage]="false" [index]="i"></app-shortanswer-question>
-    </ng-container>
-</div>-->

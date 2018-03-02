@@ -179,13 +179,14 @@ mat-toolbar {
   }
 
   @include media-breakpoint-down(xs) {
-    .main-content {
-      padding: 0.75rem !important;
 
-    }
   }
 
   @include media-breakpoint-down(sm) {
+    .main-content {
+      padding: 0rem !important;
+
+    }
 
     nb-sidebar.menu-sidebar {
 

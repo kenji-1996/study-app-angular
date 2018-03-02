@@ -1,9 +1,6 @@
-<div *ngIf="allocatedTest" [@fadeInOut]>
-    <nb-card style="max-height: 800px;">
-        <nb-card-header>
+
             {{allocatedTest.test.title | uppercase}}
-        </nb-card-header>
-        <nb-card-body *ngIf="submittedTests" [@fadeInOut]>
+
             <h6 class="display-6">Information</h6>
             <div class="row" style="font-size: small">
                 <div class="col-sm-4">
@@ -56,9 +53,6 @@
             <ng-container *ngIf="submittedTests.length === 0">
                 <p style="font-size: small">No attempts made</p>
             </ng-container>
-        </nb-card-body>
-
-        <nb-card-footer>
             <nb-actions size="medium" fullWidth>
                 <nb-action>
                     <div class="text-center">
@@ -68,7 +62,3 @@
                     </div>
                 </nb-action>
             </nb-actions>
-        </nb-card-footer>
-
-    </nb-card>
-</div>
