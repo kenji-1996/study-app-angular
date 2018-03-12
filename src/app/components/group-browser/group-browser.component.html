@@ -1,0 +1,80 @@
+
+<div *ngFor="let test of tests | paginate:{id:config.id, itemsPerPage: itemLimit,currentPage: page, totalItems: total}" class="allocatedTest cursor-click"><!--[routerLink]="['/user/test/selected/', sub._id]"-->
+    <div fxLayout="row">
+        <h5>{{test.name}} <span class="text-muted" style="font-size:small">{{test._id}}</span></h5>
+        <span class="fill-remaining-space"></span>
+        <div fxLayout="row" fxFlexAlign="start" style="padding: 3px;" class="text-center">
+            <div>
+                <i *ngIf="!isJoined(test)" matTooltip="Join this group" matTooltipPosition="above" (click)="joinGroup(test)" class="fa fa-plus cursor-click"></i>
+                <i *ngIf="isJoined(test)" matTooltip="Leave this group" matTooltipPosition="above" (click)="leaveGroup(test)" class="fa fa-trash cursor-click"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-muted" style="font-size: small">
+        <div class="row text-center">
+            <div class="col-sm-4">
+                <Strong>Creator: </Strong>{{test.creator.username}}
+            </div>
+            <div class="col-sm-4">
+                <Strong>Verified: </Strong>{{test.verified}}
+            </div>
+            <div class="col-sm-4">
+                <Strong>Users: </Strong>{{test.users.length}}
+            </div>
+        </div>
+    </div>
+    <div class="dotted-hr"></div>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label>Search titles</label>
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Title starts with..." [(ngModel)]="filter" (keyup.enter)="getPage(p)" (keyup)="keyUp.next($event)">
+                <span class="input-group-btn">
+                            <button class="btn btn-danger" (click)="getPage(p)">
+                              Search
+                            </button>
+                        </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label>Results per page</label>
+            <input type="number" class="form-control" placeholder="Results per page..." [(ngModel)]="itemLimit" (keyup.enter)="getPage(p)" (keyup)="keyUp.next($event)">
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label>Sort by</label>
+            <div class="form-group">
+                <div class="input-group">
+                    <select class="form-control" [(ngModel)]="sort" (change)="onChange($event.target.value)">
+                        <option value="">Default (Date descending)</option>
+                        <option value="title">Title Ascending</option>
+                        <option value="-title">Title Descending</option>
+                        <option value="category">Category Ascending</option>
+                        <option value="-category">Category Descending</option>
+                        <option value="date">Date Ascending</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<pagination-controls class="my-pagination text-center" [id]="config.id"
+                     [maxSize]="3"
+                     [directionLinks]="directionLinks"
+                     [autoHide]="autoHide"
+                     [previousLabel]="labels.previousLabel"
+                     [nextLabel]="labels.nextLabel"
+                     [screenReaderPaginationLabel]="labels.screenReaderPaginationLabel"
+                     [screenReaderPageLabel]="labels.screenReaderPageLabel"
+                     [screenReaderCurrentLabel]="labels.screenReaderCurrentLabel"
+                     (pageChange)="getPage($event)"></pagination-controls>

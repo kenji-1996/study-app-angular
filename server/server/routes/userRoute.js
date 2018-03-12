@@ -2,7 +2,7 @@
  * Created by Kenji on 12/29/2017. - User API
  */
 const router = require('express').Router();
-let userController = require('../controllers/user/userController');
+let userController = require('../controllers/userController');
 let auth = require('../misc/auth');
 
 /**
@@ -65,4 +65,10 @@ router.route('/users/:userId/tests/authored/users')
 router.route('/users/:userId/tests/authored/users/:userTestId/:testId')
     .delete(auth.isAuthenticated,userController.authorUnassignTest);
 
+//------------------Groups-------------
+router.route('/users/:userId/groups')
+    .get(auth.isAuthenticated,userController.listUserGroups)
+    .post(auth.isAuthenticated, userController.joinUserGroup);
+router.route('/users/:userId/groups/:groupId')
+    .delete(auth.isAuthenticated, userController.leaveUserGroup);
 module.exports = router;

@@ -20,6 +20,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
                 link: '/app/user/profile',
             },
             {
+                title: 'Groups',
+                link: '/app/user/groups',
+            },
+            {
                 title: 'Sign out',
                 link: '/app/user/sign-out',
             },

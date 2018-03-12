@@ -15,6 +15,7 @@ import {user} from "../../objects/objects";
 })
 export class UserProfileComponent implements OnInit {
     user: user;
+    groups:any = [];
 
     constructor(
         public auth: AuthenticateService,
@@ -25,6 +26,16 @@ export class UserProfileComponent implements OnInit {
     ngOnInit() {
         this.dataManagement.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id).subscribe(httpUser => {
             this.user = httpUser.data;
+        });
+        this.dataManagement.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/groups').subscribe(xd => {
+            console.log(xd.data);
+            for(let i = 0; i < xd.data.length; i++) {
+                console.log(xd.data[i]);
+                if(xd.data[i].staff.includes(JSON.parse(localStorage.getItem('userObject'))._id)) {
+                    xd.data[i]['canModify'] = true;
+                }
+            }
+            this.groups = xd.data;
         });
     }
 }

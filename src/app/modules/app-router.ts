@@ -26,7 +26,7 @@ const routes: Routes = [
     },
     { path: 'app',
         component: MainComponent,
-        //canActivate:[AuthGuard],
+        canActivate:[AuthGuard],
         children:[
 
             { path: 'home', loadChildren: '../components/home/home.module#HomeModule'/**/ },
@@ -39,6 +39,8 @@ const routes: Routes = [
             { path: 'user/test/live/:testId', loadChildren: '../components/live-test/live-test.module#LiveTestModule' },//Live attempt page of test
             { path: 'user/profile', loadChildren: '../components/user-profile/user-profile.module#UserProfileModule' },
             { path: 'user/browse', loadChildren: '../components/test-browser/test-browser.module#TestBrowserModule' },
+            { path: 'user/groups', loadChildren: '../components/group-browser/group-browser.module#GroupBrowserModule' },
+            { path: 'user/groups/add', loadChildren: '../components/group/group.module#GroupModule' },
             //{ path: 'user/test/edit/:testId', loadChildren: '../components/edit-test/edit-test.module#EditTestModule' },//Users cant edit tests unless specified
             //{ path: 'user/test/result/:testId', loadChildren: '../components/result/result.module#ResultModule' },//feedback/marks for 1 test
 
@@ -47,6 +49,7 @@ const routes: Routes = [
             { path: 'author/create', loadChildren: '../components/create-test/create-test.module#CreateTestModule' },
             { path: 'author/review/:testId', loadChildren: '../components/author-test-review/author-test-review.module#AuthorTestModule' },
             { path: 'author/edit/:testId', loadChildren: '../components/modify-test/modify-test.module#ModifyTestModule' },
+
 
             //Misc
             { path: '404', component: FourOhFourPage },

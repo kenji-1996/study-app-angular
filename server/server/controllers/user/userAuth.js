@@ -55,7 +55,7 @@ exports.getLogin = function(req, res) {
                     // Password did not match
                     if (!isMatch) {  return res.status(403).json({message: "Password incorrect", data: err}); }
                     // Success
-                    let token = jwt.sign({_id: userResult._id, exp: rememberMe === 'true'? Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365 * 100) : Math.floor(Date.now() / 1000) + (60 * 60) }, config.jwtSecret);
+                    let token = jwt.sign({_id: userResult._id,username: userResult.username, exp: rememberMe === 'true'? Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365 * 100) : Math.floor(Date.now() / 1000) + (60 * 60) }, config.jwtSecret);
                     let obj = {};
                     obj['profile'] = userResult;
                     obj['profile']['password'] = undefined;

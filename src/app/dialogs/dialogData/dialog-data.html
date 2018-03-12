@@ -1,8 +1,48 @@
+<h2 mat-dialog-title>{{config.title}}</h2>
+<p class="text-muted">{{config.subTitle}}</p>
 <div mat-dialog-content>
-    <p>{{data.question}}</p>
-    <div *ngFor="let d of objectKeys(data)">
-        <mat-form-field><input matInput placeholder="{{d}}" [(ngModel)]="data[d]"></mat-form-field>
+
+    <ng-container *ngIf="config.singleResult">
+        <mat-form-field style="width: 100%;">
+            <mat-select placeholder="{{config.singleResultQuestion? config.singleResultQuestion : 'Choose an option'}}" [(ngModel)]="singleSelectChoice">
+                <mat-option *ngFor="let option of data" [value]="option.providedName">
+                    {{ option.providedName }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </ng-container>
+
+
+
+
+    <div *ngFor="let d of inputDialogOptions">
+        <mat-form-field style="width: 100%;" *ngIf="config.singleResult && singleSelectChoice == d.providedName">
+            <input matInput placeholder="{{d.providedName}}" [(ngModel)]="d.result">
+        </mat-form-field>
+        <mat-form-field style="width: 100%;" *ngIf="!config.singleResult">
+            <input matInput placeholder="{{d.providedName}}" [(ngModel)]="d.result">
+        </mat-form-field>
     </div>
+
+    <ng-container>
+        <div *ngFor="let d of selectDialogOptions">
+            <mat-form-field style="width: 100%;" *ngIf="config.singleResult && singleSelectChoice == d.providedName">
+                <mat-select placeholder="{{d.providedName}}" [(ngModel)]="d.result">
+                    <mat-option *ngFor="let option of d.providedValue" [value]="option">
+                        {{ option.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field style="width: 100%;" *ngIf="!config.singleResult">
+                <mat-select placeholder="{{d.providedName}}" [(ngModel)]="d.result">
+                    <mat-option *ngFor="let option of d.providedValue" [value]="option.name">
+                        {{ option.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </ng-container>
+
 </div>
 <div mat-dialog-actions>
     <button mat-button (click)="submit()" tabindex="2">Submit</button>

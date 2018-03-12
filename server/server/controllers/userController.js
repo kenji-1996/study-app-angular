@@ -1,11 +1,12 @@
 /**
  * Created by Kenji on 1/8/2018.
  */
-let userAuth = require('./userAuth');
-let userDetail = require('./userDetail');
-let selfTest = require('./tests/selfTest');
-let allocatedTest = require('./tests/allocatedTest');
-let authorTest = require('./author/authorTest');
+let userAuth = require('./user/userAuth');
+let userDetail = require('./user/userDetail');
+let selfTest = require('./user/tests/selfTest');
+let allocatedTest = require('./user/tests/allocatedTest');
+let authorTest = require('./user/author/authorTest');
+let userGroup = require('./user/userGroup');
 
 /**
  * ./userAuth.js
@@ -41,8 +42,6 @@ exports.allocatedRemoveTest = allocatedTest.removeTest;//DELETE /api/users/:user
 exports.allocatedListAllResults = allocatedTest.listAllResults;//GET /api/users/:userId/tests/allocated/results
 exports.allocatedListResults = allocatedTest.listResults;//GET /api/users/:userId/tests/allocated/results/:testId
 
-
-//---------------------------------------------------------Authored restful API here --------------------------------------
 /**
  * ./author/authorTest.js
  * /api/users/:userId/tests/authored
@@ -50,3 +49,11 @@ exports.allocatedListResults = allocatedTest.listResults;//GET /api/users/:userI
 exports.authorListTests = authorTest.listTests;//GET /api/users/:userId/tests/authored
 exports.authorAssignTest = authorTest.assignTest;//POST /api/users/:userId/tests/authored/users
 exports.authorUnassignTest = authorTest.unassignTest;//DELETE /api/users/:userId/tests/authored/users/:targetUserId/:targetTestId
+
+/**
+ * ./userGroup.js
+ * /api/users/groups
+ */
+exports.listUserGroups = userGroup.listUserGroups;//GET /api/users/:userId/tests/authored
+exports.joinUserGroup = userGroup.joinGroup;
+exports.leaveUserGroup = userGroup.leaveGroup;

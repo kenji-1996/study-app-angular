@@ -1,0 +1,21 @@
+<form (ngSubmit)="form.form.valid && registerGroup()" #form="ngForm">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Group name</label>
+                <input name="username" [(ngModel)]="model.name" #name="ngModel"
+                       class="form-control" placeholder="Group name"
+                       [class.form-control-danger]="name.invalid && name.touched"
+                       [required]="true" [minlength]="3" [maxlength]="40" autofocus>
+                <small class="form-text error" *ngIf="name.invalid && name.touched">Group name invalid</small>
+                <nb-checkbox name="private" [(ngModel)]="model.private" #private="ngModel" placeholder="Group name">Private</nb-checkbox>
+            </div>
+        </div>
+    </div>
+
+
+    <button [disabled]="submitted || !form.valid" class="btn btn-block btn-hero-success"
+            [class.btn-pulse]="submitted">
+        Register group
+    </button>
+</form>

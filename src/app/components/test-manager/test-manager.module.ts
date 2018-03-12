@@ -5,7 +5,7 @@ import {DataManagementService} from "../../services/data-management.service";
 
 import * as global from '../../globals';
 import {newTest} from '../../objects/objects';
-import {MatDialog} from "@angular/material";
+import {MatDialog, MatSelectModule} from "@angular/material";
 import {DataEmitterService} from "../../services/data-emitter.service";
 import {Subject, Observable} from 'rxjs';
 import 'rxjs/add/observable/of';
@@ -37,6 +37,7 @@ export class TestManagerComponent implements OnInit {
     autoHide = false;
     public keyUp = new Subject<any>();
     animationState = 'out';
+    groups:any = [];
 
     public config: PaginationInstance = {
         id: 'advanced',
@@ -68,6 +69,13 @@ export class TestManagerComponent implements OnInit {
     ngOnInit() {
         this.titleService.setTitle('Authored tests - DigitalStudy');
         this.getPage(1);
+        this.data.getDATA(global.url + '/api/users/' + JSON.parse(localStorage.getItem('userObject'))._id + '/groups').subscribe(groupData => {
+            for(let i = 0; i < groupData.data.length; i++) {
+                if(groupData.data[i].staff.includes(JSON.parse(localStorage.getItem('userObject'))._id)) {
+                    this.groups.push(groupData.data[i]);
+                }
+            }
+        });
     }
 
 
@@ -88,15 +96,34 @@ export class TestManagerComponent implements OnInit {
         this.getPage(this.page);
     }
 
-    assignUserID(test:newTest,data:any): void{
-        let dialogRef = this.dialog.open(DialogData, {data: data });
-        dialogRef.afterClosed().subscribe((result:any) => {
-            if(result && result.Username) {
-                let username = result.Username;
+    assignUserID(test:newTest): void{
+        let input = {
+            config : {
+                singleResult: true,
+                singleResultQuestion: 'Please choose a method of assigning',
+                title: 'Assign this test',
+                subTitle: 'Enter a username or a group (You must have allocation rights towards the individual or test)',
+            },
+            data : [
+                { providedName: 'Username', result: null, type : 'input' },
+                { providedName: 'Group', providedValue: this.groups, result: null, type: 'select'},
+            ],
+        };
+        let dialogRef = this.dialog.open(DialogData, {data: input});
+        dialogRef.afterClosed().subscribe((dialog:any) => {
+            let result = dialog.result;
+            if(dialog && result) {
                 let body = {
                     testid: test._id,
-                    username: username,
                 };
+                if(result.type == 'input') {
+                    body['type'] = 'username';
+                    body['username'] = result.value;
+                }
+                if(result.type == 'select') {
+                    body['type'] = 'group';
+                    body['group'] = result.value._id;
+                }
                 this.data.postDATA(global.url + global.authoredTests(JSON.parse(localStorage.getItem('userObject'))._id) + '/users',body).subscribe(dataResult=> {
                     if(dataResult) {
                         console.log(dataResult);

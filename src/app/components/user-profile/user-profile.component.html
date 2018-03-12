@@ -1,38 +1,58 @@
+<div *ngIf="user">
+    <div fxLayout="row">
+        <div fxLayout="column" fxFlexAlign="center">
+            <h2>{{user.username}}</h2>
+            <p class="text-muted" style="font-size:small">ID: <i>{{user._id}}</i>, Permissions: <i>{{user.permissions}}</i></p>
+        </div>
+        <span class="fill-remaining-space"></span>
+        <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
+            <div class="avatar" style="margin-top: -10px;" [ngStyle]="{'background-image':'url(' + user?.picture + ')'}"></div>
+        </div>
+    </div>
+    <div fxLayout="row">
+        <div fxLayout="column" fxFlexAlign="center">
+            <p><Strong>Your email</Strong></p>
+            <p>{{user.email}}</p>
+        </div>
+        <span class="fill-remaining-space"></span>
+        <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
+            <button type="button" class="btn btn-hero-info btn-tn" [disabled]="true">Edit email</button>
+        </div>
+    </div>
+    <hr>
+    <div fxLayout="row">
+        <div fxLayout="column" fxFlexAlign="center">
+            <p><Strong>Your name</Strong></p>
+            <p>{{user.name}}</p>
+        </div>
+        <span class="fill-remaining-space"></span>
+        <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
+            <button type="button" class="btn btn-hero-info btn-tn" [disabled]="true">Edit Name</button>
+        </div>
+    </div>
+    <hr>
 
-                <div fxLayout="row">
-                    <div fxLayout="column" fxFlexAlign="center">
-                        <h2>{{user.username}}</h2>
-                        <p class="text-muted" style="font-size:small">ID: <i>{{user._id}}</i>, Permissions: <i>{{user.permissions}}</i></p>
-                    </div>
-                    <span class="fill-remaining-space"></span>
-                    <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
-                        <div class="avatar" style="margin-top: -10px;" [ngStyle]="{'background-image':'url(' + user?.picture + ')'}"></div>
-                    </div>
-                </div>
-                <div fxLayout="row">
-                    <div fxLayout="column" fxFlexAlign="center">
-                        <p><Strong>Your email</Strong></p>
-                        <p>{{user.email}}</p>
-                    </div>
-                    <span class="fill-remaining-space"></span>
-                    <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
-                        <button type="button" class="btn btn-hero-info btn-tn" [disabled]="true">Edit email</button>
-                    </div>
-                </div>
-                <hr>
-                <div fxLayout="row">
-                    <div fxLayout="column" fxFlexAlign="center">
-                        <p><Strong>Your name</Strong></p>
-                        <p>{{user.name}}</p>
-                    </div>
-                    <span class="fill-remaining-space"></span>
-                    <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
-                        <button type="button" class="btn btn-hero-info btn-tn" [disabled]="true">Edit Name</button>
-                    </div>
-                </div>
+    <div fxLayout="row">
+        <div fxLayout="column" fxFlexAlign="center">
+            <p><Strong>Group(s)</Strong></p>
+            <div *ngFor="let g of groups; let i = index">
+                <ng-container *ngIf="g.canModify">
+                    STAFF: {{g.name}}
+                </ng-container>
+                <ng-container *ngIf="!g.canModify">
+                    NON-STAFF: {{g.name}}
+                </ng-container>
+            </div>
+        </div>
+        <span class="fill-remaining-space"></span>
+        <div fxLayout="row" fxFlexAlign="center" style="padding: 3px;">
+            <button type="button" class="btn btn-hero-info btn-tn" routerLink="/app/user/groups/add">Add group</button>
+        </div>
+    </div>
+    <div fxLayout="row" style="margin-top:15px;">
+        <p fxFlexAlign="center" class="text-muted" style="font-size:small"><strong>Date created:</strong> {{user.dateCreated | date:'medium'}}</p>
+        <span class="fill-remaining-space"></span>
+        <p fxFlexAlign="center" class="text-muted" style="font-size:small"><strong>Last login:</strong> {{user.lastLogin | date:'medium'}}</p>
+    </div>
+</div>
 
-                <div fxLayout="row" style="margin-top:5px;">
-                    <p fxFlexAlign="center" class="text-muted" style="font-size:small"><strong>Date created:</strong> {{user.dateCreated | date:'medium'}}</p>
-                    <span class="fill-remaining-space"></span>
-                    <p fxFlexAlign="center" class="text-muted" style="font-size:small"><strong>Last login:</strong> {{user.lastLogin | date:'medium'}}</p>
-                </div>

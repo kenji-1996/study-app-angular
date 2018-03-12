@@ -11,7 +11,8 @@ import {
     MatExpansionModule,
     MatFormFieldModule, MatGridListModule,
     MatIconModule,
-    MatInputModule, MatListModule, MatMenuModule, MatNativeDateModule, MatProgressBarModule, MatSidenavModule,
+    MatInputModule, MatListModule, MatMenuModule, MatNativeDateModule, MatProgressBarModule, MatSelectModule,
+    MatSidenavModule,
     MatSnackBarModule,
     MatStepperModule,
     MatTableModule, MatToolbarModule, MatTooltipModule
@@ -57,6 +58,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
         MatAutocompleteModule,
         MatDatepickerModule,
         MatNativeDateModule,
+        MatSelectModule,
 
         FlexLayoutModule,
 
@@ -105,6 +107,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
         MatAutocompleteModule,
         MatDatepickerModule,
         MatNativeDateModule,
+        MatSelectModule,
 
         FlexLayoutModule,
 
