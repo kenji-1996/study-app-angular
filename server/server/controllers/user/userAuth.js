@@ -22,7 +22,12 @@ exports.postRegister = function(req, res) {
         user.password = req.body.password;
         user.email = req.body.email;
         if(req.body.name) user.name = req.body.name;
-        if(req.body.picture) { user.picture = req.body.picture; }else{ user.picture = settings.chance.avatar(); }
+        if(req.body.picture) {
+            user.picture = req.body.picture;
+        }else{
+            //let chance = new Chance();
+            user.picture = settings.chance.avatar();
+        }
         user.save(function (err, result) {
             if (err && err.code && err.code === 11000) return res.status(400).json({message: "A user with that username or email already exists", data: err});
             if (err) return res.status(500).json({message: "Saving user failed", data: err});

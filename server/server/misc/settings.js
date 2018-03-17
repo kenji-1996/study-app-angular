@@ -9,6 +9,7 @@ let GoogleAuth = require('google-auth-library');
 let mongoose     = require('mongoose');
 let bodyParser = require('body-parser');
 let User = require('../models/userModel');
+let Chance = require('chance');
 let config = require('./config');
 
 /**
@@ -16,14 +17,15 @@ let config = require('./config');
  * Then we connect to our mongodb hosted on my server, targeting the 'study' database.
  */
 let auth = new GoogleAuth;
-let client = new auth.OAuth2('***REMOVED***', '', '');
-mongoose.connect('mongodb://kenji:***REMOVED***@***REMOVED***:27017/study');
+let client = new auth.OAuth2('240769489797-ij5d1g73ol2491lla5f1ts0u377fb0ad.apps.googleusercontent.com', '', '');
+mongoose.connect('mongodb://localhost/study');
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
-    console.log("Connected to mongodb at ***REMOVED***");
+    console.log("Connected to mongodb at localhost");
 });
 //Export the database for access in other files
+module.exports.chance = new Chance();
 module.exports.db = db;
 module.exports.bodyParser = bodyParser;
 
