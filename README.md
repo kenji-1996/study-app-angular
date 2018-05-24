@@ -1,5 +1,6 @@
 # StudyAppAngular
 
+This is a passion project I created and worked hard on. It is messy because I was teaching myself as I developed, this is my first experience with a NodeJS RESTFUL api, and a proper RESTFULAPI in general. Also my first time using mongoose/mongodb.
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.5.0.
 
 ## Development server
